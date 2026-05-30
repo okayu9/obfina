@@ -1,70 +1,74 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import ValueByAlphaMap from '$lib/components/map/ValueByAlphaMap.svelte';
-	import CountryPanel from '$lib/components/panels/CountryPanel.svelte';
-	import { aggregateByCountry, formatBandwidth } from '$lib/relay-stats';
+	import ViewNav from '$lib/components/nav/ViewNav.svelte';
+	import MapView from '$lib/components/views/MapView.svelte';
+	import CentralizationView from '$lib/components/views/CentralizationView.svelte';
+	import PathBiasView from '$lib/components/views/PathBiasView.svelte';
+	import TrendsView from '$lib/components/views/TrendsView.svelte';
+	import CircuitView from '$lib/components/views/CircuitView.svelte';
+	import { relayStore, loadRelays } from '$lib/stores/relays.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
-	import type { Relay, RelaysResponse } from '$lib/types';
+	import {
+		VIEWS,
+		viewState,
+		setView,
+		cycleView,
+		initViewFromUrl,
+		syncViewToUrl
+	} from '$lib/stores/view.svelte';
 
-	let relays = $state<Relay[]>([]);
-	let count = $state(0);
-	let loading = $state(true);
-	let failed = $state(false);
-
-	const byCountry = $derived(aggregateByCountry(relays));
-	const selectedStats = $derived(
-		selection.country ? (byCountry.get(selection.country) ?? null) : null
-	);
-	const totalBandwidth = $derived(relays.reduce((sum, r) => sum + r.bandwidth, 0));
+	// Views that render off live relay data; GROWTH fetches its own time-series.
+	const needsRelays = $derived(viewState.id !== 'growth');
+	const showStatus = $derived(needsRelays && (relayStore.loading || relayStore.failed));
 
 	function onKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape') selection.country = null;
+		if (e.metaKey || e.ctrlKey || e.altKey) return;
+		if (e.key === 'Escape') {
+			selection.country = null;
+			return;
+		}
+		const n = Number(e.key);
+		if (n >= 1 && n <= VIEWS.length) {
+			setView(VIEWS[n - 1].id);
+			return;
+		}
+		if (e.key === 'ArrowRight' || e.key === ']') cycleView(1);
+		else if (e.key === 'ArrowLeft' || e.key === '[') cycleView(-1);
 	}
 
-	onMount(async () => {
-		try {
-			const res = await fetch('/api/relays');
-			const data = (await res.json()) as RelaysResponse;
-			if (data.unavailable) {
-				failed = true;
-			} else {
-				relays = data.relays;
-				count = data.count;
-			}
-		} catch {
-			failed = true;
-		} finally {
-			loading = false;
-		}
+	onMount(() => {
+		initViewFromUrl();
+		loadRelays();
+	});
+
+	// Keep the URL in step with the active view, and drop any stale selection
+	// when leaving the map.
+	$effect(() => {
+		syncViewToUrl();
+		if (viewState.id !== 'map') selection.country = null;
 	});
 </script>
 
 <svelte:window onkeydown={onKeydown} />
 
 <div class="scene">
-	<ValueByAlphaMap {relays} />
-
-	{#if loading}
-		<div class="status pulse" aria-label="loading"></div>
-	{:else if failed}
-		<div class="status err" aria-label="unavailable"></div>
-	{:else}
-		<div class="hud">
-			<div class="metric">
-				<span class="count">{count.toLocaleString()}</span>
-				<span class="unit">relays</span>
-			</div>
-			<div class="metric">
-				<span class="bw">{formatBandwidth(totalBandwidth)}</span>
-			</div>
-			<div class="legend">
-				<span class="enc"><i class="ramp"></i>cyan→green = exit share</span>
-				<span class="enc"><i class="bright"></i>brighter = more relays</span>
-			</div>
-		</div>
+	{#if viewState.id === 'map'}
+		<MapView />
+	{:else if viewState.id === 'hosting'}
+		<CentralizationView />
+	{:else if viewState.id === 'paths'}
+		<PathBiasView />
+	{:else if viewState.id === 'growth'}
+		<TrendsView />
+	{:else if viewState.id === 'circuits'}
+		<CircuitView />
 	{/if}
 
-	<CountryPanel stats={selectedStats} />
+	<ViewNav />
+
+	{#if showStatus}
+		<div class="status" class:pulse={relayStore.loading} class:err={relayStore.failed}></div>
+	{/if}
 </div>
 
 <style>
@@ -72,69 +76,6 @@
 		position: fixed;
 		inset: 0;
 	}
-
-	.hud {
-		position: fixed;
-		bottom: 1.5rem;
-		left: 1.5rem;
-		pointer-events: none;
-	}
-
-	.metric {
-		display: flex;
-		align-items: baseline;
-		gap: 0.5rem;
-	}
-
-	.count {
-		font-size: 2rem;
-		font-variant-numeric: tabular-nums;
-		letter-spacing: 0.05em;
-		color: var(--accent-cyan);
-		text-shadow: 0 0 12px rgba(0, 212, 255, 0.6);
-	}
-
-	.unit {
-		font-size: 0.8rem;
-		letter-spacing: 0.15em;
-		color: #6f8aa3;
-	}
-
-	.bw {
-		font-size: 1rem;
-		color: #9fc6e0;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.legend {
-		margin-top: 0.7rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-		font-size: 0.72rem;
-		letter-spacing: 0.08em;
-		color: #6f8aa3;
-	}
-	.enc {
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-	}
-	.bright {
-		width: 28px;
-		height: 8px;
-		display: inline-block;
-		border-radius: 999px;
-		background: linear-gradient(90deg, #0e2230, #00d4ff);
-	}
-	.ramp {
-		width: 28px;
-		height: 8px;
-		display: inline-block;
-		border-radius: 999px;
-		background: linear-gradient(90deg, #00d4ff, #39ff14);
-	}
-
 	.status {
 		position: fixed;
 		top: 50%;
@@ -145,15 +86,12 @@
 		border-radius: 50%;
 		background: var(--accent-cyan);
 	}
-
 	.status.err {
 		background: #ff3b3b;
 	}
-
 	.pulse {
 		animation: pulse 1.4s ease-in-out infinite;
 	}
-
 	@keyframes pulse {
 		0%,
 		100% {
