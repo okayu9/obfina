@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { geoNaturalEarth1, geoPath } from 'd3-geo';
+	import { geoEquirectangular, geoPath } from 'd3-geo';
 	import { scaleSqrt } from 'd3-scale';
 	import { select } from 'd3-selection';
-	import { zoom, type D3ZoomEvent } from 'd3-zoom';
+	import { zoom, zoomIdentity, type D3ZoomEvent } from 'd3-zoom';
 	import isoCountries from 'i18n-iso-countries';
 	import { feature, mesh } from 'topojson-client';
 	import worldData from 'world-atlas/countries-110m.json';
@@ -15,15 +15,16 @@
 
 	let width = $state(0);
 	let height = $state(0);
-	let transform = $state('');
 	let svgEl = $state<SVGSVGElement | undefined>();
 	let hover = $state<{ code: string; count: number; x: number; y: number } | null>(null);
+	let zt = $state({ x: 0, y: 0, k: 1 });
 
 	const topology = worldData as unknown as Parameters<typeof feature>[0];
 	const countriesFc = feature(topology, topology.objects.countries as never) as unknown as {
 		features: { id?: string | number; properties: Record<string, unknown> }[];
 	};
 	const borders = mesh(topology, topology.objects.countries as never);
+	const SPHERE = { type: 'Sphere' } as const;
 
 	function codeFor(id?: string | number): string | null {
 		if (id == null) return null;
@@ -33,24 +34,41 @@
 
 	const byCountry = $derived(aggregateByCountry(relays));
 	const maxCount = $derived(Math.max(1, ...[...byCountry.values()].map((s) => s.count)));
-	// Value-by-alpha: the glow opacity is the "weight" (relay count). The base
-	// land is always visible underneath so the whole world reads as a map.
 	const weight = $derived(scaleSqrt().domain([1, maxCount]).range([0.18, 1]).clamp(true));
 
+	// Equirectangular so the map is a clean rectangle that tiles horizontally.
+	// Fit to height → poles sit exactly at the top/bottom edges (no empty space
+	// above the North Pole or below the South Pole).
 	const projection = $derived.by(() => {
 		if (!width || !height) return null;
-		return geoNaturalEarth1().fitExtent(
-			[
-				[12, 12],
-				[width - 12, height - 12]
-			],
-			borders
-		);
+		const p = geoEquirectangular();
+		p.fitHeight(height, SPHERE);
+		const b = geoPath(p).bounds(SPHERE);
+		const mapW = b[1][0] - b[0][0];
+		const t = p.translate();
+		p.translate([t[0] + (width - mapW) / 2 - b[0][0], t[1]]);
+		return p;
 	});
 	const path = $derived(projection ? geoPath(projection) : null);
 	const bordersPath = $derived(path ? (path(borders) ?? '') : '');
 
-	// Every country, with its shape, base render, and (if present) data.
+	// One world's pixel width (a full 360° of longitude) at scale 1.
+	const worldW = $derived(projection ? projection([180, 0])![0] - projection([-180, 0])![0] : 0);
+	const mapTop = $derived(projection ? geoPath(projection).bounds(SPHERE)[0][1] : 0);
+	const mapBottom = $derived(projection ? geoPath(projection).bounds(SPHERE)[1][1] : 0);
+
+	// Side copies left/right of the centre so horizontal panning never shows an edge.
+	const COPIES = [-1, 0, 1, 2];
+
+	// Horizontal position wrapped into one period; vertical taken as-is (already
+	// clamped by the zoom constraint below).
+	const rootTransform = $derived.by(() => {
+		const period = worldW * zt.k || 1;
+		let x = zt.x % period;
+		if (x > 0) x -= period;
+		return `translate(${x} ${zt.y}) scale(${zt.k})`;
+	});
+
 	const shapes = $derived.by(() => {
 		if (!path) return [];
 		return countriesFc.features.map((f) => {
@@ -83,43 +101,54 @@
 		if (!svgEl) return;
 		const z = zoom<SVGSVGElement, unknown>()
 			.scaleExtent([1, 8])
+			// Clamp vertical pan so you cannot scroll past either pole; leave
+			// horizontal free (it wraps via rootTransform).
+			.constrain((t) => {
+				const minY = height - mapBottom * t.k;
+				const maxY = -mapTop * t.k;
+				const y = Math.max(minY, Math.min(maxY, t.y));
+				return y === t.y ? t : zoomIdentity.translate(t.x, y).scale(t.k);
+			})
 			.on('zoom', (e: D3ZoomEvent<SVGSVGElement, unknown>) => {
-				transform = e.transform.toString();
+				zt = { x: e.transform.x, y: e.transform.y, k: e.transform.k };
 			});
 		select(svgEl).call(z);
 	});
 </script>
 
+{#snippet world(offset: number)}
+	<g transform="translate({offset * worldW} 0)">
+		{#each shapes as s (s.code ?? s.d.slice(0, 12))}
+			<path class="land" d={s.d} />
+		{/each}
+		<path class="borders" d={bordersPath} />
+		{#each shapes as s (`g-${s.code ?? s.d.slice(0, 12)}`)}
+			{#if s.stats && s.glow}
+				<path
+					class="data"
+					class:selected={s.code && selection.country === s.code}
+					d={s.d}
+					fill={s.glow}
+					fill-opacity={s.opacity}
+					onclick={() => selectCountry(s.code)}
+					onkeydown={(e) => onKey(e, s.code)}
+					onpointerenter={(e) => onEnter(e, s.code, s.stats)}
+					onpointermove={(e) => hover && (hover = { ...hover, x: e.clientX, y: e.clientY })}
+					onpointerleave={() => (hover = null)}
+					role="button"
+					tabindex="0"
+					aria-label={`${s.code}: ${s.stats.count} relays`}
+				/>
+			{/if}
+		{/each}
+	</g>
+{/snippet}
+
 <div class="map" bind:clientWidth={width} bind:clientHeight={height}>
 	<svg bind:this={svgEl} {width} {height} role="presentation">
-		<g {transform}>
-			<!-- Base: every country visible so the world shape reads -->
-			{#each shapes as s (s.code ?? s.d.slice(0, 12))}
-				<path class="land" d={s.d} />
-			{/each}
-
-			<!-- Borders -->
-			<path class="borders" d={bordersPath} />
-
-			<!-- Data glow on top, interactive -->
-			{#each shapes as s (`g-${s.code ?? s.d.slice(0, 12)}`)}
-				{#if s.stats && s.glow}
-					<path
-						class="data"
-						class:selected={s.code && selection.country === s.code}
-						d={s.d}
-						fill={s.glow}
-						fill-opacity={s.opacity}
-						onclick={() => selectCountry(s.code)}
-						onkeydown={(e) => onKey(e, s.code)}
-						onpointerenter={(e) => onEnter(e, s.code, s.stats)}
-						onpointermove={(e) => hover && (hover = { ...hover, x: e.clientX, y: e.clientY })}
-						onpointerleave={() => (hover = null)}
-						role="button"
-						tabindex="0"
-						aria-label={`${s.code}: ${s.stats.count} relays`}
-					/>
-				{/if}
+		<g transform={rootTransform}>
+			{#each COPIES as offset (offset)}
+				{@render world(offset)}
 			{/each}
 		</g>
 	</svg>
