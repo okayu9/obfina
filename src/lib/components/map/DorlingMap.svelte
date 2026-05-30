@@ -118,14 +118,9 @@
 			<path class="borders" d={bordersPath} />
 
 			{#each nodes as n (n.code)}
-				<circle
+				<g
 					class="bubble"
 					class:selected={selection.country === n.code}
-					cx={n.x}
-					cy={n.y}
-					r={n.r}
-					fill={n.fill}
-					fill-opacity={n.opacity}
 					onclick={() => selectCountry(n.code)}
 					onkeydown={(e) => onKey(e, n.code)}
 					onpointerenter={(e) =>
@@ -135,7 +130,19 @@
 					role="button"
 					tabindex="0"
 					aria-label={`${n.code}: ${n.count} relays`}
-				/>
+				>
+					<circle cx={n.x} cy={n.y} r={n.r} fill={n.fill} fill-opacity={n.opacity} />
+					{#if n.r >= 7}
+						<text
+							class="label"
+							x={n.x}
+							y={n.y}
+							font-size={Math.min(n.r * 0.9, 15)}
+							dominant-baseline="central"
+							text-anchor="middle">{n.code.toUpperCase()}</text
+						>
+					{/if}
+				</g>
 			{/each}
 		</g>
 	</svg>
@@ -169,17 +176,28 @@
 		pointer-events: none;
 	}
 	.bubble {
+		cursor: pointer;
+	}
+	.bubble circle {
 		stroke: rgba(255, 255, 255, 0.25);
 		stroke-width: 0.5;
-		cursor: pointer;
 		filter: drop-shadow(0 0 4px currentColor);
 	}
-	.bubble:hover {
+	.bubble:hover circle {
 		stroke: #ffffff;
 	}
-	.bubble.selected {
+	.bubble.selected circle {
 		stroke: #ffffff;
 		stroke-width: 1.5;
+	}
+	.label {
+		fill: #03121d;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		pointer-events: none;
+		paint-order: stroke;
+		stroke: rgba(255, 255, 255, 0.35);
+		stroke-width: 0.4;
 	}
 	.tooltip {
 		position: fixed;

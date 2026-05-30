@@ -10,6 +10,7 @@
 	import DotDensityMap from '$lib/components/map/DotDensityMap.svelte';
 	import InsetMap from '$lib/components/map/InsetMap.svelte';
 	import RadialMap from '$lib/components/map/RadialMap.svelte';
+	import ValueByAlphaMap from '$lib/components/map/ValueByAlphaMap.svelte';
 	import CountryPanel from '$lib/components/panels/CountryPanel.svelte';
 	import { aggregateByCountry, formatBandwidth } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
@@ -70,6 +71,8 @@
 		<InsetMap {relays} />
 	{:else if viz === 'radial'}
 		<RadialMap {relays} />
+	{:else if viz === 'vba'}
+		<ValueByAlphaMap {relays} />
 	{:else}
 		<WorldMap {relays} />
 	{/if}
