@@ -22,10 +22,10 @@ Copy the example file and fill in your values:
 cp .env.example .env.local
 ```
 
-| Variable | Description |
-|----------|-------------|
-| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
-| `KV_NAMESPACE_ID` | KV namespace ID for local dev (from Wrangler) |
+| Variable                | Description                                   |
+| ----------------------- | --------------------------------------------- |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID                    |
+| `KV_NAMESPACE_ID`       | KV namespace ID for local dev (from Wrangler) |
 
 For local development, Wrangler emulates Cloudflare KV in memory. You do not need a live Cloudflare account or KV namespace to run the app. Leave these variables empty and the dev server will use in-memory emulation.
 

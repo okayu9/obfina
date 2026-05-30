@@ -28,17 +28,17 @@ Data is refreshed every 5–30 minutes via a server-side cache layer (relay data
 
 ## Tech stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | SvelteKit |
-| 3D Globe | Threlte + Three.js |
-| Charts | D3.js |
-| Animation | Svelte built-ins + GSAP |
-| Styling | Tailwind CSS |
-| Hosting | Cloudflare Pages + Workers |
-| Cache | Cloudflare KV |
-| IaC | Terraform |
-| CI/CD | GitHub Actions |
+| Layer     | Technology                 |
+| --------- | -------------------------- |
+| Framework | SvelteKit                  |
+| 3D Globe  | Threlte + Three.js         |
+| Charts    | D3.js                      |
+| Animation | Svelte built-ins + GSAP    |
+| Styling   | Tailwind CSS               |
+| Hosting   | Cloudflare Pages + Workers |
+| Cache     | Cloudflare KV              |
+| IaC       | Terraform                  |
+| CI/CD     | GitHub Actions             |
 
 ## Documentation
 

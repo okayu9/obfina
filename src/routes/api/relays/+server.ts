@@ -73,8 +73,11 @@ export const GET: RequestHandler = async ({ platform, url }) => {
 				return json({ ...parsed, stale: true });
 			}
 		}
-		return json({ publishedAt: null, count: 0, relays: [], unavailable: true } satisfies RelaysResponse, {
-			status: 503
-		});
+		return json(
+			{ publishedAt: null, count: 0, relays: [], unavailable: true } satisfies RelaysResponse,
+			{
+				status: 503
+			}
+		);
 	}
 };

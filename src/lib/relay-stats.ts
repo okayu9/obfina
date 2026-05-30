@@ -47,8 +47,5 @@ export function flagEmoji(code: string): string {
 	if (code.length !== 2) return '🏴';
 	const base = 0x1f1e6;
 	const upper = code.toUpperCase();
-	return String.fromCodePoint(
-		base + (upper.charCodeAt(0) - 65),
-		base + (upper.charCodeAt(1) - 65)
-	);
+	return String.fromCodePoint(base + (upper.charCodeAt(0) - 65), base + (upper.charCodeAt(1) - 65));
 }

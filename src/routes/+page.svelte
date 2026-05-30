@@ -14,7 +14,9 @@
 	let failed = $state(false);
 
 	const byCountry = $derived(aggregateByCountry(relays));
-	const selectedStats = $derived(selection.country ? (byCountry.get(selection.country) ?? null) : null);
+	const selectedStats = $derived(
+		selection.country ? (byCountry.get(selection.country) ?? null) : null
+	);
 	const totalBandwidth = $derived(relays.reduce((sum, r) => sum + r.bandwidth, 0));
 
 	function onKeydown(e: KeyboardEvent) {

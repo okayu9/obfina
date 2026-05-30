@@ -13,6 +13,7 @@ Use SvelteKit with `@sveltejs/adapter-cloudflare`.
 ## Consequences
 
 **Benefits:**
+
 - Svelte's compiler-based reactivity eliminates Virtual DOM overhead. When relay data updates, only the affected DOM nodes and Three.js scene objects change — no diffing across the entire component tree.
 - Built-in animation primitives (`tweened`, `spring`, `transition:`, `animate:`) handle the majority of ambient UI effects without a separate animation library.
 - Svelte stores are a natural fit for app-wide relay state that multiple components (globe, panels, legend) need to observe simultaneously.
@@ -20,6 +21,7 @@ Use SvelteKit with `@sveltejs/adapter-cloudflare`.
 - The Cloudflare adapter deploys server routes as Workers with no additional configuration.
 
 **Tradeoffs:**
+
 - The Svelte ecosystem is smaller than React's. Some libraries assume React and require adaptation or replacement.
 - Threlte (the Svelte-native Three.js wrapper) is less mature than react-three-fiber. Breaking changes between Threlte and Three.js releases require more active maintenance attention.
 - Fewer hiring candidates are familiar with Svelte compared to React, which matters if the project grows to a team.

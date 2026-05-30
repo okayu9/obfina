@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { AdditiveBlending, BufferGeometry, Float32BufferAttribute, Points, PointsMaterial } from 'three';
+	import {
+		AdditiveBlending,
+		BufferGeometry,
+		Float32BufferAttribute,
+		Points,
+		PointsMaterial
+	} from 'three';
 
 	let { count = 1600, radius = 40 }: { count?: number; radius?: number } = $props();
 

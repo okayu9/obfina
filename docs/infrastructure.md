@@ -4,12 +4,12 @@ obfina runs entirely on Cloudflare. All resources are managed with Terraform.
 
 ## Architecture
 
-| Resource | Purpose |
-|----------|---------|
-| Cloudflare Pages | Hosts the built SvelteKit app |
-| Cloudflare Workers | Runs SvelteKit server routes (via `adapter-cloudflare`) |
-| Cloudflare KV | API response cache (separate namespaces per environment) |
-| Cloudflare R2 | Terraform remote state storage |
+| Resource           | Purpose                                                  |
+| ------------------ | -------------------------------------------------------- |
+| Cloudflare Pages   | Hosts the built SvelteKit app                            |
+| Cloudflare Workers | Runs SvelteKit server routes (via `adapter-cloudflare`)  |
+| Cloudflare KV      | API response cache (separate namespaces per environment) |
+| Cloudflare R2      | Terraform remote state storage                           |
 
 ## Prerequisites
 
@@ -111,18 +111,18 @@ The production workflow uses a GitHub Actions concurrency group to prevent paral
 
 ## Environments
 
-| Environment | Trigger | URL | KV namespace |
-|-------------|---------|-----|--------------|
-| Preview | PR opened / updated | `<branch>.obfina.pages.dev` | `obfina-cache-preview` |
-| Production | Push to `main` | `obfina.pages.dev` (or custom domain) | `obfina-cache-prod` |
+| Environment | Trigger             | URL                                   | KV namespace           |
+| ----------- | ------------------- | ------------------------------------- | ---------------------- |
+| Preview     | PR opened / updated | `<branch>.obfina.pages.dev`           | `obfina-cache-preview` |
+| Production  | Push to `main`      | `obfina.pages.dev` (or custom domain) | `obfina-cache-prod`    |
 
 ## Secrets management
 
 CI/CD workflows require the following repository secrets (set in GitHub → Settings → Secrets):
 
-| Secret | Value |
-|--------|-------|
-| `CLOUDFLARE_API_TOKEN` | Cloudflare API token |
+| Secret                  | Value                 |
+| ----------------------- | --------------------- |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare API token  |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
 
 No secrets are embedded in `wrangler.toml` or Terraform files.

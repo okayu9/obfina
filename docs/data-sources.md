@@ -22,13 +22,13 @@ Lightweight list of all relays and bridges. Used to populate the globe with node
 
 Key fields per relay:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `n` | string | Relay nickname |
-| `f` | string | Fingerprint (40-char hex) |
-| `a` | string[] | IP addresses |
-| `r` | boolean | Running in the most recent consensus |
-| `c` | string | Country code (ISO 3166-1 alpha-2) |
+| Field | Type     | Description                          |
+| ----- | -------- | ------------------------------------ |
+| `n`   | string   | Relay nickname                       |
+| `f`   | string   | Fingerprint (40-char hex)            |
+| `a`   | string[] | IP addresses                         |
+| `r`   | boolean  | Running in the most recent consensus |
+| `c`   | string   | Country code (ISO 3166-1 alpha-2)    |
 
 Note: `r` (running) reflects the most recent consensus Onionoo has processed, not real-time status. A relay that went offline minutes ago may still appear as running.
 
@@ -40,20 +40,20 @@ Full relay metadata. Fetched on demand when a user drills into a specific relay 
 
 Key fields:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `nickname` | string | Relay nickname |
-| `fingerprint` | string | Fingerprint |
-| `country` | string | Country code |
-| `as` | string | Autonomous system number |
-| `as_name` | string | AS name |
-| `consensus_weight` | number | Probabilistic routing weight in the current consensus |
-| `observed_bandwidth` | number | Bytes/sec observed by the relay; used by obfina for node sizing |
-| `advertised_bandwidth` | number | Bytes/sec self-reported by the relay |
-| `flags` | string[] | e.g. `["Guard", "Exit", "Stable"]` |
-| `first_seen` | string | ISO 8601 timestamp |
-| `last_seen` | string | ISO 8601 timestamp |
-| `relays_published` | string | ISO 8601 timestamp of the consensus this data is derived from |
+| Field                  | Type     | Description                                                     |
+| ---------------------- | -------- | --------------------------------------------------------------- |
+| `nickname`             | string   | Relay nickname                                                  |
+| `fingerprint`          | string   | Fingerprint                                                     |
+| `country`              | string   | Country code                                                    |
+| `as`                   | string   | Autonomous system number                                        |
+| `as_name`              | string   | AS name                                                         |
+| `consensus_weight`     | number   | Probabilistic routing weight in the current consensus           |
+| `observed_bandwidth`   | number   | Bytes/sec observed by the relay; used by obfina for node sizing |
+| `advertised_bandwidth` | number   | Bytes/sec self-reported by the relay                            |
+| `flags`                | string[] | e.g. `["Guard", "Exit", "Stable"]`                              |
+| `first_seen`           | string   | ISO 8601 timestamp                                              |
+| `last_seen`            | string   | ISO 8601 timestamp                                              |
+| `relays_published`     | string   | ISO 8601 timestamp of the consensus this data is derived from   |
 
 **Data quality notes:**
 
@@ -77,14 +77,14 @@ Uptime fraction history. Used in relay detail panels.
 
 All endpoints accept:
 
-| Parameter | Description |
-|-----------|-------------|
-| `search` | Filter by fingerprint, nickname, or IP |
-| `country` | Filter by ISO country code |
-| `as` | Filter by AS number |
-| `flag` | Filter by relay flag (e.g. `Guard`, `Exit`) |
+| Parameter | Description                                    |
+| --------- | ---------------------------------------------- |
+| `search`  | Filter by fingerprint, nickname, or IP         |
+| `country` | Filter by ISO country code                     |
+| `as`      | Filter by AS number                            |
+| `flag`    | Filter by relay flag (e.g. `Guard`, `Exit`)    |
 | `running` | `true` to return only currently running relays |
-| `fields` | Comma-separated list of fields to include |
+| `fields`  | Comma-separated list of fields to include      |
 
 ### Acceptable use
 

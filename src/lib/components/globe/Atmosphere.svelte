@@ -34,7 +34,7 @@
 	});
 </script>
 
-<T.Mesh scale={scale}>
+<T.Mesh {scale}>
 	<T.SphereGeometry args={[radius, 48, 48]} />
 	<T is={material} attach="material" />
 </T.Mesh>

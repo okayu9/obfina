@@ -27,22 +27,22 @@ flowchart TD
 
 Major technology choices are recorded individually as Architecture Decision Records (ADRs) in [`docs/decisions/`](decisions/). Each ADR documents the context, the decision, and its consequences — including tradeoffs.
 
-| ADR | Decision |
-|-----|---------|
-| [ADR-001](decisions/001-sveltekit.md) | Use SvelteKit as the application framework |
-| [ADR-002](decisions/002-threlte.md) | Use Threlte + Three.js for 3D rendering |
-| [ADR-003](decisions/003-d3.md) | Use D3.js for supplementary charts |
-| [ADR-004](decisions/004-cloudflare-stack.md) | Host entirely on Cloudflare |
-| [ADR-005](decisions/005-cloudflare-kv-cache.md) | Use Cloudflare KV for API response caching |
-| [ADR-006](decisions/006-terraform.md) | Use Terraform for infrastructure management |
+| ADR                                             | Decision                                    |
+| ----------------------------------------------- | ------------------------------------------- |
+| [ADR-001](decisions/001-sveltekit.md)           | Use SvelteKit as the application framework  |
+| [ADR-002](decisions/002-threlte.md)             | Use Threlte + Three.js for 3D rendering     |
+| [ADR-003](decisions/003-d3.md)                  | Use D3.js for supplementary charts          |
+| [ADR-004](decisions/004-cloudflare-stack.md)    | Host entirely on Cloudflare                 |
+| [ADR-005](decisions/005-cloudflare-kv-cache.md) | Use Cloudflare KV for API response caching  |
+| [ADR-006](decisions/006-terraform.md)           | Use Terraform for infrastructure management |
 
 ## Caching strategy
 
-| Endpoint | TTL | Rationale |
-|----------|-----|-----------|
-| `/api/relays` | 10 min | Onionoo updates every ~3 hours; polling more often is wasteful |
-| `/api/stats` | 30 min | Aggregate metrics change slowly |
-| `/api/censorship` | 5 min | Blocking events should surface quickly |
+| Endpoint          | TTL    | Rationale                                                      |
+| ----------------- | ------ | -------------------------------------------------------------- |
+| `/api/relays`     | 10 min | Onionoo updates every ~3 hours; polling more often is wasteful |
+| `/api/stats`      | 30 min | Aggregate metrics change slowly                                |
+| `/api/censorship` | 5 min  | Blocking events should surface quickly                         |
 
 Cache entries are stored as JSON strings in Cloudflare KV. On a cache miss the Worker fetches upstream, writes to KV with the appropriate TTL, and returns the response. KV TTL is a hard expiry — background revalidation does not happen automatically. To avoid blocking responses on upstream latency after expiry, the Worker initiates a background fetch via `waitUntil()` and returns the slightly-stale cached value while the new value is written asynchronously.
 
