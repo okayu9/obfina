@@ -188,7 +188,13 @@
 		cursor: pointer;
 		stroke: none;
 	}
-	.data:hover {
+	/* Suppress the browser focus rectangle (it boxes the element's scaled bbox,
+	   so it balloons when zoomed); use our own outline-stroke for keyboard focus. */
+	.data:focus {
+		outline: none;
+	}
+	.data:hover,
+	.data:focus-visible {
 		stroke: #ffffff;
 		stroke-width: calc(0.75px * var(--inv-k, 1));
 	}
