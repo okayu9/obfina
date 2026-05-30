@@ -1,0 +1,106 @@
+# Development
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) 20 or later
+- [pnpm](https://pnpm.io/) 9 or later
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) (for local Cloudflare Workers emulation)
+- [Terraform](https://developer.hashicorp.com/terraform/install) 1.10 or later (for infrastructure changes only — not required to run the app)
+- A Cloudflare account (free tier is sufficient; optional for local development — see below)
+
+## Setup
+
+```bash
+pnpm install
+```
+
+## Environment variables
+
+Copy the example file and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
+
+| Variable | Description |
+|----------|-------------|
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
+| `KV_NAMESPACE_ID` | KV namespace ID for local dev (from Wrangler) |
+
+For local development, Wrangler emulates Cloudflare KV in memory. You do not need a live Cloudflare account or KV namespace to run the app. Leave these variables empty and the dev server will use in-memory emulation.
+
+## Running locally
+
+```bash
+pnpm dev
+```
+
+This must invoke `wrangler dev` (not bare `vite dev`) so that the Cloudflare Workers runtime is emulated locally. The `package.json` dev script should call `wrangler dev` directly. If it calls `vite dev` instead, KV bindings will be absent and the server routes will fail. Confirm `wrangler.toml` declares the KV namespace binding before running.
+
+The app is available at `http://localhost:5173`.
+
+**What to expect on first run:**
+
+1. The server routes fetch live data from Onionoo and Tor Metrics on the first request. This takes 2–5 seconds.
+2. The globe appears once relay coordinates are loaded. Nodes fade in over ~1 second.
+3. Subsequent requests within the cache TTL are served from Wrangler's in-memory KV emulator instantly.
+4. The first run may show fewer relays than production if Onionoo is mid-update cycle.
+
+## Forcing a cache miss in development
+
+Wrangler's in-memory KV resets on each dev server restart. To force a cache miss mid-session without restarting, add a `?nocache=1` query parameter to any `/api/*` route in your browser's network tab, or call the endpoint directly:
+
+```bash
+curl "http://localhost:5173/api/relays?nocache=1"
+```
+
+## Project structure
+
+```
+obfina/
+├── src/
+│   ├── lib/
+│   │   ├── components/
+│   │   │   ├── globe/        # Threlte scene components (docs: threlte.xyz)
+│   │   │   └── panels/       # Detail panel components
+│   │   ├── stores/           # Svelte stores — app-wide relay and UI state
+│   │   └── utils/            # Data normalization, type definitions
+│   ├── routes/
+│   │   ├── +page.svelte      # Main entry point (globe view)
+│   │   └── api/
+│   │       ├── relays/       # Proxies Onionoo /summary and /details
+│   │       ├── stats/        # Proxies Tor Metrics aggregate data
+│   │       └── censorship/   # Derived censorship indicator endpoint
+│   └── app.html
+├── docs/
+│   └── decisions/            # Architecture Decision Records (ADRs)
+├── infra/                    # Terraform — see infrastructure.md
+├── .github/workflows/        # CI/CD pipelines
+├── wrangler.toml             # Cloudflare Workers config
+├── svelte.config.js          # SvelteKit config (docs: kit.svelte.dev)
+├── vite.config.ts
+└── tailwind.config.ts
+```
+
+Useful documentation links while navigating the codebase:
+
+- [SvelteKit docs](https://kit.svelte.dev/docs)
+- [Threlte docs](https://threlte.xyz/docs)
+- [D3.js docs](https://d3js.org/)
+- [Cloudflare Workers runtime APIs](https://developers.cloudflare.com/workers/runtime-apis/)
+
+## Type checking and linting
+
+```bash
+pnpm typecheck   # svelte-check + tsc
+pnpm lint        # ESLint
+pnpm format      # Prettier
+```
+
+## Building for production
+
+```bash
+pnpm build
+```
+
+Output goes to `.svelte-kit/cloudflare`. This is what Cloudflare Pages deploys.
