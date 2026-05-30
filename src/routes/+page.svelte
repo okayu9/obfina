@@ -4,7 +4,6 @@
 	import CountryPanel from '$lib/components/panels/CountryPanel.svelte';
 	import { aggregateByCountry, formatBandwidth } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
-	import { initMotion } from '$lib/stores/motion.svelte';
 	import type { Relay, RelaysResponse } from '$lib/types';
 
 	let relays = $state<Relay[]>([]);
@@ -23,7 +22,6 @@
 	}
 
 	onMount(async () => {
-		initMotion();
 		try {
 			const res = await fetch('/api/relays');
 			const data = (await res.json()) as RelaysResponse;

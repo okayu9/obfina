@@ -2,7 +2,9 @@
 
 ## Overview
 
-obfina is a single-page web application that visualizes the Tor network in real time. The centerpiece is a 3D globe rendered in WebGL, overlaid with relay nodes, bandwidth arcs, and ambient animations. A server-side cache layer mediates between upstream Tor APIs and the client, keeping data fresh without hammering external services.
+obfina is a single-page web application that visualizes the Tor network in real time. The centerpiece is a 2D world map (D3 + SVG) with one marker per country — radius encodes relay count, color encodes exit share, opacity encodes bandwidth. A server-side cache layer mediates between upstream Tor APIs and the client, keeping data fresh without hammering external services.
+
+> The visualization began as a 3D WebGL globe (Threlte + Three.js) but moved to a flat D3 map for far better readability and operability. See [ADR-007](decisions/007-2d-map-over-globe.md).
 
 ## System diagram
 
@@ -27,14 +29,15 @@ flowchart TD
 
 Major technology choices are recorded individually as Architecture Decision Records (ADRs) in [`docs/decisions/`](decisions/). Each ADR documents the context, the decision, and its consequences — including tradeoffs.
 
-| ADR                                             | Decision                                    |
-| ----------------------------------------------- | ------------------------------------------- |
-| [ADR-001](decisions/001-sveltekit.md)           | Use SvelteKit as the application framework  |
-| [ADR-002](decisions/002-threlte.md)             | Use Threlte + Three.js for 3D rendering     |
-| [ADR-003](decisions/003-d3.md)                  | Use D3.js for supplementary charts          |
-| [ADR-004](decisions/004-cloudflare-stack.md)    | Host entirely on Cloudflare                 |
-| [ADR-005](decisions/005-cloudflare-kv-cache.md) | Use Cloudflare KV for API response caching  |
-| [ADR-006](decisions/006-terraform.md)           | Use Terraform for infrastructure management |
+| ADR                                             | Decision                                             |
+| ----------------------------------------------- | ---------------------------------------------------- |
+| [ADR-001](decisions/001-sveltekit.md)           | Use SvelteKit as the application framework           |
+| [ADR-002](decisions/002-threlte.md)             | Use Threlte + Three.js for 3D rendering (superseded) |
+| [ADR-003](decisions/003-d3.md)                  | Use D3.js for geography and data-driven visuals      |
+| [ADR-004](decisions/004-cloudflare-stack.md)    | Host entirely on Cloudflare                          |
+| [ADR-005](decisions/005-cloudflare-kv-cache.md) | Use Cloudflare KV for API response caching           |
+| [ADR-006](decisions/006-terraform.md)           | Use Terraform for infrastructure management          |
+| [ADR-007](decisions/007-2d-map-over-globe.md)   | Use a 2D D3 map instead of a 3D globe                |
 
 ## Caching strategy
 

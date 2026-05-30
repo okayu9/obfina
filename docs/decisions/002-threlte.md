@@ -1,6 +1,10 @@
 # ADR-002: Use Threlte + Three.js for 3D rendering
 
-**Status**: Accepted
+**Status**: Superseded by [ADR-007](007-2d-map-over-globe.md)
+
+> The 3D globe described here was built and working, but was replaced by a 2D
+> D3 map for readability and operability. This record is kept for history; the
+> Threlte/Three.js dependencies have been removed from the project.
 
 ## Context
 

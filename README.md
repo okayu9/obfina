@@ -2,20 +2,20 @@
 
 A real-time, interactive visualization of the Tor network.
 
-![The obfina globe: running Tor relays lit across the world, sized by bandwidth and colored by role](docs/assets/globe.png)
+![The obfina map: one marker per country, sized by relay count and colored by exit share](docs/assets/map.png)
 
 ## Why it exists
 
 Tor routes traffic through thousands of volunteer-run relays across dozens of countries. The network is healthy, globally distributed, and surprisingly fragile — governments block it, relays go offline, bandwidth concentrates in unexpected places. None of this is visible to most people who use Tor, and even network operators lack a compelling way to see the whole picture at once.
 
-obfina makes the Tor network observable. Not through tables and CSV exports, but through a 3D globe where the network breathes in real time.
+obfina makes the Tor network observable. Not through tables and CSV exports, but through a world map where each country's place in the network reads at a glance.
 
 ## What it does
 
-- **Relay globe** — every running relay rendered as a node, sized by bandwidth, colored by flag type (Guard, Exit, Middle)
-- **Country drill-down** — click any country to see its relay count, aggregate bandwidth, and AS diversity
-- **Censorship indicator** — countries where Tor usage has dropped anomalously surface visually, without requiring the user to know what they're looking for
-- **Ambient mode** — leave it on a screen and it tells you the network's health without any interaction
+- **Country markers** — one marker per country: radius encodes relay count, color encodes exit share (cyan → green), opacity encodes total bandwidth
+- **Drill-down** — click any country for its relay count, aggregate bandwidth, and Guard/Exit/Middle composition
+- **Pan & zoom** — explore dense regions like Europe by zooming in
+- **Ambient mode** — leave it on a screen and it conveys the network's shape without any interaction
 
 ## Data
 
@@ -28,17 +28,16 @@ Data is refreshed every 5–30 minutes via a server-side cache layer (relay data
 
 ## Tech stack
 
-| Layer     | Technology                 |
-| --------- | -------------------------- |
-| Framework | SvelteKit                  |
-| 3D Globe  | Threlte + Three.js         |
-| Charts    | D3.js                      |
-| Animation | Svelte built-ins + GSAP    |
-| Styling   | Tailwind CSS               |
-| Hosting   | Cloudflare Pages + Workers |
-| Cache     | Cloudflare KV              |
-| IaC       | Terraform                  |
-| CI/CD     | GitHub Actions             |
+| Layer     | Technology                         |
+| --------- | ---------------------------------- |
+| Framework | SvelteKit                          |
+| Map       | D3 (d3-geo, d3-zoom) + world-atlas |
+| Animation | Svelte built-ins                   |
+| Styling   | Tailwind CSS                       |
+| Hosting   | Cloudflare Pages + Workers         |
+| Cache     | Cloudflare KV                      |
+| IaC       | Terraform                          |
+| CI/CD     | GitHub Actions                     |
 
 ## Documentation
 

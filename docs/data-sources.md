@@ -18,7 +18,7 @@ Onionoo ingests Tor network consensuses, which are published by directory author
 
 #### `GET /summary`
 
-Lightweight list of all relays and bridges. Used to populate the globe with node positions on initial load.
+Lightweight list of all relays and bridges.
 
 Key fields per relay:
 
@@ -32,7 +32,7 @@ Key fields per relay:
 
 Note: `r` (running) reflects the most recent consensus Onionoo has processed, not real-time status. A relay that went offline minutes ago may still appear as running.
 
-The `/summary` endpoint does not include per-relay bandwidth or location. obfina therefore loads the globe from `/details` with a field filter (`fields=nickname,observed_bandwidth,country,flags`) rather than `/summary`, which returns everything needed for placement and sizing in a single request (~1.2 MB for ~9,600 running relays).
+The `/summary` endpoint does not include per-relay bandwidth or location. obfina therefore loads the map from `/details` with a field filter (`fields=nickname,observed_bandwidth,country,flags`) rather than `/summary`, which returns everything needed to aggregate per country in a single request (~1.2 MB for ~9,600 running relays).
 
 #### `GET /details`
 
@@ -57,7 +57,7 @@ Key fields:
 
 **Data quality notes:**
 
-- **Onionoo does not expose per-relay latitude/longitude.** Coordinates were removed from the API for privacy reasons; geolocation is provided only at the country level (`country`, `country_name`) plus optional `as`/`as_name`. obfina therefore places relays on the globe by mapping each relay's `country` code to a country centroid (`src/lib/country-centroids.ts`), with deterministic jitter so relays in the same country fan out rather than stacking on one point. This is verified against the live API: a request for `fields=...latitude,longitude...` returns those fields empty.
+- **Onionoo does not expose per-relay latitude/longitude.** Coordinates were removed from the API for privacy reasons; geolocation is provided only at the country level (`country`, `country_name`) plus optional `as`/`as_name`. obfina therefore aggregates relays by `country` and draws one marker per country, placed at a country centroid (`src/lib/country-centroids.ts`). This is verified against the live API: a request for `fields=...latitude,longitude...` returns those fields empty.
 - `consensus_weight` is not bandwidth. It is the weight assigned by directory authorities for probabilistic relay selection. A relay with high consensus weight receives proportionally more circuits. It correlates with bandwidth but is not equal to it.
 - `observed_bandwidth` and `advertised_bandwidth` are both self-reported by the relay and unverified. obfina uses `observed_bandwidth` for node sizing. The actual measured bandwidth (used for `consensus_weight` calculation) is not exposed via Onionoo.
 
@@ -127,7 +127,7 @@ When a country's estimated user count drops sharply relative to its recent basel
 1. Compute a 30-day rolling average of daily users per country from `userstats-relay-country.json`.
 2. Compare the most recent 3-day average against the rolling average.
 3. If the ratio drops below 0.5 (users less than half the baseline), the country is flagged as a potential blocking event.
-4. The indicator is displayed visually on the globe without a numeric label — the goal is to surface anomalies, not to make precise claims about censorship.
+4. The indicator is displayed visually on the map without a numeric label — the goal is to surface anomalies, not to make precise claims about censorship.
 
 This is a threshold heuristic applied to Tor Metrics data. It is simpler than the active network measurement techniques used by projects like [OONI](https://ooni.org/) (which runs probes on user devices) but requires no additional infrastructure. False positives can occur during measurement gaps or when Tor bridges absorb traffic that was previously counted as direct connections.
 

@@ -42,7 +42,7 @@ The app is available at `http://localhost:5173`.
 **What to expect on first run:**
 
 1. The server routes fetch live data from Onionoo and Tor Metrics on the first request. This takes 2–5 seconds.
-2. The globe appears once relay coordinates are loaded. Nodes fade in over ~1 second.
+2. The map appears once relays load; each country gets one marker sized by relay count.
 3. Subsequent requests within the cache TTL are served from Wrangler's in-memory KV emulator instantly.
 4. The first run may show fewer relays than production if Onionoo is mid-update cycle.
 
@@ -61,16 +61,16 @@ obfina/
 ├── src/
 │   ├── lib/
 │   │   ├── components/
-│   │   │   ├── globe/        # Threlte scene components (docs: threlte.xyz)
-│   │   │   └── panels/       # Detail panel components
-│   │   ├── stores/           # Svelte stores — app-wide relay and UI state
-│   │   └── utils/            # Data normalization, type definitions
+│   │   │   ├── map/          # D3 world map (WorldMap.svelte)
+│   │   │   └── panels/       # Country detail panel
+│   │   ├── stores/           # Svelte stores — selection state
+│   │   ├── country-centroids.ts  # ISO code → [lat, lon] for marker placement
+│   │   ├── map-encoding.ts   # size/color/opacity scales
+│   │   └── relay-stats.ts    # per-country aggregation + formatting
 │   ├── routes/
-│   │   ├── +page.svelte      # Main entry point (globe view)
+│   │   ├── +page.svelte      # Main entry point (map view + HUD)
 │   │   └── api/
-│   │       ├── relays/       # Proxies Onionoo /summary and /details
-│   │       ├── stats/        # Proxies Tor Metrics aggregate data
-│   │       └── censorship/   # Derived censorship indicator endpoint
+│   │       └── relays/       # Proxies Onionoo /details (filtered fields)
 │   └── app.html
 ├── docs/
 │   └── decisions/            # Architecture Decision Records (ADRs)
@@ -84,9 +84,9 @@ obfina/
 
 Useful documentation links while navigating the codebase:
 
-- [SvelteKit docs](https://kit.svelte.dev/docs)
-- [Threlte docs](https://threlte.xyz/docs)
-- [D3.js docs](https://d3js.org/)
+- [SvelteKit docs](https://svelte.dev/docs/kit)
+- [D3 docs](https://d3js.org/) — especially `d3-geo` and `d3-zoom`
+- [world-atlas](https://github.com/topojson/world-atlas) — TopoJSON base map data
 - [Cloudflare Workers runtime APIs](https://developers.cloudflare.com/workers/runtime-apis/)
 
 ## Type checking
@@ -100,22 +100,22 @@ contribution.
 
 ## Tests
 
-Unit tests for the pure helpers (globe math, relay aggregation) run with
+Unit tests for the pure helpers (relay aggregation, formatting) run with
 [Vitest](https://vitest.dev/):
 
 ```bash
 pnpm test
 ```
 
-Test files live next to their sources as `*.test.ts`. Components that depend on
-WebGL are verified manually via `scripts/screenshot.mjs` (see below) rather than
-in unit tests.
+Test files live next to their sources as `*.test.ts`. The map component is
+verified manually via `scripts/screenshot.mjs` (see below) rather than in unit
+tests.
 
 ## Visual verification
 
 `scripts/screenshot.mjs` loads the running app in a headless browser, captures a
-screenshot, and reports the relay count, WebGL status, and console errors. With
-the dev server running:
+screenshot, and reports the relay count, how many country markers rendered, and
+console errors. With the dev server running:
 
 ```bash
 node scripts/screenshot.mjs [url] [outPath] [waitMs]
