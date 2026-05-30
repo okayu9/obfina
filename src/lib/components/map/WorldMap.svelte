@@ -5,7 +5,7 @@
 	import { feature, mesh } from 'topojson-client';
 	import worldData from 'world-atlas/countries-110m.json';
 	import { COUNTRY_CENTROIDS } from '$lib/country-centroids';
-	import { aggregateByCountry } from '$lib/relay-stats';
+	import { aggregateByCountry, flagEmoji } from '$lib/relay-stats';
 	import { makeOpacityScale, makeRadiusScale, roleColor } from '$lib/map-encoding';
 	import { selection } from '$lib/stores/selection.svelte';
 	import type { Relay } from '$lib/types';
@@ -16,6 +16,7 @@
 	let height = $state(0);
 	let transform = $state('');
 	let svgEl = $state<SVGSVGElement | undefined>();
+	let hover = $state<{ code: string; count: number; x: number; y: number } | null>(null);
 
 	// Base map geometry (land fill + country borders).
 	type World = Parameters<typeof feature>[0] & {
@@ -117,6 +118,10 @@
 					fill-opacity={m.opacity}
 					onclick={() => selectCountry(m.code)}
 					onkeydown={(e) => onMarkerKey(e, m.code)}
+					onpointerenter={(e) =>
+						(hover = { code: m.code, count: m.count, x: e.clientX, y: e.clientY })}
+					onpointermove={(e) => hover && (hover = { ...hover, x: e.clientX, y: e.clientY })}
+					onpointerleave={() => (hover = null)}
 					role="button"
 					tabindex="0"
 					aria-label={`${m.code}: ${m.count} relays`}
@@ -124,12 +129,44 @@
 			{/each}
 		</g>
 	</svg>
+
+	{#if hover}
+		<div class="tooltip" style:left="{hover.x}px" style:top="{hover.y}px">
+			<span class="t-flag">{flagEmoji(hover.code)}</span>
+			<span class="t-code">{hover.code.toUpperCase()}</span>
+			<span class="t-count">{hover.count.toLocaleString()}</span>
+		</div>
+	{/if}
 </div>
 
 <style>
 	.map {
 		position: fixed;
 		inset: 0;
+	}
+
+	.tooltip {
+		position: fixed;
+		transform: translate(14px, -50%);
+		pointer-events: none;
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.3rem 0.6rem;
+		background: rgba(8, 14, 22, 0.9);
+		border: 1px solid rgba(0, 212, 255, 0.25);
+		border-radius: 6px;
+		font-size: 0.8rem;
+		white-space: nowrap;
+		backdrop-filter: blur(6px);
+	}
+	.t-code {
+		color: #6f8aa3;
+		letter-spacing: 0.1em;
+	}
+	.t-count {
+		color: var(--accent-cyan);
+		font-variant-numeric: tabular-nums;
 	}
 
 	svg {
