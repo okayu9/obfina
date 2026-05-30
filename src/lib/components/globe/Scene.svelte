@@ -4,6 +4,7 @@
 	import { COUNTRY_CENTROIDS } from '$lib/country-centroids';
 	import { nearestCountry, vector3ToLatLon } from '$lib/globe-math';
 	import { selection } from '$lib/stores/selection.svelte';
+	import { motion } from '$lib/stores/motion.svelte';
 	import type { Relay } from '$lib/types';
 	import Atmosphere from './Atmosphere.svelte';
 	import Landmass from './Landmass.svelte';
@@ -19,6 +20,10 @@
 		const [lat, lon] = vector3ToLatLon(e.point);
 		selection.country = nearestCountry(lat, lon, COUNTRY_CENTROIDS);
 	}
+
+	function setCursor(value: string) {
+		if (typeof document !== 'undefined') document.body.style.cursor = value;
+	}
 </script>
 
 <T.PerspectiveCamera makeDefault position={[0, 0.5, 3]} fov={45}>
@@ -26,7 +31,7 @@
 		enableDamping
 		dampingFactor={0.05}
 		enableZoom
-		autoRotate={!selection.country}
+		autoRotate={!selection.country && !motion.reduced}
 		autoRotateSpeed={0.35}
 		minDistance={1.4}
 		maxDistance={6}
@@ -40,7 +45,11 @@
 <Atmosphere />
 
 <!-- The globe body (also the click target for country selection) -->
-<T.Mesh onclick={handleGlobeClick}>
+<T.Mesh
+	onclick={handleGlobeClick}
+	onpointerenter={() => setCursor('pointer')}
+	onpointerleave={() => setCursor('default')}
+>
 	<T.SphereGeometry args={[1, 64, 64]} />
 	<T.MeshPhongMaterial color={0x0a1929} emissive={0x040d18} shininess={8} />
 </T.Mesh>

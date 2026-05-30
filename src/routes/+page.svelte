@@ -5,6 +5,7 @@
 	import CountryPanel from '$lib/components/panels/CountryPanel.svelte';
 	import { aggregateByCountry, formatBandwidth } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
+	import { initMotion } from '$lib/stores/motion.svelte';
 	import type { Relay, RelaysResponse } from '$lib/types';
 
 	let relays = $state<Relay[]>([]);
@@ -16,7 +17,12 @@
 	const selectedStats = $derived(selection.country ? (byCountry.get(selection.country) ?? null) : null);
 	const totalBandwidth = $derived(relays.reduce((sum, r) => sum + r.bandwidth, 0));
 
+	function onKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') selection.country = null;
+	}
+
 	onMount(async () => {
+		initMotion();
 		try {
 			const res = await fetch('/api/relays');
 			const data = (await res.json()) as RelaysResponse;
@@ -33,6 +39,8 @@
 		}
 	});
 </script>
+
+<svelte:window onkeydown={onKeydown} />
 
 <div class="scene">
 	<Canvas>

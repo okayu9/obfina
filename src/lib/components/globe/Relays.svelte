@@ -10,6 +10,7 @@
 	} from 'three';
 	import { COUNTRY_CENTROIDS } from '$lib/country-centroids';
 	import { discOffset, latLonToVector3 } from '$lib/globe-math';
+	import { motion } from '$lib/stores/motion.svelte';
 	import type { Relay } from '$lib/types';
 
 	let { relays, radius = 1 }: { relays: Relay[]; radius?: number } = $props();
@@ -22,13 +23,14 @@
 	const MIDDLE = new Color(0x5a7a99);
 
 	const material = new ShaderMaterial({
-		uniforms: { uTime: { value: 0 }, uReveal: { value: 0 } },
+		uniforms: { uTime: { value: 0 }, uReveal: { value: 0 }, uPulse: { value: 1 } },
 		transparent: true,
 		depthWrite: false,
 		blending: AdditiveBlending,
 		vertexShader: `
 			uniform float uTime;
 			uniform float uReveal;
+			uniform float uPulse;
 			attribute float aSize;
 			attribute float aPhase;
 			attribute float aDelay;
@@ -40,8 +42,8 @@
 				vColor = aColor;
 				// Staggered fade-in: each relay reveals around its own delay.
 				vReveal = smoothstep(aDelay, aDelay + 0.3, uReveal);
-				// Independent twinkle per relay.
-				float pulse = 0.6 + 0.4 * sin(uTime * 1.5 + aPhase);
+				// Independent twinkle per relay (amplitude scaled by uPulse).
+				float pulse = 0.6 + 0.4 * uPulse * sin(uTime * 1.5 + aPhase);
 				vGlow = pulse;
 				vec4 mv = modelViewMatrix * vec4(position, 1.0);
 				gl_PointSize = aSize * pulse * vReveal * (300.0 / -mv.z);
@@ -102,6 +104,7 @@
 
 	useTask((delta) => {
 		material.uniforms.uTime.value += delta;
+		material.uniforms.uPulse.value = motion.reduced ? 0 : 1;
 		if (material.uniforms.uReveal.value < 1) {
 			material.uniforms.uReveal.value = Math.min(1, material.uniforms.uReveal.value + delta / 1.3);
 		}

@@ -43,8 +43,15 @@ const count = await page
 	.textContent()
 	.catch(() => null);
 await page.screenshot({ path: '/tmp/shot-panel.png' });
+
+// Escape should deselect and close the panel.
+await page.keyboard.press('Escape');
+await page.waitForTimeout(500);
+const closedAfterEsc = (await page.locator('.panel').count()) === 0;
+
 await browser.close();
 
 console.log('panel opened:', opened);
 console.log('country:', code, '| relays:', count);
+console.log('closed after Esc:', closedAfterEsc);
 console.log('console errors:', errors.length ? JSON.stringify(errors) : 'none');
