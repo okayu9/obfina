@@ -89,12 +89,36 @@ Useful documentation links while navigating the codebase:
 - [D3.js docs](https://d3js.org/)
 - [Cloudflare Workers runtime APIs](https://developers.cloudflare.com/workers/runtime-apis/)
 
-## Type checking and linting
+## Type checking
 
 ```bash
-pnpm typecheck   # svelte-check + tsc
-pnpm lint        # ESLint
-pnpm format      # Prettier
+pnpm check   # svelte-kit sync + svelte-check
+```
+
+ESLint and Prettier are not yet configured; adding them is a good first
+contribution.
+
+## Tests
+
+Unit tests for the pure helpers (globe math, relay aggregation) run with
+[Vitest](https://vitest.dev/):
+
+```bash
+pnpm test
+```
+
+Test files live next to their sources as `*.test.ts`. Components that depend on
+WebGL are verified manually via `scripts/screenshot.mjs` (see below) rather than
+in unit tests.
+
+## Visual verification
+
+`scripts/screenshot.mjs` loads the running app in a headless browser, captures a
+screenshot, and reports the relay count, WebGL status, and console errors. With
+the dev server running:
+
+```bash
+node scripts/screenshot.mjs [url] [outPath] [waitMs]
 ```
 
 ## Building for production
