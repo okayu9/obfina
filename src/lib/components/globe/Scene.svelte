@@ -2,6 +2,7 @@
 	import { T } from '@threlte/core';
 	import { OrbitControls } from '@threlte/extras';
 	import type { Relay } from '$lib/types';
+	import Landmass from './Landmass.svelte';
 	import Relays from './Relays.svelte';
 
 	let { relays }: { relays: Relay[] } = $props();
@@ -28,10 +29,7 @@
 	<T.MeshPhongMaterial color={0x0a1929} emissive={0x040d18} shininess={8} />
 </T.Mesh>
 
-<!-- Faint wireframe atmosphere -->
-<T.Mesh scale={1.015}>
-	<T.SphereGeometry args={[1, 36, 24]} />
-	<T.MeshBasicMaterial color={0x0d3a5c} wireframe transparent opacity={0.12} />
-</T.Mesh>
+<!-- Country borders traced on the surface -->
+<Landmass />
 
 <Relays {relays} />
