@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { aggregateByCountry, formatBandwidth, flagEmoji } from './relay-stats';
+import { aggregateByCountry, countryName, formatBandwidth, flagEmoji } from './relay-stats';
 import type { Relay } from './types';
 
 const relay = (country: string, bandwidth: number, flags: string[]): Relay => ({
@@ -54,5 +54,17 @@ describe('flagEmoji', () => {
 
 	it('falls back for invalid codes', () => {
 		expect(flagEmoji('xyz')).toBe('🏴');
+	});
+});
+
+describe('countryName', () => {
+	it('resolves ISO alpha-2 codes to English names', () => {
+		expect(countryName('jp')).toBe('Japan');
+		expect(countryName('de')).toBe('Germany');
+		expect(countryName('US')).toMatch(/United States/);
+	});
+
+	it('falls back to the upper-cased code when unknown', () => {
+		expect(countryName('zz')).toBe('ZZ');
 	});
 });

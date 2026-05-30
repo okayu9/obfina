@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import { flagEmoji, formatBandwidth, type CountryStats } from '$lib/relay-stats';
+	import { countryName, flagEmoji, formatBandwidth, type CountryStats } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
 
 	let { stats }: { stats: CountryStats | null } = $props();
@@ -44,6 +44,7 @@
 		<button class="close" onclick={close} aria-label="close">×</button>
 
 		<div class="flag">{flagEmoji(stats.country)}</div>
+		<div class="name">{countryName(stats.country)}</div>
 		<div class="code">{stats.country.toUpperCase()}</div>
 
 		<div class="count">{stats.count.toLocaleString()}</div>
@@ -106,11 +107,17 @@
 	.flag {
 		font-size: 2.4rem;
 	}
+	.name {
+		margin-top: 0.3rem;
+		font-size: 1.1rem;
+		color: #e6f1ff;
+		line-height: 1.2;
+	}
 	.code {
 		color: #6f8aa3;
 		letter-spacing: 0.2em;
-		font-size: 0.85rem;
-		margin-top: 0.2rem;
+		font-size: 0.75rem;
+		margin-top: 0.1rem;
 	}
 
 	.count {

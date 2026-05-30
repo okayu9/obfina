@@ -1,4 +1,8 @@
+import isoCountries from 'i18n-iso-countries';
+import enLocale from 'i18n-iso-countries/langs/en.json';
 import type { Relay } from './types';
+
+isoCountries.registerLocale(enLocale);
 
 export interface CountryStats {
 	/** ISO 3166-1 alpha-2 country code, lowercase. */
@@ -48,4 +52,9 @@ export function flagEmoji(code: string): string {
 	const base = 0x1f1e6;
 	const upper = code.toUpperCase();
 	return String.fromCodePoint(base + (upper.charCodeAt(0) - 65), base + (upper.charCodeAt(1) - 65));
+}
+
+/** Full English country name for an ISO alpha-2 code (falls back to the code). */
+export function countryName(code: string): string {
+	return isoCountries.getName(code.toUpperCase(), 'en', { select: 'alias' }) ?? code.toUpperCase();
 }

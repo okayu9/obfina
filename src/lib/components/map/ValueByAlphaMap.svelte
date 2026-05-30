@@ -6,7 +6,7 @@
 	import isoCountries from 'i18n-iso-countries';
 	import { feature, mesh } from 'topojson-client';
 	import worldData from 'world-atlas/countries-110m.json';
-	import { aggregateByCountry, flagEmoji, type CountryStats } from '$lib/relay-stats';
+	import { aggregateByCountry, countryName, flagEmoji, type CountryStats } from '$lib/relay-stats';
 	import { roleColor } from '$lib/map-encoding';
 	import { selection } from '$lib/stores/selection.svelte';
 	import type { Relay } from '$lib/types';
@@ -156,7 +156,7 @@
 	{#if hover}
 		<div class="tooltip" style:left="{hover.x}px" style:top="{hover.y}px">
 			<span>{flagEmoji(hover.code)}</span>
-			<span class="t-code">{hover.code.toUpperCase()}</span>
+			<span class="t-name">{countryName(hover.code)}</span>
 			<span class="t-count">{hover.count.toLocaleString()}</span>
 		</div>
 	{/if}
@@ -212,9 +212,8 @@
 		white-space: nowrap;
 		backdrop-filter: blur(6px);
 	}
-	.t-code {
-		color: #6f8aa3;
-		letter-spacing: 0.1em;
+	.t-name {
+		color: #e6f1ff;
 	}
 	.t-count {
 		color: var(--accent-cyan);
