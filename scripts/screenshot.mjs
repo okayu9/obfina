@@ -1,6 +1,6 @@
 /**
  * Dev helper: load the running app, capture a screenshot, and report the relay
- * count, how many country markers rendered, and any console errors. Used to
+ * count, how many data countries rendered, and any console errors. Used to
  * visually verify map changes without a manual browser.
  *
  * Usage: node scripts/screenshot.mjs [url] [outPath] [waitMs]
@@ -26,12 +26,12 @@ const hud = await page
 	.locator('.hud .count')
 	.textContent()
 	.catch(() => null);
-const markers = await page.locator('.marker').count();
+const markers = await page.locator('.data').count();
 
 await page.screenshot({ path: out });
 await browser.close();
 
 console.log('HUD count:', hud);
-console.log('markers:', markers);
+console.log('data paths (incl. tile copies):', markers);
 console.log('console errors:', errors.length ? JSON.stringify(errors, null, 2) : 'none');
 console.log('screenshot:', out);

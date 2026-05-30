@@ -23,8 +23,10 @@ conveyed count only through density, which is a weak and misleading channel.
 
 Replace the 3D globe with a flat 2D world map rendered with D3 and SVG:
 
-- **Projection and geography**: `d3-geo` Natural Earth projection with
-  `world-atlas` land and country borders.
+- **Projection and geography**: a `d3-geo` cylindrical projection with
+  `world-atlas` land and country borders. (Started as Natural Earth; later
+  switched to equirectangular so the map tiles cleanly for horizontal
+  wrapping — see the Overview in [architecture.md](../architecture.md).)
 - **Per-country aggregation** (not per relay), since Onionoo only provides
   country-level location.
 - **Interaction**: hover tooltip, click for a country detail panel, and
@@ -54,7 +56,7 @@ Three.js, Threlte, and the globe components were removed.
 
 - Less immediately spectacular than a glowing 3D globe; the "wow" factor is
   lower even if the clarity is higher.
-- A flat projection distorts area (Natural Earth is a compromise) and cannot
-  show great-circle relationships between relays.
+- A flat projection distorts area (equirectangular stretches the poles) and
+  cannot show great-circle relationships between relays.
 - Country markers near each other (e.g. in Europe) still overlap at the default
   zoom; this is mitigated by zoom rather than eliminated.

@@ -2,7 +2,7 @@
 
 ## Overview
 
-obfina is a single-page web application that visualizes the Tor network in real time. The centerpiece is a 2D **value-by-alpha** world map (D3 + SVG): every country is drawn as a visible land base, and countries with relays glow on top — hue encodes exit share (cyan → green) and opacity encodes relay count. A server-side cache layer mediates between upstream Tor APIs and the client, keeping data fresh without hammering external services.
+obfina is a single-page web application that visualizes the Tor network in real time. The centerpiece is a 2D **value-by-alpha** world map (D3 + SVG): every country is drawn as a visible land base, and countries with relays glow on top — hue encodes exit share (cyan → green) and opacity encodes relay count. The map uses an equirectangular projection fitted to viewport height so the poles sit at the top/bottom edges; it pans and zooms, wraps seamlessly east–west (no left/right edge), and clamps vertical panning at the poles. A server-side cache layer mediates between upstream Tor APIs and the client, keeping data fresh without hammering external services.
 
 > The visualization began as a 3D WebGL globe (Threlte + Three.js), then a proportional-symbol bubble map, before settling on a value-by-alpha map after comparing many alternatives. See [ADR-007](decisions/007-2d-map-over-globe.md).
 

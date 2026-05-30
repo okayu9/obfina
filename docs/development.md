@@ -65,20 +65,26 @@ obfina/
 │   │   │   └── panels/       # country detail panel
 │   │   ├── stores/           # Svelte stores — selection state
 │   │   ├── map-encoding.ts   # exit-share → color
-│   │   └── relay-stats.ts    # per-country aggregation + formatting
+│   │   ├── relay-stats.ts    # per-country aggregation, formatting, country names
+│   │   └── types.ts          # shared types
 │   ├── routes/
-│   │   ├── +page.svelte      # Main entry point (map view + HUD)
+│   │   ├── +page.svelte      # main entry point (map view + HUD)
 │   │   └── api/
-│   │       └── relays/       # Proxies Onionoo /details (filtered fields)
+│   │       └── relays/       # proxies Onionoo /details (filtered fields)
+│   ├── app.css               # global styles + Tailwind v4 import
 │   └── app.html
+├── scripts/screenshot.mjs    # headless visual-check helper
 ├── docs/
 │   └── decisions/            # Architecture Decision Records (ADRs)
-├── infra/                    # Terraform — see infrastructure.md
-├── .github/workflows/        # CI/CD pipelines
-├── wrangler.toml             # Cloudflare Workers config
-├── svelte.config.js          # SvelteKit config (docs: kit.svelte.dev)
-├── vite.config.ts
-└── tailwind.config.ts
+├── svelte.config.js          # SvelteKit config
+├── vite.config.ts            # Vite + Tailwind v4 plugin (no tailwind.config)
+├── eslint.config.js
+└── .prettierrc
+
+# planned (see infrastructure.md), not yet in the repo:
+#   infra/              Terraform
+#   .github/workflows/  CI/CD
+#   wrangler.toml       Cloudflare Workers config
 ```
 
 Useful documentation links while navigating the codebase:
@@ -113,7 +119,7 @@ tests.
 ## Visual verification
 
 `scripts/screenshot.mjs` loads the running app in a headless browser, captures a
-screenshot, and reports the relay count, how many country markers rendered, and
+screenshot, and reports the relay count, how many country paths rendered, and
 console errors. With the dev server running:
 
 ```bash

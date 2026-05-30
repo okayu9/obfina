@@ -21,7 +21,7 @@ obfina makes the Tor network observable. Not through tables and CSV exports, but
 
 obfina pulls from two authoritative sources maintained by the Tor Project:
 
-- [Onionoo](https://onionoo.torproject.org/) — per-relay details, bandwidth, uptime, geolocation
+- [Onionoo](https://onionoo.torproject.org/) — per-relay details, bandwidth, uptime, country (no precise coordinates)
 - [Tor Metrics](https://metrics.torproject.org/) — aggregate statistics, historical trends, censorship signals
 
 Data is refreshed every 5–30 minutes via a server-side cache layer (relay data: 10 min, censorship signals: 5 min, aggregate stats: 30 min). Relay data shown in the app may lag up to 3–6 hours behind the live network due to Onionoo's consensus ingestion cycle.
