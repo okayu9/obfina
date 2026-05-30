@@ -8,6 +8,7 @@
 	import Atmosphere from './Atmosphere.svelte';
 	import Landmass from './Landmass.svelte';
 	import Relays from './Relays.svelte';
+	import SelectionMarker from './SelectionMarker.svelte';
 	import Starfield from './Starfield.svelte';
 
 	let { relays }: { relays: Relay[] } = $props();
@@ -25,7 +26,7 @@
 		enableDamping
 		dampingFactor={0.05}
 		enableZoom
-		autoRotate
+		autoRotate={!selection.country}
 		autoRotateSpeed={0.35}
 		minDistance={1.4}
 		maxDistance={6}
@@ -48,3 +49,4 @@
 <Landmass />
 
 <Relays {relays} />
+<SelectionMarker />
