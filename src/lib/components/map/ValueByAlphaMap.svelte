@@ -33,16 +33,16 @@
 
 	const byCountry = $derived(aggregateByCountry(relays));
 	const maxCount = $derived(Math.max(1, ...[...byCountry.values()].map((s) => s.count)));
-	// Value-by-alpha: opacity is the "weight" (relay count). Low-count countries
-	// fade into the black background; hue (exit share) only reads where weight is high.
-	const weight = $derived(scaleSqrt().domain([1, maxCount]).range([0.06, 1]).clamp(true));
+	// Value-by-alpha: the glow opacity is the "weight" (relay count). The base
+	// land is always visible underneath so the whole world reads as a map.
+	const weight = $derived(scaleSqrt().domain([1, maxCount]).range([0.18, 1]).clamp(true));
 
 	const projection = $derived.by(() => {
 		if (!width || !height) return null;
 		return geoNaturalEarth1().fitExtent(
 			[
-				[10, 10],
-				[width - 10, height - 10]
+				[12, 12],
+				[width - 12, height - 12]
 			],
 			borders
 		);
@@ -50,16 +50,17 @@
 	const path = $derived(projection ? geoPath(projection) : null);
 	const bordersPath = $derived(path ? (path(borders) ?? '') : '');
 
+	// Every country, with its shape, base render, and (if present) data.
 	const shapes = $derived.by(() => {
 		if (!path) return [];
 		return countriesFc.features.map((f) => {
 			const code = codeFor(f.id);
-			const stats = code ? byCountry.get(code) : undefined;
+			const stats = code ? (byCountry.get(code) ?? null) : null;
 			return {
 				code,
 				d: path(f as never) ?? '',
-				stats: stats ?? null,
-				fill: stats ? roleColor(stats) : '#000000',
+				stats,
+				glow: stats ? roleColor(stats) : null,
 				opacity: stats ? weight(stats.count) : 0
 			};
 		});
@@ -92,24 +93,33 @@
 <div class="map" bind:clientWidth={width} bind:clientHeight={height}>
 	<svg bind:this={svgEl} {width} {height} role="presentation">
 		<g {transform}>
-			<path class="graticule" d={bordersPath} />
+			<!-- Base: every country visible so the world shape reads -->
 			{#each shapes as s (s.code ?? s.d.slice(0, 12))}
-				<path
-					class="country"
-					class:has-data={!!s.stats}
-					class:selected={s.code && selection.country === s.code}
-					d={s.d}
-					fill={s.fill}
-					fill-opacity={s.opacity}
-					onclick={() => selectCountry(s.code)}
-					onkeydown={(e) => onKey(e, s.code)}
-					onpointerenter={(e) => onEnter(e, s.code, s.stats)}
-					onpointermove={(e) => hover && (hover = { ...hover, x: e.clientX, y: e.clientY })}
-					onpointerleave={() => (hover = null)}
-					role={s.stats ? 'button' : 'presentation'}
-					tabindex={s.stats ? 0 : -1}
-					aria-label={s.code && s.stats ? `${s.code}: ${s.stats.count} relays` : undefined}
-				/>
+				<path class="land" d={s.d} />
+			{/each}
+
+			<!-- Borders -->
+			<path class="borders" d={bordersPath} />
+
+			<!-- Data glow on top, interactive -->
+			{#each shapes as s (`g-${s.code ?? s.d.slice(0, 12)}`)}
+				{#if s.stats && s.glow}
+					<path
+						class="data"
+						class:selected={s.code && selection.country === s.code}
+						d={s.d}
+						fill={s.glow}
+						fill-opacity={s.opacity}
+						onclick={() => selectCountry(s.code)}
+						onkeydown={(e) => onKey(e, s.code)}
+						onpointerenter={(e) => onEnter(e, s.code, s.stats)}
+						onpointermove={(e) => hover && (hover = { ...hover, x: e.clientX, y: e.clientY })}
+						onpointerleave={() => (hover = null)}
+						role="button"
+						tabindex="0"
+						aria-label={`${s.code}: ${s.stats.count} relays`}
+					/>
+				{/if}
 			{/each}
 		</g>
 	</svg>
@@ -127,30 +137,33 @@
 	.map {
 		position: fixed;
 		inset: 0;
-		background: #000000;
+		background: radial-gradient(ellipse at 50% 40%, #122436 0%, #0a141f 70%, #070d16 100%);
 	}
 	svg {
 		display: block;
 	}
-	.graticule {
+	.land {
+		fill: #20384c;
+		stroke: none;
+	}
+	.borders {
 		fill: none;
-		stroke: #0e1a24;
-		stroke-width: 0.4;
+		stroke: #3a5d78;
+		stroke-width: 0.5;
+		stroke-opacity: 0.8;
 		vector-effect: non-scaling-stroke;
 		pointer-events: none;
 	}
-	.country {
+	.data {
+		cursor: pointer;
 		stroke: none;
 	}
-	.country.has-data {
-		cursor: pointer;
-	}
-	.country.has-data:hover {
+	.data:hover {
 		stroke: #ffffff;
 		stroke-width: 0.75;
 		vector-effect: non-scaling-stroke;
 	}
-	.country.selected {
+	.data.selected {
 		stroke: #ffffff;
 		stroke-width: 1.25;
 		vector-effect: non-scaling-stroke;

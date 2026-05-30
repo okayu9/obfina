@@ -1,23 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/state';
-	import WorldMap from '$lib/components/map/WorldMap.svelte';
-	import ChoroplethMap from '$lib/components/map/ChoroplethMap.svelte';
-	import DorlingMap from '$lib/components/map/DorlingMap.svelte';
-	import SpikeMap from '$lib/components/map/SpikeMap.svelte';
-	import HexMap from '$lib/components/map/HexMap.svelte';
-	import LeaderMap from '$lib/components/map/LeaderMap.svelte';
-	import DotDensityMap from '$lib/components/map/DotDensityMap.svelte';
-	import InsetMap from '$lib/components/map/InsetMap.svelte';
-	import RadialMap from '$lib/components/map/RadialMap.svelte';
 	import ValueByAlphaMap from '$lib/components/map/ValueByAlphaMap.svelte';
 	import CountryPanel from '$lib/components/panels/CountryPanel.svelte';
 	import { aggregateByCountry, formatBandwidth } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
 	import type { Relay, RelaysResponse } from '$lib/types';
-
-	// Temporary visualization switch for design comparison: ?viz=bubble|choropleth|dorling
-	const viz = $derived(page.url.searchParams.get('viz') ?? 'bubble');
 
 	let relays = $state<Relay[]>([]);
 	let count = $state(0);
@@ -55,27 +42,7 @@
 <svelte:window onkeydown={onKeydown} />
 
 <div class="scene">
-	{#if viz === 'choropleth'}
-		<ChoroplethMap {relays} />
-	{:else if viz === 'dorling'}
-		<DorlingMap {relays} />
-	{:else if viz === 'spike'}
-		<SpikeMap {relays} />
-	{:else if viz === 'hex'}
-		<HexMap {relays} />
-	{:else if viz === 'leader'}
-		<LeaderMap {relays} />
-	{:else if viz === 'dots'}
-		<DotDensityMap {relays} />
-	{:else if viz === 'inset'}
-		<InsetMap {relays} />
-	{:else if viz === 'radial'}
-		<RadialMap {relays} />
-	{:else if viz === 'vba'}
-		<ValueByAlphaMap {relays} />
-	{:else}
-		<WorldMap {relays} />
-	{/if}
+	<ValueByAlphaMap {relays} />
 
 	{#if loading}
 		<div class="status pulse" aria-label="loading"></div>
@@ -91,8 +58,8 @@
 				<span class="bw">{formatBandwidth(totalBandwidth)}</span>
 			</div>
 			<div class="legend">
-				<span class="enc"><i class="size"></i>size = relays</span>
 				<span class="enc"><i class="ramp"></i>cyan→green = exit share</span>
+				<span class="enc"><i class="bright"></i>brighter = more relays</span>
 			</div>
 		</div>
 	{/if}
@@ -153,14 +120,12 @@
 		align-items: center;
 		gap: 0.4rem;
 	}
-	.size {
-		width: 14px;
+	.bright {
+		width: 28px;
 		height: 8px;
 		display: inline-block;
 		border-radius: 999px;
-		background:
-			radial-gradient(circle at 30% 50%, #9fc6e0 0 2px, transparent 2px),
-			radial-gradient(circle at 75% 50%, #9fc6e0 0 4px, transparent 4px);
+		background: linear-gradient(90deg, #0e2230, #00d4ff);
 	}
 	.ramp {
 		width: 28px;

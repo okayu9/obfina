@@ -1,4 +1,3 @@
-import { scaleSqrt, scaleLinear } from 'd3-scale';
 import type { CountryStats } from './relay-stats';
 
 /** Role-mix endpoints: guard-heavy (cyan) to exit-heavy (green). */
@@ -18,20 +17,4 @@ export function roleColor(stats: CountryStats): string {
 		mix(GUARD_RGB[2], EXIT_RGB[2])
 	];
 	return `rgb(${r}, ${g}, ${b})`;
-}
-
-/** Marker radius (px) encodes relay count, on a sqrt scale so area reads as count. */
-export function makeRadiusScale(maxCount: number) {
-	return scaleSqrt()
-		.domain([1, Math.max(maxCount, 1)])
-		.range([3, 34])
-		.clamp(true);
-}
-
-/** Marker opacity encodes total bandwidth, so high-capacity countries glow more. */
-export function makeOpacityScale(maxBandwidth: number) {
-	return scaleLinear()
-		.domain([0, Math.max(maxBandwidth, 1)])
-		.range([0.45, 1])
-		.clamp(true);
 }
