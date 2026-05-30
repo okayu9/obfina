@@ -1,0 +1,60 @@
+/**
+ * Which visualization is on screen, and the means to move between them. The id
+ * is mirrored to the `?view=` query param so views are deep-linkable.
+ */
+
+export interface ViewDef {
+	id: ViewId;
+	/** Short label shown in the nav rail. */
+	label: string;
+	/** One-line description (tooltip / sub-label). */
+	desc: string;
+}
+
+export type ViewId = 'map' | 'hosting' | 'paths' | 'growth' | 'circuits';
+
+export const VIEWS: ViewDef[] = [
+	{ id: 'map', label: 'MAP', desc: 'Relays by country' },
+	{ id: 'hosting', label: 'HOSTING', desc: 'AS concentration risk' },
+	{ id: 'paths', label: 'PATHS', desc: 'Path-selection bias' },
+	{ id: 'growth', label: 'GROWTH', desc: 'Capacity & usage over time' },
+	{ id: 'circuits', label: 'CIRCUITS', desc: 'Live circuit simulation' }
+];
+
+export const viewState = $state<{ id: ViewId }>({ id: 'map' });
+
+function isViewId(v: string | null): v is ViewId {
+	return !!v && VIEWS.some((x) => x.id === v);
+}
+
+export function setView(id: ViewId): void {
+	viewState.id = id;
+}
+
+/** Move forward (+1) or backward (-1) through the views, wrapping around. */
+export function cycleView(dir: 1 | -1): void {
+	const i = VIEWS.findIndex((v) => v.id === viewState.id);
+	const next = (i + dir + VIEWS.length) % VIEWS.length;
+	viewState.id = VIEWS[next].id;
+}
+
+/** Read the initial view from the URL (`?view=...`). */
+export function initViewFromUrl(): void {
+	if (typeof location === 'undefined') return;
+	// Plain string parse (no URLSearchParams): this is a one-off read, not
+	// reactive state, so the Svelte reactivity wrappers don't apply.
+	const m = location.search.match(/[?&]view=([^&]+)/);
+	const v = m ? decodeURIComponent(m[1]) : null;
+	if (isViewId(v)) viewState.id = v;
+}
+
+/** Reflect the current view into the URL without adding history entries. */
+export function syncViewToUrl(): void {
+	if (typeof location === 'undefined' || typeof history === 'undefined') return;
+	// obfina only uses the `view` query param, so a plain rewrite is enough.
+	history.replaceState(
+		history.state,
+		'',
+		`${location.pathname}?view=${viewState.id}${location.hash}`
+	);
+}
