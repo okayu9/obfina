@@ -32,7 +32,7 @@ Key fields per relay:
 
 Note: `r` (running) reflects the most recent consensus Onionoo has processed, not real-time status. A relay that went offline minutes ago may still appear as running.
 
-The `/summary` endpoint does not include per-relay bandwidth or location. obfina therefore loads the map from `/details` with a field filter (`fields=nickname,observed_bandwidth,country,flags`) rather than `/summary`, which returns everything needed to aggregate per country in a single request (~1.2 MB for ~9,600 running relays).
+The `/summary` endpoint does not include per-relay bandwidth or location. obfina therefore loads from `/details` with a field filter rather than `/summary`. The filter is `fields=nickname,as,as_name,observed_bandwidth,consensus_weight,guard_probability,middle_probability,exit_probability,country,flags,first_seen` — everything the views need (per-country aggregation, per-AS centralization, path-selection weighting, and the circuit simulation) in a single request (~3.7 MB for ~9,600 running relays). The per-position `*_probability` fields are Onionoo's own path-selection probabilities, so the circuit view samples relays exactly the way Tor weights them.
 
 #### `GET /details`
 
@@ -99,6 +99,16 @@ obfina's cache layer enforces a minimum TTL of 10 minutes for relay data.
 Base URL: `https://metrics.torproject.org`
 
 Tor Metrics provides aggregate statistics about the network, collected and processed by the Tor Project's metrics team. Data is available as JSON and CSV and is typically updated once per day. It is suitable for historical trend visualizations but not for real-time relay state.
+
+The GROWTH view consumes three CSV exports through the cached `/api/trends` route, which parses, bounds (last ~2 years for users), and downsamples them into one compact payload:
+
+| CSV                           | Columns used         | Drives                                |
+| ----------------------------- | -------------------- | ------------------------------------- |
+| `networksize.csv`             | `date,relays`        | Relay-count growth                    |
+| `bandwidth.csv`               | `date,advbw,bwhist`  | Advertised capacity vs. consumed      |
+| `userstats-relay-country.csv` | `date,country,users` | Estimated users for the top countries |
+
+Each section degrades independently: if one CSV is unavailable the route returns that section empty and flags the response `partial`, and the view shows a placeholder for it rather than failing.
 
 ### Key datasets
 

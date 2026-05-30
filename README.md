@@ -12,10 +12,14 @@ obfina makes the Tor network observable. Not through tables and CSV exports, but
 
 ## What it does
 
-- **Value-by-alpha map** — every country is filled by its role in the network: hue encodes exit share (cyan → green) and brightness encodes relay count, so the busiest countries glow while the rest recede. The whole world stays visible as a map.
-- **Drill-down** — click any country for its relay count, aggregate bandwidth, and Guard/Exit/Middle composition
-- **Pan & zoom** — explore dense regions like Europe by zooming in
-- **Ambient mode** — leave it on a screen and it conveys the network's shape without any interaction
+obfina is a set of linked views over the same network, switchable from the nav rail, with number keys `1`–`5`, or with `←`/`→` (the active view is saved to `?view=…` so any view is shareable). See [ADR-009](docs/decisions/009-multi-view.md).
+
+- **Map** — value-by-alpha world map: hue encodes exit share (cyan → green) and brightness encodes relay count, so the busiest countries glow while the rest recede. Click a country for its relay count, bandwidth, and Guard/Middle/Exit composition; pan & zoom into dense regions like Europe.
+- **Hosting** — centralization risk by autonomous system (hosting provider), as Lorenz curves with a Gini score and the top ASes — shown both for the whole network and for exit capacity alone, where concentration bites hardest.
+- **Paths** — how much of all traffic rides on a few high-bandwidth relays: a concentration curve you can drag to read "the top N% of relays carry M% of traffic."
+- **Growth** — the network over time: relay count, advertised capacity vs. bandwidth actually consumed, and estimated users by country (from Tor Metrics).
+- **Circuits** — real Guard → Middle → Exit paths, sampled from live relays by their actual selection weight and animated across the map.
+- **Ambient mode** — leave any view on a screen and it conveys the network's shape without interaction.
 
 ## Data
 
