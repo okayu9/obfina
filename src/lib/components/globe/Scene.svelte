@@ -2,8 +2,10 @@
 	import { T } from '@threlte/core';
 	import { OrbitControls } from '@threlte/extras';
 	import type { Relay } from '$lib/types';
+	import Atmosphere from './Atmosphere.svelte';
 	import Landmass from './Landmass.svelte';
 	import Relays from './Relays.svelte';
+	import Starfield from './Starfield.svelte';
 
 	let { relays }: { relays: Relay[] } = $props();
 </script>
@@ -22,6 +24,9 @@
 
 <T.AmbientLight intensity={0.5} />
 <T.DirectionalLight position={[5, 3, 5]} intensity={1.1} />
+
+<Starfield />
+<Atmosphere />
 
 <!-- The globe body -->
 <T.Mesh>
