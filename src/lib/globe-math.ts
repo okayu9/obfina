@@ -14,6 +14,39 @@ export function latLonToVector3(lat: number, lon: number, radius: number): Vecto
 	);
 }
 
+/** Inverse of {@link latLonToVector3}: world position to [lat, lon] in degrees. */
+export function vector3ToLatLon(v: Vector3): [number, number] {
+	const r = v.length();
+	const lat = 90 - (Math.acos(v.y / r) * 180) / Math.PI;
+	let lon = (Math.atan2(v.z, -v.x) * 180) / Math.PI - 180;
+	if (lon < -180) lon += 360;
+	return [lat, lon];
+}
+
+/**
+ * Find the country whose centroid is nearest to the given lat/lon, using
+ * angular (great-circle) distance. Returns null if nothing is within
+ * `maxDeg` degrees.
+ */
+export function nearestCountry(
+	lat: number,
+	lon: number,
+	centroids: Record<string, [number, number]>,
+	maxDeg = 18
+): string | null {
+	const target = latLonToVector3(lat, lon, 1);
+	let best: string | null = null;
+	let bestDot = Math.cos((maxDeg * Math.PI) / 180);
+	for (const [code, [cLat, cLon]] of Object.entries(centroids)) {
+		const dot = latLonToVector3(cLat, cLon, 1).dot(target);
+		if (dot > bestDot) {
+			bestDot = dot;
+			best = code;
+		}
+	}
+	return best;
+}
+
 /** Deterministic pseudo-random in [0, 1) from an integer seed. */
 function hash(seed: number): number {
 	const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;

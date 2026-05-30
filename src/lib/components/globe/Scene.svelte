@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { OrbitControls } from '@threlte/extras';
+	import { interactivity, OrbitControls, type IntersectionEvent } from '@threlte/extras';
+	import { COUNTRY_CENTROIDS } from '$lib/country-centroids';
+	import { nearestCountry, vector3ToLatLon } from '$lib/globe-math';
+	import { selection } from '$lib/stores/selection.svelte';
 	import type { Relay } from '$lib/types';
 	import Atmosphere from './Atmosphere.svelte';
 	import Landmass from './Landmass.svelte';
@@ -8,6 +11,13 @@
 	import Starfield from './Starfield.svelte';
 
 	let { relays }: { relays: Relay[] } = $props();
+
+	interactivity();
+
+	function handleGlobeClick(e: IntersectionEvent<MouseEvent>) {
+		const [lat, lon] = vector3ToLatLon(e.point);
+		selection.country = nearestCountry(lat, lon, COUNTRY_CENTROIDS);
+	}
 </script>
 
 <T.PerspectiveCamera makeDefault position={[0, 0.5, 3]} fov={45}>
@@ -28,8 +38,8 @@
 <Starfield />
 <Atmosphere />
 
-<!-- The globe body -->
-<T.Mesh>
+<!-- The globe body (also the click target for country selection) -->
+<T.Mesh onclick={handleGlobeClick}>
 	<T.SphereGeometry args={[1, 64, 64]} />
 	<T.MeshPhongMaterial color={0x0a1929} emissive={0x040d18} shininess={8} />
 </T.Mesh>

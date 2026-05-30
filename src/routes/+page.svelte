@@ -2,12 +2,18 @@
 	import { onMount } from 'svelte';
 	import { Canvas } from '@threlte/core';
 	import Scene from '$lib/components/globe/Scene.svelte';
+	import CountryPanel from '$lib/components/panels/CountryPanel.svelte';
+	import { aggregateByCountry } from '$lib/relay-stats';
+	import { selection } from '$lib/stores/selection.svelte';
 	import type { Relay, RelaysResponse } from '$lib/types';
 
 	let relays = $state<Relay[]>([]);
 	let count = $state(0);
 	let loading = $state(true);
 	let failed = $state(false);
+
+	const byCountry = $derived(aggregateByCountry(relays));
+	const selectedStats = $derived(selection.country ? (byCountry.get(selection.country) ?? null) : null);
 
 	onMount(async () => {
 		try {
@@ -41,6 +47,8 @@
 			<span class="count">{count.toLocaleString()}</span>
 		</div>
 	{/if}
+
+	<CountryPanel stats={selectedStats} />
 </div>
 
 <style>

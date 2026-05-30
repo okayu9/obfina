@@ -2,15 +2,20 @@
 	import { T } from '@threlte/core';
 	import { BufferGeometry, Float32BufferAttribute, LineBasicMaterial, LineSegments } from 'three';
 	import { mesh } from 'topojson-client';
-	import type { Topology } from 'topojson-specification';
 	import worldData from 'world-atlas/countries-110m.json';
 	import { latLonToVector3 } from '$lib/globe-math';
 
 	let { radius = 1 }: { radius?: number } = $props();
 
+	// Minimal shape of the world-atlas TopoJSON we rely on; the full type lives
+	// in topojson-specification, which we don't depend on.
+	type WorldTopology = Parameters<typeof mesh>[0] & {
+		objects: { countries: Parameters<typeof mesh>[1] };
+	};
+
 	// Country borders as a single MultiLineString (shared edges drawn once).
-	const topology = worldData as unknown as Topology;
-	const borders = mesh(topology, topology.objects.countries as never);
+	const topology = worldData as unknown as WorldTopology;
+	const borders = mesh(topology, topology.objects.countries);
 
 	const lines = (() => {
 		const positions: number[] = [];
