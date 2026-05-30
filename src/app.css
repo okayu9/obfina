@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+:root {
+	--bg: #080b0f;
+	--accent-cyan: #00d4ff;
+	--accent-green: #39ff14;
+}
+
+html,
+body {
+	margin: 0;
+	height: 100%;
+	background: var(--bg);
+	color: #e6f1ff;
+	font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+	overflow: hidden;
+}

@@ -32,7 +32,7 @@ Key fields per relay:
 
 Note: `r` (running) reflects the most recent consensus Onionoo has processed, not real-time status. A relay that went offline minutes ago may still appear as running.
 
-The `/summary` endpoint does not include per-relay bandwidth. Globe node sizing by bandwidth requires either a separate `/details` request (costly for ~8,000 relays) or fetching `/bandwidth` in aggregate and joining on fingerprint. The chosen approach should be documented once implemented.
+The `/summary` endpoint does not include per-relay bandwidth or location. obfina therefore loads the globe from `/details` with a field filter (`fields=nickname,observed_bandwidth,country,flags`) rather than `/summary`, which returns everything needed for placement and sizing in a single request (~1.2 MB for ~9,600 running relays).
 
 #### `GET /details`
 
@@ -48,19 +48,18 @@ Key fields:
 | `as` | string | Autonomous system number |
 | `as_name` | string | AS name |
 | `consensus_weight` | number | Probabilistic routing weight in the current consensus |
+| `observed_bandwidth` | number | Bytes/sec observed by the relay; used by obfina for node sizing |
 | `advertised_bandwidth` | number | Bytes/sec self-reported by the relay |
 | `flags` | string[] | e.g. `["Guard", "Exit", "Stable"]` |
 | `first_seen` | string | ISO 8601 timestamp |
 | `last_seen` | string | ISO 8601 timestamp |
-| `latitude` | number | Approximate geolocation |
-| `longitude` | number | Approximate geolocation |
 | `relays_published` | string | ISO 8601 timestamp of the consensus this data is derived from |
 
 **Data quality notes:**
 
-- `latitude` / `longitude` are derived from MaxMind's GeoLite2 database. For relays hosted in datacenters or VPSes, geolocation accuracy is often at the country or city level only — do not treat coordinates as precise.
+- **Onionoo does not expose per-relay latitude/longitude.** Coordinates were removed from the API for privacy reasons; geolocation is provided only at the country level (`country`, `country_name`) plus optional `as`/`as_name`. obfina therefore places relays on the globe by mapping each relay's `country` code to a country centroid (`src/lib/country-centroids.ts`), with deterministic jitter so relays in the same country fan out rather than stacking on one point. This is verified against the live API: a request for `fields=...latitude,longitude...` returns those fields empty.
 - `consensus_weight` is not bandwidth. It is the weight assigned by directory authorities for probabilistic relay selection. A relay with high consensus weight receives proportionally more circuits. It correlates with bandwidth but is not equal to it.
-- `advertised_bandwidth` is self-reported and unverified. The actual measured bandwidth (used for `consensus_weight` calculation) is not exposed via Onionoo.
+- `observed_bandwidth` and `advertised_bandwidth` are both self-reported by the relay and unverified. obfina uses `observed_bandwidth` for node sizing. The actual measured bandwidth (used for `consensus_weight` calculation) is not exposed via Onionoo.
 
 #### `GET /bandwidth`
 
