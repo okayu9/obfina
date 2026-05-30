@@ -11,6 +11,32 @@
 	}
 
 	const total = $derived(stats ? Math.max(stats.count, 1) : 1);
+
+	// Circuit order: entry → middle → exit.
+	const roles = $derived(
+		stats
+			? [
+					{
+						key: 'guard',
+						name: 'Guard',
+						desc: 'entry — a client’s first hop into Tor',
+						count: stats.guard
+					},
+					{
+						key: 'middle',
+						name: 'Middle',
+						desc: 'relays traffic between guard and exit',
+						count: stats.middle
+					},
+					{
+						key: 'exit',
+						name: 'Exit',
+						desc: 'last hop — connects out to the destination',
+						count: stats.exit
+					}
+				]
+			: []
+	);
 </script>
 
 {#if stats}
@@ -25,17 +51,25 @@
 
 		<div class="bw">{formatBandwidth(stats.bandwidth)}</div>
 
-		<!-- Flag composition as a stacked bar (Guard / Exit / Middle) -->
-		<div class="bar" role="img" aria-label="relay flag composition">
+		<!-- Relay composition as a stacked bar (entry → middle → exit) -->
+		<div class="bar" role="img" aria-label="relay role composition">
 			<div class="seg guard" style:width="{(stats.guard / total) * 100}%"></div>
-			<div class="seg exit" style:width="{(stats.exit / total) * 100}%"></div>
 			<div class="seg middle" style:width="{(stats.middle / total) * 100}%"></div>
+			<div class="seg exit" style:width="{(stats.exit / total) * 100}%"></div>
 		</div>
-		<div class="legend">
-			<span><i class="dot guard"></i>{stats.guard}</span>
-			<span><i class="dot exit"></i>{stats.exit}</span>
-			<span><i class="dot middle"></i>{stats.middle}</span>
-		</div>
+
+		<ul class="roles">
+			{#each roles as role (role.key)}
+				<li>
+					<i class="dot {role.key}"></i>
+					<div class="role-text">
+						<span class="role-name">{role.name}</span>
+						<span class="role-desc">{role.desc}</span>
+					</div>
+					<span class="role-count">{role.count.toLocaleString()}</span>
+				</li>
+			{/each}
+		</ul>
 	</aside>
 {/if}
 
@@ -110,39 +144,60 @@
 	.seg.guard {
 		background: #00d4ff;
 	}
-	.seg.exit {
-		background: #39ff14;
-	}
 	.seg.middle {
 		background: #5a7a99;
 	}
-
-	.legend {
-		margin-top: 0.6rem;
-		display: flex;
-		gap: 1rem;
-		font-size: 0.8rem;
-		color: #9fc6e0;
-		font-variant-numeric: tabular-nums;
+	.seg.exit {
+		background: #39ff14;
 	}
-	.legend span {
+
+	.roles {
+		list-style: none;
+		margin: 0.9rem 0 0;
+		padding: 0;
 		display: flex;
-		align-items: center;
-		gap: 0.35rem;
+		flex-direction: column;
+		gap: 0.7rem;
+	}
+	.roles li {
+		display: grid;
+		grid-template-columns: 8px 1fr auto;
+		align-items: baseline;
+		gap: 0.5rem;
 	}
 	.dot {
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
 		display: inline-block;
+		transform: translateY(1px);
 	}
 	.dot.guard {
 		background: #00d4ff;
 	}
+	.dot.middle {
+		background: #5a7a99;
+	}
 	.dot.exit {
 		background: #39ff14;
 	}
-	.dot.middle {
-		background: #5a7a99;
+	.role-text {
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+	}
+	.role-name {
+		font-size: 0.85rem;
+		color: #e6f1ff;
+	}
+	.role-desc {
+		font-size: 0.7rem;
+		line-height: 1.3;
+		color: #6f8aa3;
+	}
+	.role-count {
+		font-size: 1rem;
+		font-variant-numeric: tabular-nums;
+		color: #9fc6e0;
 	}
 </style>

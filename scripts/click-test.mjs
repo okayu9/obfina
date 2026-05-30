@@ -11,8 +11,8 @@ page.on('pageerror', (e) => errors.push('PAGEERROR: ' + e.message));
 await page.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
 await page.waitForTimeout(4000);
 
-// Click the largest country marker and confirm a panel opens.
-const marker = page.locator('.marker').first();
+// Click a country with data and confirm a panel opens.
+const marker = page.locator('.data').first();
 await marker.click({ force: true });
 await page.waitForTimeout(700);
 let opened = (await page.locator('.panel').count()) > 0;
