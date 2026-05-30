@@ -1,10 +1,22 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 	import WorldMap from '$lib/components/map/WorldMap.svelte';
+	import ChoroplethMap from '$lib/components/map/ChoroplethMap.svelte';
+	import DorlingMap from '$lib/components/map/DorlingMap.svelte';
+	import SpikeMap from '$lib/components/map/SpikeMap.svelte';
+	import HexMap from '$lib/components/map/HexMap.svelte';
+	import LeaderMap from '$lib/components/map/LeaderMap.svelte';
+	import DotDensityMap from '$lib/components/map/DotDensityMap.svelte';
+	import InsetMap from '$lib/components/map/InsetMap.svelte';
+	import RadialMap from '$lib/components/map/RadialMap.svelte';
 	import CountryPanel from '$lib/components/panels/CountryPanel.svelte';
 	import { aggregateByCountry, formatBandwidth } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
 	import type { Relay, RelaysResponse } from '$lib/types';
+
+	// Temporary visualization switch for design comparison: ?viz=bubble|choropleth|dorling
+	const viz = $derived(page.url.searchParams.get('viz') ?? 'bubble');
 
 	let relays = $state<Relay[]>([]);
 	let count = $state(0);
@@ -42,7 +54,25 @@
 <svelte:window onkeydown={onKeydown} />
 
 <div class="scene">
-	<WorldMap {relays} />
+	{#if viz === 'choropleth'}
+		<ChoroplethMap {relays} />
+	{:else if viz === 'dorling'}
+		<DorlingMap {relays} />
+	{:else if viz === 'spike'}
+		<SpikeMap {relays} />
+	{:else if viz === 'hex'}
+		<HexMap {relays} />
+	{:else if viz === 'leader'}
+		<LeaderMap {relays} />
+	{:else if viz === 'dots'}
+		<DotDensityMap {relays} />
+	{:else if viz === 'inset'}
+		<InsetMap {relays} />
+	{:else if viz === 'radial'}
+		<RadialMap {relays} />
+	{:else}
+		<WorldMap {relays} />
+	{/if}
 
 	{#if loading}
 		<div class="status pulse" aria-label="loading"></div>
