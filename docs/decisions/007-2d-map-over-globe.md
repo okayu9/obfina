@@ -25,13 +25,15 @@ Replace the 3D globe with a flat 2D world map rendered with D3 and SVG:
 
 - **Projection and geography**: `d3-geo` Natural Earth projection with
   `world-atlas` land and country borders.
-- **One marker per country** (not per relay). Each marker encodes multiple
-  dimensions at once:
-  - radius → relay count (sqrt scale, so area reads as count)
-  - color → exit share (cyan = guard-heavy, green = exit-heavy)
-  - opacity → total bandwidth
+- **Per-country aggregation** (not per relay), since Onionoo only provides
+  country-level location.
 - **Interaction**: hover tooltip, click for a country detail panel, and
   `d3-zoom` pan/zoom to inspect dense regions.
+
+> The original per-country encoding here was a proportional-symbol bubble
+> (radius = count, color = exit share). That was later replaced after comparing
+> many alternatives — see [ADR-008](008-value-by-alpha.md) for the final
+> value-by-alpha encoding.
 
 Three.js, Threlte, and the globe components were removed.
 

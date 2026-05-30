@@ -42,7 +42,7 @@ The app is available at `http://localhost:5173`.
 **What to expect on first run:**
 
 1. The server routes fetch live data from Onionoo and Tor Metrics on the first request. This takes 2–5 seconds.
-2. The map appears once relays load; each country gets one marker sized by relay count.
+2. The map appears once relays load; each country glows by relay count and exit share.
 3. Subsequent requests within the cache TTL are served from Wrangler's in-memory KV emulator instantly.
 4. The first run may show fewer relays than production if Onionoo is mid-update cycle.
 
@@ -61,11 +61,10 @@ obfina/
 ├── src/
 │   ├── lib/
 │   │   ├── components/
-│   │   │   ├── map/          # D3 world map (WorldMap.svelte)
-│   │   │   └── panels/       # Country detail panel
+│   │   │   ├── map/          # value-by-alpha world map (ValueByAlphaMap.svelte)
+│   │   │   └── panels/       # country detail panel
 │   │   ├── stores/           # Svelte stores — selection state
-│   │   ├── country-centroids.ts  # ISO code → [lat, lon] for marker placement
-│   │   ├── map-encoding.ts   # size/color/opacity scales
+│   │   ├── map-encoding.ts   # exit-share → color
 │   │   └── relay-stats.ts    # per-country aggregation + formatting
 │   ├── routes/
 │   │   ├── +page.svelte      # Main entry point (map view + HUD)

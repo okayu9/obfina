@@ -2,7 +2,7 @@
 
 A real-time, interactive visualization of the Tor network.
 
-![The obfina map: one marker per country, sized by relay count and colored by exit share](docs/assets/map.png)
+![The obfina map: a value-by-alpha world map where each country glows by relay count and is colored by exit share](docs/assets/map.png)
 
 ## Why it exists
 
@@ -12,7 +12,7 @@ obfina makes the Tor network observable. Not through tables and CSV exports, but
 
 ## What it does
 
-- **Country markers** — one marker per country: radius encodes relay count, color encodes exit share (cyan → green), opacity encodes total bandwidth
+- **Value-by-alpha map** — every country is filled by its role in the network: hue encodes exit share (cyan → green) and brightness encodes relay count, so the busiest countries glow while the rest recede. The whole world stays visible as a map.
 - **Drill-down** — click any country for its relay count, aggregate bandwidth, and Guard/Exit/Middle composition
 - **Pan & zoom** — explore dense regions like Europe by zooming in
 - **Ambient mode** — leave it on a screen and it conveys the network's shape without any interaction
@@ -28,16 +28,17 @@ Data is refreshed every 5–30 minutes via a server-side cache layer (relay data
 
 ## Tech stack
 
-| Layer     | Technology                         |
-| --------- | ---------------------------------- |
-| Framework | SvelteKit                          |
-| Map       | D3 (d3-geo, d3-zoom) + world-atlas |
-| Animation | Svelte built-ins                   |
-| Styling   | Tailwind CSS                       |
-| Hosting   | Cloudflare Pages + Workers         |
-| Cache     | Cloudflare KV                      |
-| IaC       | Terraform                          |
-| CI/CD     | GitHub Actions                     |
+| Layer        | Technology                             |
+| ------------ | -------------------------------------- |
+| Framework    | SvelteKit                              |
+| Map          | D3 (d3-geo, d3-zoom) + world-atlas     |
+| Country join | i18n-iso-countries (numeric → alpha-2) |
+| Animation    | Svelte built-ins                       |
+| Styling      | Tailwind CSS                           |
+| Hosting      | Cloudflare Pages + Workers             |
+| Cache        | Cloudflare KV                          |
+| IaC          | Terraform                              |
+| CI/CD        | GitHub Actions                         |
 
 ## Documentation
 

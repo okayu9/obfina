@@ -57,7 +57,7 @@ Key fields:
 
 **Data quality notes:**
 
-- **Onionoo does not expose per-relay latitude/longitude.** Coordinates were removed from the API for privacy reasons; geolocation is provided only at the country level (`country`, `country_name`) plus optional `as`/`as_name`. obfina therefore aggregates relays by `country` and draws one marker per country, placed at a country centroid (`src/lib/country-centroids.ts`). This is verified against the live API: a request for `fields=...latitude,longitude...` returns those fields empty.
+- **Onionoo does not expose per-relay latitude/longitude.** Coordinates were removed from the API for privacy reasons; geolocation is provided only at the country level (`country`, `country_name`) plus optional `as`/`as_name`. obfina therefore aggregates relays by `country` and fills each country's territory on the map (value-by-alpha), joining Onionoo's ISO alpha-2 country codes to the `world-atlas` boundaries (which use ISO numeric IDs) via `i18n-iso-countries`. This is verified against the live API: a request for `fields=...latitude,longitude...` returns those fields empty.
 - `consensus_weight` is not bandwidth. It is the weight assigned by directory authorities for probabilistic relay selection. A relay with high consensus weight receives proportionally more circuits. It correlates with bandwidth but is not equal to it.
 - `observed_bandwidth` and `advertised_bandwidth` are both self-reported by the relay and unverified. obfina uses `observed_bandwidth` for node sizing. The actual measured bandwidth (used for `consensus_weight` calculation) is not exposed via Onionoo.
 

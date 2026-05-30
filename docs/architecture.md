@@ -2,9 +2,9 @@
 
 ## Overview
 
-obfina is a single-page web application that visualizes the Tor network in real time. The centerpiece is a 2D world map (D3 + SVG) with one marker per country — radius encodes relay count, color encodes exit share, opacity encodes bandwidth. A server-side cache layer mediates between upstream Tor APIs and the client, keeping data fresh without hammering external services.
+obfina is a single-page web application that visualizes the Tor network in real time. The centerpiece is a 2D **value-by-alpha** world map (D3 + SVG): every country is drawn as a visible land base, and countries with relays glow on top — hue encodes exit share (cyan → green) and opacity encodes relay count. A server-side cache layer mediates between upstream Tor APIs and the client, keeping data fresh without hammering external services.
 
-> The visualization began as a 3D WebGL globe (Threlte + Three.js) but moved to a flat D3 map for far better readability and operability. See [ADR-007](decisions/007-2d-map-over-globe.md).
+> The visualization began as a 3D WebGL globe (Threlte + Three.js), then a proportional-symbol bubble map, before settling on a value-by-alpha map after comparing many alternatives. See [ADR-007](decisions/007-2d-map-over-globe.md).
 
 ## System diagram
 
@@ -38,6 +38,7 @@ Major technology choices are recorded individually as Architecture Decision Reco
 | [ADR-005](decisions/005-cloudflare-kv-cache.md) | Use Cloudflare KV for API response caching           |
 | [ADR-006](decisions/006-terraform.md)           | Use Terraform for infrastructure management          |
 | [ADR-007](decisions/007-2d-map-over-globe.md)   | Use a 2D D3 map instead of a 3D globe                |
+| [ADR-008](decisions/008-value-by-alpha.md)      | Use a value-by-alpha encoding for the country map    |
 
 ## Caching strategy
 
