@@ -2,6 +2,8 @@
 
 A real-time, interactive visualization of the Tor network.
 
+![The obfina globe: running Tor relays lit across the world, sized by bandwidth and colored by role](docs/assets/globe.png)
+
 ## Why it exists
 
 Tor routes traffic through thousands of volunteer-run relays across dozens of countries. The network is healthy, globally distributed, and surprisingly fragile — governments block it, relays go offline, bandwidth concentrates in unexpected places. None of this is visible to most people who use Tor, and even network operators lack a compelling way to see the whole picture at once.
