@@ -145,7 +145,7 @@
 {/snippet}
 
 <div class="map" bind:clientWidth={width} bind:clientHeight={height}>
-	<svg bind:this={svgEl} {width} {height} role="presentation">
+	<svg bind:this={svgEl} {width} {height} role="presentation" style:--inv-k={1 / zt.k}>
 		<g transform={rootTransform}>
 			{#each COPIES as offset (offset)}
 				{@render world(offset)}
@@ -175,12 +175,13 @@
 		fill: #20384c;
 		stroke: none;
 	}
+	/* Stroke widths are divided by the zoom scale (var(--inv-k) = 1 / k) so they
+	   keep a constant on-screen thickness regardless of zoom. */
 	.borders {
 		fill: none;
 		stroke: #3a5d78;
-		stroke-width: 0.5;
+		stroke-width: calc(0.5px * var(--inv-k, 1));
 		stroke-opacity: 0.8;
-		vector-effect: non-scaling-stroke;
 		pointer-events: none;
 	}
 	.data {
@@ -189,13 +190,11 @@
 	}
 	.data:hover {
 		stroke: #ffffff;
-		stroke-width: 0.75;
-		vector-effect: non-scaling-stroke;
+		stroke-width: calc(0.75px * var(--inv-k, 1));
 	}
 	.data.selected {
 		stroke: #ffffff;
-		stroke-width: 1.25;
-		vector-effect: non-scaling-stroke;
+		stroke-width: calc(1.25px * var(--inv-k, 1));
 	}
 	.tooltip {
 		position: fixed;
