@@ -6,7 +6,14 @@ const relay = (country: string, bandwidth: number, flags: string[]): Relay => ({
 	nickname: 'r',
 	country,
 	bandwidth,
-	flags
+	flags,
+	consensusWeight: 0,
+	guardProb: 0,
+	middleProb: 0,
+	exitProb: 0,
+	as: null,
+	asName: null,
+	firstSeen: null
 });
 
 describe('aggregateByCountry', () => {

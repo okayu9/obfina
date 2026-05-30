@@ -3,16 +3,36 @@ import type { RequestHandler } from './$types';
 import type { Relay, RelaysResponse } from '$lib/types';
 
 const ONIONOO_URL =
-	'https://onionoo.torproject.org/details?running=true&fields=nickname,observed_bandwidth,country,flags';
+	'https://onionoo.torproject.org/details?running=true&fields=' +
+	[
+		'nickname',
+		'as',
+		'as_name',
+		'observed_bandwidth',
+		'consensus_weight',
+		'guard_probability',
+		'middle_probability',
+		'exit_probability',
+		'country',
+		'flags',
+		'first_seen'
+	].join(',');
 
-const CACHE_KEY = 'relays:v1';
+const CACHE_KEY = 'relays:v2';
 const TTL_SECONDS = 60 * 10; // 10 min, per docs/architecture.md caching strategy
 
 interface OnionooRelay {
 	nickname?: string;
+	as?: string;
+	as_name?: string;
 	observed_bandwidth?: number;
+	consensus_weight?: number;
+	guard_probability?: number;
+	middle_probability?: number;
+	exit_probability?: number;
 	country?: string;
 	flags?: string[];
+	first_seen?: string;
 }
 
 interface OnionooDetails {
@@ -28,8 +48,15 @@ function normalize(data: OnionooDetails): RelaysResponse {
 		.map((r) => ({
 			nickname: r.nickname ?? 'unnamed',
 			bandwidth: r.observed_bandwidth ?? 0,
+			consensusWeight: r.consensus_weight ?? 0,
+			guardProb: r.guard_probability ?? 0,
+			middleProb: r.middle_probability ?? 0,
+			exitProb: r.exit_probability ?? 0,
+			as: r.as ?? null,
+			asName: r.as_name ?? null,
 			country: r.country,
-			flags: r.flags ?? []
+			flags: r.flags ?? [],
+			firstSeen: r.first_seen ?? null
 		}));
 
 	return {
