@@ -87,8 +87,26 @@
 	function selectCountry(code: string | null) {
 		if (code) selection.country = selection.country === code ? null : code;
 	}
+	// Clicking a country selects it without bubbling to the background deselect.
+	function onCountryClick(e: MouseEvent, code: string | null) {
+		e.stopPropagation();
+		selectCountry(code);
+	}
 	function onEnter(e: PointerEvent, code: string | null, stats: CountryStats | null) {
 		if (code && stats) hover = { code, count: stats.count, x: e.clientX, y: e.clientY };
+	}
+
+	// Background click (ocean or a country with no data) deselects — but not when
+	// the click was actually a pan/drag.
+	let downAt: { x: number; y: number } | null = null;
+	function onBackgroundPointerDown(e: PointerEvent) {
+		downAt = { x: e.clientX, y: e.clientY };
+	}
+	function onBackgroundClick(e: MouseEvent) {
+		if (!downAt) return;
+		const moved = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y);
+		downAt = null;
+		if (moved <= 6) selection.country = null;
 	}
 	function onKey(e: KeyboardEvent, code: string | null) {
 		if (code && (e.key === 'Enter' || e.key === ' ')) {
@@ -130,7 +148,7 @@
 					d={s.d}
 					fill={s.glow}
 					fill-opacity={s.opacity}
-					onclick={() => selectCountry(s.code)}
+					onclick={(e) => onCountryClick(e, s.code)}
 					onkeydown={(e) => onKey(e, s.code)}
 					onpointerenter={(e) => onEnter(e, s.code, s.stats)}
 					onpointermove={(e) => hover && (hover = { ...hover, x: e.clientX, y: e.clientY })}
@@ -145,7 +163,15 @@
 {/snippet}
 
 <div class="map" bind:clientWidth={width} bind:clientHeight={height}>
-	<svg bind:this={svgEl} {width} {height} role="presentation" style:--inv-k={1 / zt.k}>
+	<svg
+		bind:this={svgEl}
+		{width}
+		{height}
+		role="presentation"
+		style:--inv-k={1 / zt.k}
+		onpointerdown={onBackgroundPointerDown}
+		onclick={onBackgroundClick}
+	>
 		<g transform={rootTransform}>
 			{#each COPIES as offset (offset)}
 				{@render world(offset)}
