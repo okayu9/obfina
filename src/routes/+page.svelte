@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Canvas } from '@threlte/core';
-	import Scene from '$lib/components/globe/Scene.svelte';
+	import WorldMap from '$lib/components/map/WorldMap.svelte';
 	import CountryPanel from '$lib/components/panels/CountryPanel.svelte';
 	import { aggregateByCountry, formatBandwidth } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
@@ -45,9 +44,7 @@
 <svelte:window onkeydown={onKeydown} />
 
 <div class="scene">
-	<Canvas>
-		<Scene {relays} />
-	</Canvas>
+	<WorldMap {relays} />
 
 	{#if loading}
 		<div class="status pulse" aria-label="loading"></div>
@@ -63,9 +60,8 @@
 				<span class="bw">{formatBandwidth(totalBandwidth)}</span>
 			</div>
 			<div class="legend">
-				<span><i class="dot guard"></i>guard</span>
-				<span><i class="dot exit"></i>exit</span>
-				<span><i class="dot middle"></i>middle</span>
+				<span class="enc"><i class="size"></i>size = relays</span>
+				<span class="enc"><i class="ramp"></i>cyan→green = exit share</span>
 			</div>
 		</div>
 	{/if}
@@ -115,30 +111,32 @@
 	.legend {
 		margin-top: 0.7rem;
 		display: flex;
-		gap: 0.9rem;
+		flex-direction: column;
+		gap: 0.4rem;
 		font-size: 0.72rem;
 		letter-spacing: 0.08em;
 		color: #6f8aa3;
 	}
-	.legend span {
+	.enc {
 		display: flex;
 		align-items: center;
-		gap: 0.3rem;
+		gap: 0.4rem;
 	}
-	.dot {
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
+	.size {
+		width: 14px;
+		height: 8px;
 		display: inline-block;
+		border-radius: 999px;
+		background:
+			radial-gradient(circle at 30% 50%, #9fc6e0 0 2px, transparent 2px),
+			radial-gradient(circle at 75% 50%, #9fc6e0 0 4px, transparent 4px);
 	}
-	.dot.guard {
-		background: #00d4ff;
-	}
-	.dot.exit {
-		background: #39ff14;
-	}
-	.dot.middle {
-		background: #5a7a99;
+	.ramp {
+		width: 28px;
+		height: 8px;
+		display: inline-block;
+		border-radius: 999px;
+		background: linear-gradient(90deg, #00d4ff, #39ff14);
 	}
 
 	.status {
