@@ -30,11 +30,11 @@
 
 	const references = [
 		{
-			href: 'https://svn.torproject.org/svn/projects/design-paper/tor-design.pdf',
+			href: 'https://svn-archive.torproject.org/svn/projects/design-paper/tor-design.pdf',
 			name: 'Tor Design Paper',
 			desc: 'Dingledine, Mathewson & Syverson (2004). Describes the onion routing architecture, path selection algorithm, and threat model that Tor is built on.',
 			descJa: 'Dingledine・Mathewson・Syverson（2004年）。Torの基盤となるオニオンルーティングの仕組み、経路選択アルゴリズム、脅威モデルを解説した論文。',
-			url: 'tor-design.pdf'
+			url: 'svn-archive.torproject.org'
 		},
 		{
 			href: 'https://www.torproject.org/',
@@ -58,11 +58,11 @@
 			url: 'spec.torproject.org'
 		},
 		{
-			href: 'https://www.usenix.org/system/files/conference/usenixsecurity14/sec14-paper-sun.pdf',
+			href: 'https://www.ohmygodel.com/publications/usersrouted-ccs13.pdf',
 			name: '"Users Get Routed"',
 			desc: 'Traffic correlation attack analysis showing how an adversary controlling AS-level positions can deanonymize Tor users.',
 			descJa: 'ASレベルの経路を制御する攻撃者がTorユーザーを匿名解除できることを示したトラフィック相関攻撃の分析。',
-			url: 'usenix.org (sec14)'
+			url: 'ohmygodel.com (ccs13)'
 		},
 		{
 			href: 'https://community.torproject.org/',
@@ -106,11 +106,11 @@
 
 	const authors = [
 		{
-			href: 'https://github.com/yumeto-inaoka',
+			href: 'https://okayu.jp',
 			name: 'Yumeto Inaoka',
 			desc: 'Software engineer based in Japan. Built obfina to make Tor network health legible to a wider audience.',
 			descJa: '日本在住のソフトウェアエンジニア。Torネットワークの状態をより多くの人に伝えるためにobfinaを制作。',
-			url: 'github.com/yumeto-inaoka'
+			url: 'okayu.jp'
 		}
 	];
 </script>
