@@ -32,51 +32,55 @@
 			aria-current={viewState.id === v.id ? 'page' : undefined}
 		>
 			<span class="num">{i + 1}</span>
-			<span class="text">
-				<span class="label">{nav.label()}</span>
-				<span class="desc">{nav.desc()}</span>
-			</span>
+			<span class="label">{nav.label()}</span>
 		</button>
 	{/each}
 
-	<div class="hint">{t.nav.hint}</div>
-
-	<div class="lang-switcher">
-		{#each availableLocales as loc, i (loc.id)}
-			{#if i > 0}<span class="lang-sep">/</span>{/if}
-			<button
-				class="lang-btn"
-				class:active={locale === loc.id}
-				onclick={() => setLocale(loc.id)}
-				aria-pressed={locale === loc.id}
-			>
-				{loc.label()}
-			</button>
-		{/each}
+	<div class="right-end">
+		<div class="hint">{t.nav.hint}</div>
+		<div class="lang-switcher">
+			{#each availableLocales as loc, i (loc.id)}
+				{#if i > 0}<span class="lang-sep">/</span>{/if}
+				<button
+					class="lang-btn"
+					class:active={locale === loc.id}
+					onclick={() => setLocale(loc.id)}
+					aria-pressed={locale === loc.id}
+				>
+					{loc.label()}
+				</button>
+			{/each}
+		</div>
 	</div>
 </nav>
 
 <style>
 	.rail {
 		position: fixed;
-		top: 1.5rem;
-		left: 1.5rem;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 44px;
 		display: flex;
-		flex-direction: column;
-		gap: 0.15rem;
+		flex-direction: row;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0 1rem;
+		background: #08141f;
+		border-bottom: 1px solid rgba(58, 93, 120, 0.35);
 		z-index: 20;
 	}
 	.item {
 		display: flex;
 		align-items: center;
-		gap: 0.55rem;
-		padding: 0.35rem 0.55rem;
+		gap: 0.35rem;
+		padding: 0 0.5rem;
+		height: 100%;
 		background: none;
 		border: none;
-		border-left: 2px solid transparent;
+		border-bottom: 2px solid transparent;
 		color: #6f8aa3;
 		cursor: pointer;
-		text-align: left;
 		font-family: inherit;
 		transition:
 			color 0.18s,
@@ -87,41 +91,24 @@
 	}
 	.item.active {
 		color: var(--accent-cyan);
-		border-left-color: var(--accent-cyan);
+		border-bottom-color: var(--accent-cyan);
 	}
 	.num {
 		font-size: 0.7rem;
 		opacity: 0.6;
-		width: 0.8rem;
-		text-align: center;
 		font-variant-numeric: tabular-nums;
 	}
-	.text {
-		display: flex;
-		flex-direction: column;
-		line-height: 1.15;
-	}
 	.label {
-		font-size: 0.8rem;
-		letter-spacing: 0.12em;
+		font-size: 0.75rem;
+		letter-spacing: 0.1em;
 	}
-	.desc {
-		font-size: 0.62rem;
-		letter-spacing: 0.04em;
-		opacity: 0;
-		max-height: 0;
-		overflow: hidden;
-		transition:
-			opacity 0.18s,
-			max-height 0.18s;
-	}
-	.item.active .desc,
-	.item:hover .desc {
-		opacity: 0.65;
-		max-height: 1.2rem;
+	.right-end {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-left: auto;
 	}
 	.hint {
-		margin: 0.5rem 0 0 0.55rem;
 		font-size: 0.6rem;
 		letter-spacing: 0.15em;
 		color: #3a5266;
@@ -132,7 +119,6 @@
 		display: flex;
 		align-items: center;
 		gap: 0.1rem;
-		margin: 0.5rem 0 0 0.55rem;
 	}
 	.lang-btn {
 		background: none;

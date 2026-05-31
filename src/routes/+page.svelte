@@ -86,6 +86,9 @@
 <style>
 	.scene {
 		position: fixed;
-		inset: 0;
+		top: 44px;
+		left: 0;
+		right: 0;
+		bottom: 0;
 	}
 </style>
