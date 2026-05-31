@@ -44,6 +44,8 @@
 		font-size: 0.7rem;
 		color: rgba(58, 93, 120, 0.6);
 		pointer-events: none;
+		background: #08141f;
+		border-top: 1px solid rgba(58, 93, 120, 0.35);
 	}
 
 	footer a {
