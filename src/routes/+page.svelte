@@ -86,9 +86,18 @@
 <style>
 	.scene {
 		position: fixed;
-		top: 44px;
+		top: 48px;
 		left: 0;
 		right: 0;
 		bottom: 0;
+	}
+
+	@keyframes fade-in {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
+
+	:global(.scene > *) {
+		animation: fade-in 0.15s ease-out;
 	}
 </style>

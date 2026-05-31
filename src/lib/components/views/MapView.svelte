@@ -38,6 +38,10 @@
 		bottom: 1.5rem;
 		left: 1.5rem;
 		pointer-events: none;
+		background: rgba(8, 14, 22, 0.6);
+		padding: 0.8rem 1rem;
+		border-radius: 8px;
+		border: 1px solid rgba(58, 93, 120, 0.2);
 	}
 	.metric {
 		display: flex;
@@ -45,11 +49,11 @@
 		gap: 0.5rem;
 	}
 	.count {
-		font-size: 2rem;
+		font-size: 2.4rem;
 		font-variant-numeric: tabular-nums;
 		letter-spacing: 0.05em;
 		color: var(--accent-cyan);
-		text-shadow: 0 0 12px rgba(0, 212, 255, 0.6);
+		text-shadow: 0 0 20px rgba(0, 212, 255, 0.7), 0 0 40px rgba(0, 212, 255, 0.3);
 	}
 	.unit {
 		font-size: 0.8rem;
@@ -60,6 +64,7 @@
 		font-size: 1rem;
 		color: #9fc6e0;
 		font-variant-numeric: tabular-nums;
+		text-shadow: 0 0 8px rgba(159, 198, 224, 0.3);
 	}
 	.legend {
 		margin-top: 0.7rem;

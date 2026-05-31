@@ -22,6 +22,7 @@
 </script>
 
 <nav class="rail" aria-label="visualizations">
+	<span class="brand">OBFINA</span>
 	{#each VIEWS as v, i (v.id)}
 		{@const nav = navMap[v.id]}
 		<button
@@ -60,7 +61,7 @@
 		top: 0;
 		left: 0;
 		right: 0;
-		height: 44px;
+		height: 48px;
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -69,6 +70,13 @@
 		background: #08141f;
 		border-bottom: 1px solid rgba(58, 93, 120, 0.35);
 		z-index: 20;
+	}
+	.brand {
+		font-size: 0.6rem;
+		letter-spacing: 0.3em;
+		color: rgba(0, 212, 255, 0.4);
+		margin-right: 0.5rem;
+		user-select: none;
 	}
 	.item {
 		display: flex;
@@ -92,10 +100,11 @@
 	.item.active {
 		color: var(--accent-cyan);
 		border-bottom-color: var(--accent-cyan);
+		text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
 	}
 	.num {
 		font-size: 0.7rem;
-		opacity: 0.6;
+		color: rgba(0, 212, 255, 0.35);
 		font-variant-numeric: tabular-nums;
 	}
 	.label {

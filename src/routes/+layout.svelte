@@ -42,17 +42,17 @@
 		padding: 0.35rem 1rem;
 		text-align: center;
 		font-size: 0.7rem;
-		color: #4a5568;
+		color: rgba(58, 93, 120, 0.6);
 		pointer-events: none;
 	}
 
 	footer a {
-		color: #4a5568;
+		color: rgba(58, 93, 120, 0.6);
 		text-decoration: none;
 		pointer-events: auto;
 	}
 
 	footer a:hover {
-		color: #718096;
+		color: #6f8aa3;
 	}
 </style>

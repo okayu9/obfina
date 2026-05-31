@@ -4,6 +4,10 @@
 	--bg: #080b0f;
 	--accent-cyan: #00d4ff;
 	--accent-green: #39ff14;
+	--surface: rgba(8, 20, 31, 0.7);
+	--border: rgba(58, 93, 120, 0.35);
+	--border-cyan: rgba(0, 212, 255, 0.18);
+	--glow-cyan: 0 0 12px rgba(0, 212, 255, 0.35);
 }
 
 html,
@@ -14,4 +18,19 @@ body {
 	color: #e6f1ff;
 	font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 	overflow: hidden;
+}
+
+body::after {
+	content: '';
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: 9999;
+	background: repeating-linear-gradient(
+		0deg,
+		rgba(0, 0, 0, 0.04) 0px,
+		rgba(0, 0, 0, 0.04) 1px,
+		transparent 1px,
+		transparent 2px
+	);
 }

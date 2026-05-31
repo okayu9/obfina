@@ -285,6 +285,7 @@
 		font-size: 1.1rem;
 		color: #e6f1ff;
 		line-height: 1.2;
+		text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
 	}
 	.code {
 		color: #6f8aa3;
@@ -311,6 +312,7 @@
 		margin-top: 0.8rem;
 		font-size: 1.1rem;
 		color: #9fc6e0;
+		text-shadow: 0 0 8px rgba(159, 198, 224, 0.3);
 	}
 
 	.bar {
