@@ -93,6 +93,87 @@
 			translations: {
 				ja: 'プライバシーは重要だ。プライバシーこそが、自分が何者であり、何者になりたいかを決める権利を与えてくれるものだ。'
 			}
+		},
+		{
+			text: 'Privacy is necessary for an open society in the electronic age.',
+			author: 'Eric Hughes',
+			source: "A Cypherpunk's Manifesto, March 9 1993",
+			lang: 'en',
+			translations: {
+				ja: '電子時代の開かれた社会には、プライバシーが不可欠である。'
+			}
+		},
+		{
+			text: 'Privacy is the power to selectively reveal oneself to the world.',
+			author: 'Eric Hughes',
+			source: "A Cypherpunk's Manifesto, March 9 1993",
+			lang: 'en',
+			translations: {
+				ja: 'プライバシーとは、自分自身を世界に対して選択的に明かす力である。'
+			}
+		},
+		{
+			text: 'We must defend our own privacy if we expect to have any.',
+			author: 'Eric Hughes',
+			source: "A Cypherpunk's Manifesto, March 9 1993",
+			lang: 'en',
+			translations: {
+				ja: 'プライバシーを持ちたいなら、私たちは自らのプライバシーを自分たちで守らなければならない。'
+			}
+		},
+		{
+			text: 'Cypherpunks write code.',
+			author: 'Eric Hughes',
+			source: "A Cypherpunk's Manifesto, March 9 1993",
+			lang: 'en',
+			translations: {
+				ja: 'サイファーパンクはコードを書く。'
+			}
+		},
+		{
+			text: 'Anonymity is a shield from the tyranny of the majority.',
+			author: 'John Paul Stevens',
+			source: 'McIntyre v. Ohio Elections Commission, U.S. Supreme Court, 1995',
+			lang: 'en',
+			translations: {
+				ja: '匿名性は、多数派の専制から身を守る盾である。'
+			}
+		},
+		{
+			text: 'No one shall be subjected to arbitrary interference with his privacy, family, home or correspondence.',
+			author: 'United Nations',
+			source: 'Universal Declaration of Human Rights, Article 12, 1948',
+			lang: 'en',
+			translations: {
+				ja: '何人も、自己の私事、家族、家庭若しくは通信に対して、ほしいままに干渉されることはない。'
+			}
+		},
+		{
+			text: 'The right to be let alone — the most comprehensive of rights.',
+			author: 'Louis Brandeis',
+			source: 'Olmstead v. United States, dissenting opinion, 1928',
+			lang: 'en',
+			translations: {
+				ja: '放っておいてもらう権利——最も包括的な権利。'
+			}
+		},
+		{
+			text: 'Code is law.',
+			author: 'Lawrence Lessig',
+			source: 'Code and Other Laws of Cyberspace, 1999',
+			lang: 'en',
+			translations: {
+				ja: 'コードは法である。'
+			}
+		},
+		{
+			text: 'We fight every day for everyone to have private access to an uncensored internet.',
+			author: 'The Tor Project',
+			source: 'Tor Project History / About page',
+			lang: 'en',
+			translations: {
+				ja: '私たちは、すべての人が検閲されないインターネットへ私的にアクセスできるよう、日々闘っている。'
+			}
 		}
 	];
 
