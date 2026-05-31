@@ -4,7 +4,9 @@
 	import { aggregateByCountry, formatBandwidth } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
 	import { relayStore } from '$lib/stores/relays.svelte';
+	import { getMessages } from '$lib/i18n';
 
+	const t = $derived(getMessages());
 	const byCountry = $derived(aggregateByCountry(relayStore.relays));
 	const selectedStats = $derived(
 		selection.country ? (byCountry.get(selection.country) ?? null) : null
@@ -17,14 +19,14 @@
 <div class="hud">
 	<div class="metric">
 		<span class="count">{relayStore.count.toLocaleString()}</span>
-		<span class="unit">relays</span>
+		<span class="unit">{t.map.relays}</span>
 	</div>
 	<div class="metric">
 		<span class="bw">{formatBandwidth(totalBandwidth)}</span>
 	</div>
 	<div class="legend">
-		<span class="enc"><i class="ramp"></i>cyan→green = exit share</span>
-		<span class="enc"><i class="bright"></i>brighter = more relays</span>
+		<span class="enc"><i class="ramp"></i>{t.map.legendExit}</span>
+		<span class="enc"><i class="bright"></i>{t.map.legendBrightness}</span>
 	</div>
 </div>
 

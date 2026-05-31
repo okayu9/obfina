@@ -1,24 +1,59 @@
 <script lang="ts">
 	import { VIEWS, viewState, setView } from '$lib/stores/view.svelte';
+	import { getMessages, getLocale, setLocale, type Locale } from '$lib/i18n';
+
+	const t = $derived(getMessages());
+	const locale = $derived(getLocale());
+
+	// Map view IDs to translation key getters
+	const navMap = {
+		map: { label: () => t.nav.map, desc: () => t.nav.mapDesc },
+		hosting: { label: () => t.nav.hosting, desc: () => t.nav.hostingDesc },
+		paths: { label: () => t.nav.paths, desc: () => t.nav.pathsDesc },
+		growth: { label: () => t.nav.growth, desc: () => t.nav.growthDesc },
+		circuits: { label: () => t.nav.circuits, desc: () => t.nav.circuitsDesc },
+		about: { label: () => t.nav.about, desc: () => t.nav.aboutDesc }
+	} as const;
+
+	const availableLocales: { id: Locale; label: () => string }[] = [
+		{ id: 'en', label: () => t.lang.en },
+		{ id: 'ja', label: () => t.lang.ja }
+	];
 </script>
 
 <nav class="rail" aria-label="visualizations">
 	{#each VIEWS as v, i (v.id)}
+		{@const nav = navMap[v.id]}
 		<button
 			class="item"
 			class:active={viewState.id === v.id}
 			onclick={() => setView(v.id)}
-			title={v.desc}
+			title={nav.desc()}
 			aria-current={viewState.id === v.id ? 'page' : undefined}
 		>
 			<span class="num">{i + 1}</span>
 			<span class="text">
-				<span class="label">{v.label}</span>
-				<span class="desc">{v.desc}</span>
+				<span class="label">{nav.label()}</span>
+				<span class="desc">{nav.desc()}</span>
 			</span>
 		</button>
 	{/each}
-	<div class="hint">1–6 · ← →</div>
+
+	<div class="hint">{t.nav.hint}</div>
+
+	<div class="lang-switcher">
+		{#each availableLocales as loc, i (loc.id)}
+			{#if i > 0}<span class="lang-sep">/</span>{/if}
+			<button
+				class="lang-btn"
+				class:active={locale === loc.id}
+				onclick={() => setLocale(loc.id)}
+				aria-pressed={locale === loc.id}
+			>
+				{loc.label()}
+			</button>
+		{/each}
+	</div>
 </nav>
 
 <style>
@@ -91,40 +126,34 @@
 		letter-spacing: 0.15em;
 		color: #3a5266;
 	}
-	.links-section {
-		margin-top: 1.2rem;
-		padding-top: 0.8rem;
-		border-top: 1px solid #1e3044;
+
+	/* Language switcher */
+	.lang-switcher {
 		display: flex;
-		flex-direction: column;
-		gap: 0.05rem;
+		align-items: center;
+		gap: 0.1rem;
+		margin: 0.5rem 0 0 0.55rem;
 	}
-	.section-label {
-		font-size: 0.6rem;
-		letter-spacing: 0.15em;
-		color: #3a5266;
-		padding: 0 0.55rem 0.25rem;
-		text-transform: uppercase;
-	}
-	.link-item {
-		display: flex;
-		flex-direction: column;
-		padding: 0.25rem 0.55rem;
-		text-decoration: none;
-		color: #4a6880;
-		line-height: 1.2;
-		transition: color 0.18s;
-	}
-	.link-item:hover {
-		color: #7aa8c7;
-	}
-	.link-title {
-		font-size: 0.72rem;
+	.lang-btn {
+		background: none;
+		border: none;
+		padding: 0.1rem 0.15rem;
+		font-family: inherit;
+		font-size: 0.65rem;
 		letter-spacing: 0.06em;
+		color: #3a5266;
+		cursor: pointer;
+		transition: color 0.15s;
 	}
-	.link-desc {
-		font-size: 0.58rem;
-		letter-spacing: 0.02em;
-		opacity: 0.65;
+	.lang-btn:hover {
+		color: #9fc6e0;
+	}
+	.lang-btn.active {
+		color: var(--accent-cyan);
+	}
+	.lang-sep {
+		font-size: 0.6rem;
+		color: #3a5266;
+		pointer-events: none;
 	}
 </style>

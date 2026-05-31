@@ -6,6 +6,7 @@
 	import { flagEmoji, countryName } from '$lib/relay-stats';
 	import { relayStore } from '$lib/stores/relays.svelte';
 	import type { Relay } from '$lib/types';
+	import { getMessages } from '$lib/i18n';
 
 	const MAX = 7;
 	const LIFE = 5600; // ms a circuit is animated before it fades out
@@ -99,14 +100,15 @@
 	}
 	const pulse = $derived(2.6 + Math.sin(now / 260) * 0.7);
 
+	const t = $derived(getMessages());
 	// Newest active circuit drives the live readout.
 	const latest = $derived(circuits.length ? circuits[circuits.length - 1] : null);
 	const roles = $derived(
 		latest
 			? [
-					{ key: 'guard', label: 'Guard', r: latest.c.guard },
-					{ key: 'middle', label: 'Middle', r: latest.c.middle },
-					{ key: 'exit', label: 'Exit', r: latest.c.exit }
+					{ key: 'guard', label: t.circuits.guardLabel, r: latest.c.guard },
+					{ key: 'middle', label: t.circuits.middleLabel, r: latest.c.middle },
+					{ key: 'exit', label: t.circuits.exitLabel, r: latest.c.exit }
 				]
 			: []
 	);
@@ -138,8 +140,8 @@
 	</svg>
 
 	<div class="hud">
-		<div class="title">Live circuits</div>
-		<div class="sub">Guard → Middle → Exit, sampled from real relays by their selection weight</div>
+		<div class="title">{t.circuits.title}</div>
+		<div class="sub">{t.circuits.subtitle}</div>
 	</div>
 
 	{#if latest}
@@ -150,7 +152,7 @@
 					<div class="meta">
 						<span class="rl">{role.label}</span>
 						<span class="rc">{flagEmoji(role.r.country)} {countryName(role.r.country)}</span>
-						<span class="ra">{role.r.asName ?? role.r.as ?? 'unknown AS'}</span>
+						<span class="ra">{role.r.asName ?? role.r.as ?? t.circuits.unknownAs}</span>
 					</div>
 				</div>
 			{/each}

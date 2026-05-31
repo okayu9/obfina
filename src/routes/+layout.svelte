@@ -1,8 +1,14 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import { initLocale } from '$lib/i18n';
 
 	let { children } = $props();
+
+	onMount(() => {
+		initLocale();
+	});
 </script>
 
 <svelte:head>
