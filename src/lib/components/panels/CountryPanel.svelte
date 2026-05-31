@@ -12,18 +12,18 @@
 		totalBandwidth = 0
 	}: { stats: CountryStats | null; relays?: Relay[]; totalBandwidth?: number } = $props();
 
-	let expanded = $state(false);
+	let expanded = $state(true);
 	const t = $derived(getMessages());
 
 	function close() {
 		selection.country = null;
-		expanded = false;
+		expanded = true;
 	}
 
 	// Reset expanded state when country changes
 	$effect(() => {
 		if (stats?.country) {
-			expanded = false;
+			expanded = true;
 		}
 	});
 
