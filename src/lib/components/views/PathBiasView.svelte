@@ -166,8 +166,10 @@
 	.plot {
 		position: relative;
 		margin: 0;
-		width: min(48vh, 440px);
+		width: min(38vh, 360px);
 		aspect-ratio: 1;
+		flex-shrink: 0;
+		align-self: flex-start;
 		border: 1px solid rgba(58, 93, 120, 0.35);
 		border-radius: 8px;
 		background: rgba(8, 20, 31, 0.4);
