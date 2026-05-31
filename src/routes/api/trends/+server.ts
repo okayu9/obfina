@@ -92,8 +92,9 @@ async function fetchBandwidth(): Promise<TrendsResponse['bandwidth']> {
 		.filter((r) => r[di])
 		.map((r) => ({
 			date: r[di].trim(),
-			advertised: ai >= 0 ? num(r[ai]) : 0,
-			consumed: ci >= 0 ? num(r[ci]) : 0
+			// CSV values are in Mbps; multiply by 125000 (= 1_000_000 / 8) to get bytes/sec.
+			advertised: ai >= 0 ? num(r[ai]) * 125000 : 0,
+			consumed: ci >= 0 ? num(r[ci]) * 125000 : 0
 		}))
 		// Require both so the most recent days (where consumed history hasn't
 		// landed yet) don't cliff the consumed line to zero.
