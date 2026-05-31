@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { geoPath } from 'd3-geo';
-	import { countryFeatures, centroidByCode, makeProjection } from '$lib/geo/world';
+	import { countryFeatures, randomPointInCountry, makeProjection } from '$lib/geo/world';
 	import { buildSamplers, sampleCircuit, type Circuit } from '$lib/analysis/circuit';
 	import { flagEmoji, countryName } from '$lib/relay-stats';
 	import { relayStore } from '$lib/stores/relays.svelte';
@@ -25,18 +25,14 @@
 		id: number;
 		c: Circuit;
 		born: number;
-		// jittered geographic coords per node, so co-located relays don't stack
+		// random point inside each relay's country polygon, so co-located relays don't stack
 		coords: [number, number][];
 	}
 	let circuits = $state<Live[]>([]);
 	let seq = 0;
 
-	function jitter([lon, lat]: [number, number]): [number, number] {
-		return [lon + (Math.random() - 0.5) * 6, lat + (Math.random() - 0.5) * 6];
-	}
 	function coordOf(r: Relay): [number, number] | null {
-		const c = centroidByCode.get(r.country);
-		return c ? jitter(c) : null;
+		return randomPointInCountry(r.country);
 	}
 
 	function spawn() {
