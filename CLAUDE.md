@@ -38,8 +38,9 @@ This section is for the main Claude Code session that coordinates subagents — 
 
 ### Before you finish
 1. Run `pnpm run check` — fix all TypeScript errors before committing.
-2. **Commit everything.** Never leave uncommitted changes in the worktree. If you created files but didn't commit them, they will be lost when the worktree is cleaned up.
-3. **Update documentation** if your changes affect the feature set, views, or architecture. Specifically:
+2. **For UI changes, verify visually before committing.** Start the dev server (`pnpm run dev`), take a screenshot with `pnpm tsx scripts/screenshot.ts http://localhost:5173 /tmp/verify.png 3000`, inspect the result, and confirm the change looks correct. Kill the dev server after. Do not report a UI task as done without this step.
+3. **Commit everything.** Never leave uncommitted changes in the worktree. If you created files but didn't commit them, they will be lost when the worktree is cleaned up.
+4. **Update documentation** if your changes affect the feature set, views, or architecture. Specifically:
    - `README.md` — if views, keyboard shortcuts, or top-level features changed
    - `docs/architecture.md` — if the view list, system diagram, or design principles changed
    - `docs/decisions/009-multi-view.md` — if a view was added or removed
