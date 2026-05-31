@@ -36,7 +36,7 @@
 	.hud {
 		position: fixed;
 		bottom: 1.5rem;
-		left: calc(200px + 1.5rem);
+		left: 1.5rem;
 		pointer-events: none;
 	}
 	.metric {
