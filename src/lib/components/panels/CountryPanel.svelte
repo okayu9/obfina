@@ -12,18 +12,18 @@
 		totalBandwidth = 0
 	}: { stats: CountryStats | null; relays?: Relay[]; totalBandwidth?: number } = $props();
 
-	let expanded = $state(true);
+	let expanded = $state(false);
 	const t = $derived(getMessages());
 
 	function close() {
 		selection.country = null;
-		expanded = true;
+		expanded = false;
 	}
 
 	// Reset expanded state when country changes
 	$effect(() => {
 		if (stats?.country) {
-			expanded = true;
+			expanded = false;
 		}
 	});
 
@@ -211,28 +211,30 @@
 					</ul>
 				{/if}
 
-				<!-- Relay list (top 10 by bandwidth) -->
+				<!-- Relay list -->
 				{#if countryRelays.length > 0}
 					<div class="section-title">{t.countryPanel.relayList}</div>
-					<ul class="relay-bars">
-						{#each countryRelays.slice(0, 10) as r, i (r.nickname + r.bandwidth)}
-							<li>
-								<span class="relay-rank">{i + 1}</span>
-								<span class="relay-name" title="{r.nickname}{r.asName ? ' · ' + r.asName : ''}">{r.nickname}</span>
-								<span class="relay-track">
-									<i style:width="{(r.bandwidth / maxRelayBw * 100).toFixed(1)}%" style:background={bwColor(r.bandwidth)}></i>
+					<ul class="relay-list">
+						{#each countryRelays as r, i (r.nickname + r.bandwidth)}
+							<li class="relay-row">
+								<span class="rrank">{i + 1}</span>
+								<span class="rname-flags" title="{r.nickname}{r.asName ? ' · ' + r.asName : ''}">
+									<span class="rn">{r.nickname}</span>
+									<span class="rf">
+										{#if hasFlag(r, 'Guard')}<span class="rflag guard">G</span>{/if}
+										{#if !hasFlag(r, 'Guard') && !hasFlag(r, 'Exit')}<span class="rflag middle">M</span>{/if}
+										{#if hasFlag(r, 'Exit')}<span class="rflag exit">E</span>{/if}
+									</span>
 								</span>
-								<span class="relay-bw" style:color={bwColor(r.bandwidth)}>{fmtBw(r.bandwidth)}</span>
-								<span class="relay-flags">
-									{#if hasFlag(r, 'Guard')}<span class="rflag guard">G</span>{/if}
-									{#if !hasFlag(r, 'Guard') && !hasFlag(r, 'Exit')}<span class="rflag middle">M</span>{/if}
-									{#if hasFlag(r, 'Exit')}<span class="rflag exit">E</span>{/if}
+								<span class="rrank-empty"></span>
+								<span class="rb">
+									<span class="rb-bar-wrap">
+										<span class="rb-bar" style:width="{(r.bandwidth / maxRelayBw * 100).toFixed(1)}%" style:background={bwColor(r.bandwidth)}></span>
+									</span>
+									<span class="rb-text" style:color={bwColor(r.bandwidth)}>{fmtBw(r.bandwidth)}</span>
 								</span>
 							</li>
 						{/each}
-						{#if countryRelays.length > 10}
-							<li class="relay-more">…and {countryRelays.length - 10} more</li>
-						{/if}
 					</ul>
 				{/if}
 			</div>
@@ -514,65 +516,111 @@
 		align-self: center;
 	}
 
-	/* Relay bars list — mirrors CentralizationView .bars aesthetic */
-	.relay-bars {
+	/* Relay list table */
+	.relay-list {
 		list-style: none;
 		margin: 0;
-		padding: 0.1rem 0;
+		padding: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0.35rem;
+		gap: 0;
+		max-height: 260px;
+		overflow-y: auto;
+		border: 1px solid rgba(58, 93, 120, 0.25);
+		border-radius: 6px;
+		background: rgba(4, 12, 20, 0.4);
+		scrollbar-width: thin;
+		scrollbar-color: rgba(58, 93, 120, 0.5) transparent;
 	}
-	.relay-bars li {
+	.relay-list::-webkit-scrollbar {
+		width: 4px;
+	}
+	.relay-list::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.relay-list::-webkit-scrollbar-thumb {
+		background: rgba(58, 93, 120, 0.5);
+		border-radius: 2px;
+	}
+	.relay-list::-webkit-scrollbar-thumb:hover {
+		background: rgba(0, 212, 255, 0.4);
+	}
+	.relay-row {
 		display: grid;
-		grid-template-columns: 1.4rem 1fr 3.5rem 2.8rem;
-		align-items: center;
-		gap: 0.45rem;
-		font-size: 0.72rem;
-		border-radius: 4px;
-		padding: 0.22rem 0.2rem;
+		grid-template-columns: 1.2rem 1fr;
+		grid-template-rows: auto auto;
+		column-gap: 0.3rem;
+		row-gap: 0.15rem;
+		padding: 0.3rem 0.6rem;
+		font-size: 0.68rem;
+		border-bottom: 1px solid rgba(58, 93, 120, 0.08);
+		transition: background 0.1s;
 	}
-	.relay-rank {
-		text-align: right;
+	.relay-row:last-child {
+		border-bottom: none;
+	}
+	.relay-row:hover {
+		background: rgba(0, 212, 255, 0.04);
+	}
+	.rrank {
+		grid-column: 1;
+		grid-row: 1;
+		font-size: 0.58rem;
+		color: #3a5266;
 		font-variant-numeric: tabular-nums;
-		font-size: 0.64rem;
-		color: #6f8aa3;
+		text-align: right;
+		padding-top: 0.1rem;
 	}
-	.relay-name {
+	.rname-flags {
+		grid-column: 2;
+		grid-row: 1;
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+		min-width: 0;
+		overflow: hidden;
+	}
+	.rn {
 		color: #9fc6e0;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		flex-shrink: 1;
+		min-width: 0;
 	}
-	.relay-track {
-		height: 8px;
-		background: rgba(255, 255, 255, 0.05);
-		border-radius: 4px;
+	.rrank-empty {
+		grid-column: 1;
+		grid-row: 2;
+	}
+	.rb {
+		grid-column: 2;
+		grid-row: 2;
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+	.rb-bar-wrap {
+		flex: 1;
+		height: 3px;
+		background: rgba(255, 255, 255, 0.06);
+		border-radius: 2px;
 		overflow: hidden;
 	}
-	.relay-track i {
+	.rb-bar {
 		display: block;
 		height: 100%;
-		border-radius: 4px;
-		min-width: 2px;
+		border-radius: 2px;
 	}
-	.relay-bw {
+	.rb-text {
 		font-variant-numeric: tabular-nums;
-		font-size: 0.64rem;
-		text-align: right;
+		font-size: 0.62rem;
 		white-space: nowrap;
+		flex-shrink: 0;
 	}
-	.relay-flags {
+	.rf {
 		display: flex;
 		gap: 0.15rem;
-		justify-content: flex-end;
-	}
-	.relay-more {
-		grid-template-columns: 1fr !important;
-		font-size: 0.64rem;
-		color: #6f8aa3;
-		padding: 0.15rem 0.2rem !important;
-		text-align: left;
+		flex-shrink: 0;
 	}
 	.rflag {
 		font-size: 0.56rem;
