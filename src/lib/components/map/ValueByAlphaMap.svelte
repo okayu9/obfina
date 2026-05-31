@@ -158,6 +158,7 @@
 				<path
 					class="empty"
 					d={s.d}
+					role="presentation"
 					onpointerenter={(e) => onEnterEmpty(e, s.code)}
 					onpointermove={(e) => hover && (hover = { ...hover, x: e.clientX, y: e.clientY })}
 					onpointerleave={() => (hover = null)}
