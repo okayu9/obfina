@@ -162,7 +162,7 @@
 
 <style>
 	.map {
-		position: fixed;
+		position: absolute;
 		inset: 0;
 		background: radial-gradient(ellipse at 50% 40%, #122436 0%, #0a141f 70%, #070d16 100%);
 	}
@@ -202,7 +202,7 @@
 		filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
 	}
 	.hud {
-		position: fixed;
+		position: absolute;
 		bottom: 1.5rem;
 		left: 1.5rem;
 		pointer-events: none;
@@ -220,7 +220,7 @@
 		max-width: 40ch;
 	}
 	.readout {
-		position: fixed;
+		position: absolute;
 		bottom: 4rem;
 		left: 1.5rem;
 		width: 240px;

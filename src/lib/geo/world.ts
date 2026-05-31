@@ -70,16 +70,24 @@ export function randomPointInCountry(
 	return centroidByCode.get(code) ?? null;
 }
 
+// Bounding box that clips Antarctica — fits the projection to the area
+// between 60°S and 90°N so the visible world fills the available height.
+const BOUNDS_NO_ANTARCTICA = {
+	type: 'Feature',
+	geometry: {
+		type: 'Polygon',
+		coordinates: [[[-180, -60], [180, -60], [180, 90], [-180, 90], [-180, -60]]]
+	},
+	properties: {}
+} as const;
+
 /**
  * Equirectangular projection fitted to height and horizontally centred —
  * identical to ValueByAlphaMap so the poles sit at the top/bottom edges.
+ * Antarctica (below −60°) is excluded from the fit so it doesn't waste space.
  */
 export function makeProjection(width: number, height: number) {
 	const p = geoEquirectangular();
-	p.fitHeight(height, SPHERE);
-	const b = geoPath(p).bounds(SPHERE);
-	const mapW = b[1][0] - b[0][0];
-	const t = p.translate();
-	p.translate([t[0] + (width - mapW) / 2 - b[0][0], t[1]]);
+	p.fitSize([width, height], BOUNDS_NO_ANTARCTICA as never);
 	return p;
 }
