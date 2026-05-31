@@ -18,7 +18,7 @@
 			</span>
 		</button>
 	{/each}
-	<div class="hint">1–5 · ← →</div>
+	<div class="hint">1–6 · ← →</div>
 </nav>
 
 <style>
