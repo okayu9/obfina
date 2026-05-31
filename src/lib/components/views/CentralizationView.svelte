@@ -8,6 +8,7 @@
 		type LorenzPoint,
 		type Group
 	} from '$lib/analysis/concentration';
+	import type { Relay } from '$lib/types';
 
 	let scope = $state<'all' | 'exit'>('all');
 
@@ -47,6 +48,36 @@
 	const breakdown = $derived(topBreakdown(emphasized, 6));
 	const restShare = $derived(breakdown.total > 0 ? breakdown.rest / breakdown.total : 0);
 
+	// Provider detail panel
+	let selectedAsKey = $state<string | null>(null);
+
+	const selectedRelays = $derived(
+		selectedAsKey !== null
+			? relayStore.relays
+					.filter((r) => r.as === selectedAsKey)
+					.sort((a, b) => b.bandwidth - a.bandwidth)
+			: ([] as Relay[])
+	);
+
+	const selectedGroup = $derived(
+		selectedAsKey !== null ? groupsAll.find((g) => g.key === selectedAsKey) ?? null : null
+	);
+
+	const totalBandwidth = $derived(relayStore.relays.reduce((s, r) => s + r.bandwidth, 0));
+	const totalConsensus = $derived(relayStore.relays.reduce((s, r) => s + r.consensusWeight, 0));
+
+	function selectProvider(g: Group) {
+		if (selectedAsKey === g.key) {
+			selectedAsKey = null;
+		} else {
+			selectedAsKey = g.key;
+		}
+	}
+
+	function closePanel() {
+		selectedAsKey = null;
+	}
+
 	function curve(pts: LorenzPoint[]): string {
 		return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x * 100} ${(1 - p.y) * 100}`).join(' ');
 	}
@@ -57,6 +88,17 @@
 	function share(g: Group): number {
 		return breakdown.total > 0 ? g.weight / breakdown.total : 0;
 	}
+
+	function fmtBw(bps: number): string {
+		if (bps >= 1e9) return `${(bps / 1e9).toFixed(1)} GB/s`;
+		if (bps >= 1e6) return `${(bps / 1e6).toFixed(1)} MB/s`;
+		if (bps >= 1e3) return `${(bps / 1e3).toFixed(0)} KB/s`;
+		return `${bps} B/s`;
+	}
+
+	function hasFlag(r: Relay, flag: string): boolean {
+		return r.flags.includes(flag);
+	}
 </script>
 
 <div class="view">
@@ -64,7 +106,7 @@
 		<h1>Hosting concentration</h1>
 		<p>
 			Share of the network held by its autonomous systems. A curve bowing toward the bottom-right
-			means a few providers carry most of the traffic.
+			means a few providers carry most of the traffic. Click a provider to see its relays.
 		</p>
 	</header>
 
@@ -115,7 +157,13 @@
 
 			<ul class="bars" class:exit={scope === 'exit'}>
 				{#each breakdown.top as g (g.key)}
-					<li>
+					<li
+						class:sel={selectedAsKey === g.key}
+						onclick={() => selectProvider(g)}
+						role="button"
+						tabindex="0"
+						onkeydown={(e) => e.key === 'Enter' && selectProvider(g)}
+					>
 						<span class="as" title={g.key}>{g.label}</span>
 						<span class="track"><i style:width={pct(share(g))}></i></span>
 						<span class="v">{pct(share(g))}</span>
@@ -130,6 +178,65 @@
 				{/if}
 			</ul>
 		</div>
+
+		<!-- Provider detail panel -->
+		{#if selectedAsKey !== null && selectedGroup !== null}
+			<div class="detail-panel">
+				<div class="detail-header">
+					<div class="detail-title">
+						<span class="detail-as-key">{selectedAsKey}</span>
+						<span class="detail-as-name">{selectedGroup.label}</span>
+					</div>
+					<button class="close-btn" onclick={closePanel} aria-label="Close panel">&#x2715;</button>
+				</div>
+
+				<div class="detail-stats">
+					<div class="stat">
+						<span class="stat-val">{selectedRelays.length}</span>
+						<span class="stat-lbl">relays</span>
+					</div>
+					<div class="stat">
+						<span class="stat-val"
+							>{totalBandwidth > 0
+								? ((selectedRelays.reduce((s, r) => s + r.bandwidth, 0) / totalBandwidth) * 100).toFixed(1)
+								: '0'}%</span
+						>
+						<span class="stat-lbl">bandwidth share</span>
+					</div>
+					<div class="stat">
+						<span class="stat-val"
+							>{totalConsensus > 0
+								? ((selectedGroup.weight / totalConsensus) * 100).toFixed(1)
+								: '0'}%</span
+						>
+						<span class="stat-lbl">consensus share</span>
+					</div>
+				</div>
+
+				<ul class="relay-list">
+					<li class="relay-header">
+						<span class="rn">Nickname</span>
+						<span class="rc">CC</span>
+						<span class="rb">Bandwidth</span>
+						<span class="rf">Flags</span>
+					</li>
+					{#each selectedRelays as r (r.nickname + r.bandwidth)}
+						<li class="relay-row">
+							<span class="rn" title={r.nickname}>{r.nickname}</span>
+							<span class="rc">{r.country.toUpperCase()}</span>
+							<span class="rb">{fmtBw(r.bandwidth)}</span>
+							<span class="rf">
+								{#if hasFlag(r, 'Guard')}<span class="flag guard">G</span>{/if}
+								{#if hasFlag(r, 'Middle') || (!hasFlag(r, 'Guard') && !hasFlag(r, 'Exit'))}<span
+										class="flag middle">M</span
+									>{/if}
+								{#if hasFlag(r, 'Exit')}<span class="flag exit">E</span>{/if}
+							</span>
+						</li>
+					{/each}
+				</ul>
+			</div>
+		{/if}
 	</div>
 </div>
 
@@ -290,6 +397,19 @@
 		align-items: center;
 		gap: 0.6rem;
 		font-size: 0.72rem;
+		border-radius: 5px;
+		padding: 0.25rem 0.3rem;
+		transition: background 0.12s;
+	}
+	.bars li:not(.rest) {
+		cursor: pointer;
+	}
+	.bars li:not(.rest):hover {
+		background: rgba(0, 212, 255, 0.06);
+	}
+	.bars li.sel {
+		background: rgba(0, 212, 255, 0.1);
+		outline: 1px solid rgba(0, 212, 255, 0.3);
 	}
 	.as {
 		color: #9fc6e0;
@@ -318,5 +438,180 @@
 		text-align: right;
 		color: #9fc6e0;
 		font-variant-numeric: tabular-nums;
+	}
+
+	/* Detail panel */
+	.detail-panel {
+		flex: 0 0 auto;
+		width: min(420px, 100%);
+		display: flex;
+		flex-direction: column;
+		gap: 0.9rem;
+		background: rgba(8, 20, 31, 0.7);
+		border: 1px solid rgba(0, 212, 255, 0.25);
+		border-radius: 10px;
+		padding: 1.1rem 1.2rem;
+		animation: slide-in 0.18s ease-out;
+		overflow: hidden;
+	}
+	@keyframes slide-in {
+		from {
+			opacity: 0;
+			transform: translateX(12px);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+	.detail-header {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 0.5rem;
+	}
+	.detail-title {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+	}
+	.detail-as-key {
+		font-size: 0.65rem;
+		letter-spacing: 0.1em;
+		color: var(--accent-cyan);
+		text-transform: uppercase;
+	}
+	.detail-as-name {
+		font-size: 0.95rem;
+		color: #e6f1ff;
+		font-weight: 500;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.close-btn {
+		flex: 0 0 auto;
+		background: none;
+		border: 1px solid rgba(58, 93, 120, 0.4);
+		border-radius: 5px;
+		color: #6f8aa3;
+		font-size: 0.75rem;
+		width: 1.6rem;
+		height: 1.6rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		transition: color 0.12s, border-color 0.12s;
+	}
+	.close-btn:hover {
+		color: #e6f1ff;
+		border-color: rgba(230, 241, 255, 0.4);
+	}
+	.detail-stats {
+		display: flex;
+		gap: 1.4rem;
+	}
+	.stat {
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+	}
+	.stat-val {
+		font-size: 1.5rem;
+		font-variant-numeric: tabular-nums;
+		line-height: 1;
+		color: var(--accent-cyan);
+		text-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+	}
+	.stat-lbl {
+		font-size: 0.62rem;
+		letter-spacing: 0.09em;
+		color: #6f8aa3;
+	}
+	.relay-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+		flex: 1;
+		overflow-y: auto;
+		max-height: 340px;
+		border: 1px solid rgba(58, 93, 120, 0.25);
+		border-radius: 6px;
+		background: rgba(4, 12, 20, 0.4);
+	}
+	.relay-header {
+		display: grid;
+		grid-template-columns: 1fr 2.2rem 5.5rem 3.5rem;
+		gap: 0.4rem;
+		padding: 0.35rem 0.7rem;
+		font-size: 0.6rem;
+		letter-spacing: 0.1em;
+		color: #3a5266;
+		text-transform: uppercase;
+		border-bottom: 1px solid rgba(58, 93, 120, 0.2);
+		position: sticky;
+		top: 0;
+		background: rgba(4, 12, 20, 0.9);
+	}
+	.relay-row {
+		display: grid;
+		grid-template-columns: 1fr 2.2rem 5.5rem 3.5rem;
+		gap: 0.4rem;
+		padding: 0.28rem 0.7rem;
+		font-size: 0.7rem;
+		align-items: center;
+		border-bottom: 1px solid rgba(58, 93, 120, 0.1);
+		transition: background 0.1s;
+	}
+	.relay-row:last-child {
+		border-bottom: none;
+	}
+	.relay-row:hover {
+		background: rgba(0, 212, 255, 0.04);
+	}
+	.rn {
+		color: #9fc6e0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.rc {
+		color: #6f8aa3;
+		font-size: 0.62rem;
+		letter-spacing: 0.06em;
+	}
+	.rb {
+		color: #9fc6e0;
+		font-variant-numeric: tabular-nums;
+		text-align: right;
+	}
+	.rf {
+		display: flex;
+		gap: 0.2rem;
+		justify-content: flex-end;
+	}
+	.flag {
+		font-size: 0.58rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		padding: 0.1rem 0.3rem;
+		border-radius: 3px;
+	}
+	.flag.guard {
+		color: var(--accent-cyan);
+		background: rgba(0, 212, 255, 0.12);
+	}
+	.flag.middle {
+		color: #9fc6e0;
+		background: rgba(159, 198, 224, 0.1);
+	}
+	.flag.exit {
+		color: var(--accent-green);
+		background: rgba(57, 255, 20, 0.1);
 	}
 </style>
