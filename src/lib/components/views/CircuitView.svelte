@@ -223,8 +223,8 @@
 	}
 	.readout {
 		position: fixed;
-		top: 1.5rem;
-		right: 1.5rem;
+		bottom: 4rem;
+		left: 1.5rem;
 		width: 240px;
 		padding: 1.2rem;
 		background: rgba(8, 14, 22, 0.82);
