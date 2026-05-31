@@ -3,7 +3,9 @@
 	import { formatBandwidth, countryName } from '$lib/relay-stats';
 	import LoadingScreen from '$lib/components/LoadingScreen.svelte';
 	import { trendsStore, loadTrends } from '$lib/stores/trends.svelte';
+	import { getMessages } from '$lib/i18n';
 
+	const t = $derived(getMessages());
 	const data = $derived(trendsStore.data);
 	const loading = $derived(trendsStore.loading);
 	const failed = $derived(trendsStore.failed);
@@ -84,24 +86,21 @@
 
 <div class="view">
 	<header>
-		<h1>Network over time</h1>
-		<p>
-			Growth of the relay network, the gap between advertised capacity and bandwidth actually used,
-			and where Tor's users connect from. Source: Tor Metrics.
-		</p>
+		<h1>{t.growth.title}</h1>
+		<p>{t.growth.description}</p>
 	</header>
 
 	{#if loading}
-		<LoadingScreen message="Fetching Tor Metrics…" />
+		<LoadingScreen message={t.loading.metrics} />
 	{:else if failed}
-		<LoadingScreen message="Historical data unavailable" />
+		<LoadingScreen message={t.loading.historical} />
 	{:else if data}
 		<div class="panels">
 			<!-- GROWTH -->
 			<section class="panel">
 				<div class="head">
 					<div class="big">{compact(last(sizeVals) ?? 0)}</div>
-					<div class="cap">running relays</div>
+					<div class="cap">{t.growth.runningRelays}</div>
 				</div>
 				<div class="chart">
 					{#if sizeVals.length > 1}
@@ -138,7 +137,7 @@
 						{#if hover?.chart === 'size'}
 							<div class="tip" style:left={`${xAt(hover.i, sizeVals.length)}%`}>
 								<span class="tip-d">{data.networkSize[hover.i].date}</span>
-								<span class="tip-v">{compact(sizeVals[hover.i])} relays</span>
+								<span class="tip-v">{compact(sizeVals[hover.i])} {t.growth.relays}</span>
 							</div>
 						{/if}
 						<span class="t0">{data.networkSize[0].date}</span>
@@ -153,10 +152,10 @@
 			<section class="panel">
 				<div class="head">
 					<div class="big">{(util() * 100).toFixed(0)}%</div>
-					<div class="cap">capacity used</div>
+					<div class="cap">{t.growth.capacityUsed}</div>
 					<div class="legend">
-						<span><i class="sw cyan"></i>{formatBandwidth(last(adv) ?? 0)} advertised</span>
-						<span><i class="sw green"></i>{formatBandwidth(last(con) ?? 0)} consumed</span>
+						<span><i class="sw cyan"></i>{formatBandwidth(last(adv) ?? 0)} {t.growth.advertised}</span>
+						<span><i class="sw green"></i>{formatBandwidth(last(con) ?? 0)} {t.growth.consumed}</span>
 					</div>
 				</div>
 				<div class="chart">
@@ -217,7 +216,7 @@
 			<!-- USERS BY COUNTRY -->
 			<section class="panel wide">
 				<div class="head">
-					<div class="cap">est. daily users · top countries</div>
+					<div class="cap">{t.growth.dailyUsers}</div>
 				</div>
 				<div class="chart">
 					{#if users.series.length > 1}

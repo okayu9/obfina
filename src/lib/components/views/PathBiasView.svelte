@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { relayStore } from '$lib/stores/relays.svelte';
+	import { getMessages } from '$lib/i18n';
 	import {
 		gini,
 		topShare,
@@ -24,6 +25,7 @@
 	const markCount = $derived(Math.max(1, Math.round(nRelays * frac)));
 
 	const presets = [0.01, 0.05, 0.1, 0.25];
+	const t = $derived(getMessages());
 
 	function path(pts: LorenzPoint[]): string {
 		return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x * 100} ${(1 - p.y) * 100}`).join(' ');
@@ -53,11 +55,8 @@
 
 <div class="view">
 	<header>
-		<h1>Path-selection bias</h1>
-		<p>
-			Tor weights relays by capacity, so a small set of high-bandwidth relays carries a large share
-			of all traffic. Drag the line — or pick a preset — to read how much.
-		</p>
+		<h1>{t.paths.title}</h1>
+		<p>{t.paths.description}</p>
 	</header>
 
 	<div class="body">
@@ -88,16 +87,16 @@
 				/>
 				<circle cx={frac * 100} cy={(1 - markShare) * 100} r="2.4" class="dot" />
 			</svg>
-			<figcaption><span>top relays →</span><span>↑ share of traffic</span></figcaption>
+			<figcaption><span>{t.paths.topRelays}</span><span>{t.paths.shareOfTraffic}</span></figcaption>
 		</figure>
 
 		<div class="side">
 			<div class="readout">
 				<div class="big">{pct(markShare)}</div>
 				<div class="sub">
-					of all traffic rides on the top
+					{t.paths.ofTrafficRidesOn}
 					<b>{pct(frac, frac < 0.1 ? 1 : 0)}</b>
-					of relays
+					{t.paths.ofRelays}
 					<span class="muted">(~{markCount.toLocaleString()} of {nRelays.toLocaleString()})</span>
 				</div>
 			</div>
@@ -105,21 +104,21 @@
 			<div class="presets">
 				{#each presets as p (p)}
 					<button class:on={Math.abs(frac - p) < 1e-6} onclick={() => (frac = p)}>
-						top {pct(p, p < 0.1 ? 1 : 0)}
+						{t.paths.top} {pct(p, p < 0.1 ? 1 : 0)}
 					</button>
 				{/each}
 			</div>
 
 			<div class="gbox">
 				<span class="g">{giniMain.toFixed(2)}</span>
-				<span class="l">Gini · consensus weight</span>
+				<span class="l">{t.paths.giniConsensus}</span>
 			</div>
 
 			<ul class="key">
-				<li><i class="sw main"></i>consensus weight (path selection)</li>
-				<li><i class="sw guard"></i>guard position</li>
-				<li><i class="sw exit"></i>exit position</li>
-				<li><i class="sw eq"></i>perfect equality</li>
+				<li><i class="sw main"></i>{t.paths.legendConsensus}</li>
+				<li><i class="sw guard"></i>{t.paths.legendGuard}</li>
+				<li><i class="sw exit"></i>{t.paths.legendExit}</li>
+				<li><i class="sw eq"></i>{t.paths.legendEquality}</li>
 			</ul>
 		</div>
 	</div>

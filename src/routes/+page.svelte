@@ -10,6 +10,7 @@
 	import LoadingScreen from '$lib/components/LoadingScreen.svelte';
 	import { relayStore, loadRelays } from '$lib/stores/relays.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
+	import { getMessages } from '$lib/i18n';
 	import {
 		VIEWS,
 		viewState,
@@ -18,6 +19,8 @@
 		initViewFromUrl,
 		syncViewToUrl
 	} from '$lib/stores/view.svelte';
+
+	const t = $derived(getMessages());
 
 	// Views that render off live relay data; GROWTH fetches its own time-series.
 	const needsRelays = $derived(viewState.id !== 'growth' && viewState.id !== 'about');
@@ -58,9 +61,9 @@
 	{#if viewState.id === 'about'}
 		<AboutView />
 	{:else if showLoading}
-		<LoadingScreen />
+		<LoadingScreen message={t.loading.default} />
 	{:else if showFailed}
-		<LoadingScreen message="Relay data unavailable" />
+		<LoadingScreen message={t.loading.unavailable} />
 	{:else}
 		{#if viewState.id === 'map'}
 			<MapView />

@@ -2,7 +2,9 @@
 	import { relayStore } from '$lib/stores/relays.svelte';
 	import { gini, lorenz, groupBy, type LorenzPoint, type Group } from '$lib/analysis/concentration';
 	import type { Relay } from '$lib/types';
+	import { getMessages } from '$lib/i18n';
 
+	const t = $derived(getMessages());
 	let scope = $state<'all' | 'exit'>('all');
 
 	const isExit = (r: { exitProb: number; flags: string[] }) =>
@@ -159,12 +161,8 @@
 
 <div class="view">
 	<header>
-		<h1>Hosting concentration</h1>
-		<p>
-			Share of the network held by its autonomous systems. A curve bowing toward the bottom-right
-			means a few providers carry most of the traffic. Drag the line — or pick a preset — to count
-			the top providers. Click a provider to see its relays.
-		</p>
+		<h1>{t.hosting.title}</h1>
+		<p>{t.hosting.description}</p>
 	</header>
 
 	<div class="body">
@@ -208,29 +206,29 @@
 				{/if}
 			</svg>
 			<figcaption>
-				<span>fewer ASes →</span>
-				<span>↑ cumulative share</span>
+				<span>{t.hosting.fewerAses}</span>
+				<span>{t.hosting.cumulativeShare}</span>
 			</figcaption>
 		</figure>
 
 		<div class="side">
 			<div class="toggle" role="tablist">
 				<button class:on={scope === 'all'} onclick={() => (scope = 'all')} role="tab">
-					All relays
+					{t.hosting.allRelays}
 				</button>
 				<button class:on={scope === 'exit'} onclick={() => (scope = 'exit')} role="tab">
-					Exit only
+					{t.hosting.exitOnly}
 				</button>
 			</div>
 
 			<div class="ginis">
 				<div class="gbox all" class:em={scope === 'all'}>
 					<span class="g">{giniAll.toFixed(2)}</span>
-					<span class="l">Gini · all</span>
+					<span class="l">{t.hosting.giniAll}</span>
 				</div>
 				<div class="gbox exit" class:em={scope === 'exit'}>
 					<span class="g">{giniExit.toFixed(2)}</span>
-					<span class="l">Gini · exit</span>
+					<span class="l">{t.hosting.giniExit}</span>
 				</div>
 			</div>
 
@@ -238,7 +236,7 @@
 				<div class="readout">
 					<div class="big {scope}">{pct(topSelShare)}</div>
 					<div class="sub">
-						held by the top <b>{m}</b> of {N.toLocaleString()} providers
+						{t.hosting.heldByTop} <b>{m}</b> {t.hosting.of} {N.toLocaleString()} {t.hosting.providers}
 						{#if marginal}<span class="muted">· #{m} {marginal.label}</span>{/if}
 					</div>
 				</div>
@@ -246,10 +244,10 @@
 				<div class="presets">
 					{#each presets as p (p)}
 						{#if p < N}
-							<button class:on={m === p} onclick={() => (pickM = p)}>top {p}</button>
+							<button class:on={m === p} onclick={() => (pickM = p)}>{t.hosting.top} {p}</button>
 						{/if}
 					{/each}
-					<button class:on={m === N} onclick={() => (pickM = N)}>all {N}</button>
+					<button class:on={m === N} onclick={() => (pickM = N)}>{t.hosting.all} {N}</button>
 				</div>
 
 				<ul class="bars" class:exit={scope === 'exit'}>
@@ -271,7 +269,7 @@
 					{#if tailCount > 0}
 						<li class="rest" class:sel={m > LIST_N}>
 							<span class="rank">·</span>
-							<span class="as">+{tailCount.toLocaleString()} more</span>
+							<span class="as">+{tailCount.toLocaleString()} {t.hosting.moreProviders}</span>
 							<span class="track"><i style:width={pct(tailShare)}></i></span>
 							<span class="v">{pct(tailShare)}</span>
 						</li>
@@ -294,7 +292,7 @@
 				<div class="detail-stats">
 					<div class="stat">
 						<span class="stat-val">{selectedRelays.length}</span>
-						<span class="stat-lbl">relays</span>
+						<span class="stat-lbl">{t.hosting.relays}</span>
 					</div>
 					<div class="stat">
 						<span class="stat-val"
@@ -302,7 +300,7 @@
 								? ((selectedRelays.reduce((s, r) => s + r.bandwidth, 0) / totalBandwidth) * 100).toFixed(1)
 								: '0'}%</span
 						>
-						<span class="stat-lbl">bandwidth share</span>
+						<span class="stat-lbl">{t.hosting.bandwidthShare}</span>
 					</div>
 					<div class="stat">
 						<span class="stat-val"
@@ -310,16 +308,16 @@
 								? ((selectedGroup.weight / totalConsensus) * 100).toFixed(1)
 								: '0'}%</span
 						>
-						<span class="stat-lbl">consensus share</span>
+						<span class="stat-lbl">{t.hosting.consensusShare}</span>
 					</div>
 				</div>
 
 				<ul class="relay-list">
 					<li class="relay-header">
-						<span class="rn">Nickname</span>
-						<span class="rc">CC</span>
-						<span class="rb">Bandwidth</span>
-						<span class="rf">Flags</span>
+						<span class="rn">{t.hosting.nickname}</span>
+						<span class="rc">{t.hosting.cc}</span>
+						<span class="rb">{t.hosting.bandwidth}</span>
+						<span class="rf">{t.hosting.flags}</span>
 					</li>
 					{#each selectedRelays as r (r.nickname + r.bandwidth)}
 						<li class="relay-row">

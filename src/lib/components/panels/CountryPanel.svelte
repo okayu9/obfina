@@ -4,6 +4,7 @@
 	import { countryName, flagEmoji, formatBandwidth, type CountryStats } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
 	import type { Relay } from '$lib/types';
+	import { getMessages } from '$lib/i18n';
 
 	let {
 		stats,
@@ -12,6 +13,7 @@
 	}: { stats: CountryStats | null; relays?: Relay[]; totalBandwidth?: number } = $props();
 
 	let expanded = $state(false);
+	const t = $derived(getMessages());
 
 	function close() {
 		selection.country = null;
@@ -33,20 +35,20 @@
 			? [
 					{
 						key: 'guard',
-						name: 'Guard',
-						desc: "entry — a client's first hop into Tor",
+						name: t.countryPanel.guard,
+						desc: t.countryPanel.guardDesc,
 						count: stats.guard
 					},
 					{
 						key: 'middle',
-						name: 'Middle',
-						desc: 'relays traffic between guard and exit',
+						name: t.countryPanel.middle,
+						desc: t.countryPanel.middleDesc,
 						count: stats.middle
 					},
 					{
 						key: 'exit',
-						name: 'Exit',
-						desc: 'last hop — connects out to the destination',
+						name: t.countryPanel.exit,
+						desc: t.countryPanel.exitDesc,
 						count: stats.exit
 					}
 				]
@@ -137,7 +139,7 @@
 		<div class="code">{stats.country.toUpperCase()}</div>
 
 		<div class="count">{stats.count.toLocaleString()}</div>
-		<div class="label">relays</div>
+		<div class="label">{t.countryPanel.relays}</div>
 
 		<div class="bw">{formatBandwidth(stats.bandwidth)}</div>
 
@@ -163,7 +165,7 @@
 
 		<!-- Expand toggle -->
 		<button class="expand-btn" onclick={() => (expanded = !expanded)} aria-expanded={expanded}>
-			<span>{expanded ? 'Show less' : 'More details'}</span>
+			<span>{expanded ? t.countryPanel.showLess : t.countryPanel.moreDetails}</span>
 			<svg
 				class="chevron"
 				class:chevron--up={expanded}
@@ -185,17 +187,17 @@
 				<div class="detail-stats">
 					<div class="stat">
 						<span class="stat-val">{bwShare.toFixed(1)}%</span>
-						<span class="stat-lbl">network BW</span>
+						<span class="stat-lbl">{t.countryPanel.networkBw}</span>
 					</div>
 					<div class="stat">
 						<span class="stat-val">{uniqueAS}</span>
-						<span class="stat-lbl">unique AS</span>
+						<span class="stat-lbl">{t.countryPanel.uniqueAs}</span>
 					</div>
 				</div>
 
 				<!-- Top AS providers -->
 				{#if topAS.length > 0}
-					<div class="section-title">Top providers</div>
+					<div class="section-title">{t.countryPanel.topProviders}</div>
 					<ul class="as-bars">
 						{#each topAS as entry (entry.key)}
 							<li>
@@ -211,12 +213,12 @@
 
 				<!-- Relay list -->
 				{#if countryRelays.length > 0}
-					<div class="section-title">Relays</div>
+					<div class="section-title">{t.countryPanel.relayList}</div>
 					<ul class="relay-list">
 						<li class="relay-header">
-							<span class="rn">Nickname</span>
-							<span class="rb">Bandwidth</span>
-							<span class="rf">Flags</span>
+							<span class="rn">{t.countryPanel.nickname}</span>
+							<span class="rb">{t.countryPanel.bandwidth}</span>
+							<span class="rf">{t.countryPanel.flags}</span>
 						</li>
 						{#each countryRelays as r (r.nickname + r.bandwidth)}
 							<li class="relay-row">

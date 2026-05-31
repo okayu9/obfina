@@ -1,15 +1,18 @@
+<script lang="ts">
+	import { getMessages } from '$lib/i18n';
+
+	const t = $derived(getMessages());
+</script>
+
 <div class="view">
 	<header>
-		<h1>Data Sources &amp; References</h1>
-		<p>
-			This visualization is built on open data published by the Tor Project and the network
-			research community.
-		</p>
+		<h1>{t.about.title}</h1>
+		<p>{t.about.subtitle}</p>
 	</header>
 
 	<div class="body">
 		<section>
-			<h2>Data Sources</h2>
+			<h2>{t.about.dataSources}</h2>
 			<div class="cards">
 				<a
 					href="https://metrics.torproject.org/"
@@ -54,7 +57,7 @@
 		</section>
 
 		<section>
-			<h2>References</h2>
+			<h2>{t.about.references}</h2>
 			<div class="cards">
 				<a
 					href="https://svn.torproject.org/svn/projects/design-paper/tor-design.pdf"
