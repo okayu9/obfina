@@ -1,23 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { formatBandwidth, countryName } from '$lib/relay-stats';
-	import type { TrendsResponse } from '$lib/types';
+	import { trendsStore, loadTrends } from '$lib/stores/trends.svelte';
 
-	let data = $state<TrendsResponse | null>(null);
-	let loading = $state(true);
-	let failed = $state(false);
+	const data = $derived(trendsStore.data);
+	const loading = $derived(trendsStore.loading);
+	const failed = $derived(trendsStore.failed);
 
-	onMount(async () => {
-		try {
-			const res = await fetch('/api/trends');
-			const json = (await res.json()) as TrendsResponse;
-			if (json.unavailable) failed = true;
-			else data = json;
-		} catch {
-			failed = true;
-		} finally {
-			loading = false;
-		}
+	onMount(() => {
+		loadTrends();
 	});
 
 	function linePath(values: number[], max: number): string {
