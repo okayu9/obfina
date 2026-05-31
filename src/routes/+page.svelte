@@ -51,7 +51,7 @@
 	// Keep the URL in step with the active view, and drop any stale selection
 	// when leaving the map.
 	$effect(() => {
-		syncViewToUrl();
+		syncViewToUrl(viewState.id);
 		if (viewState.id !== 'map') selection.country = null;
 	});
 </script>

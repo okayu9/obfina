@@ -52,8 +52,10 @@ export function initViewFromUrl(): void {
 }
 
 /** Reflect the current view into the URL without adding history entries. */
-export function syncViewToUrl(): void {
+export function syncViewToUrl(id: ViewId = viewState.id): void {
 	if (!browser) return;
-	// obfina only uses the `view` query param, so a plain rewrite is enough.
-	replaceState(`${location.pathname}?view=${viewState.id}${location.hash}`, history.state);
+	const url = new URL(location.href);
+	if (id === 'map') url.searchParams.delete('view');
+	else url.searchParams.set('view', id);
+	replaceState(`${url.pathname}${url.search}${url.hash}`, history.state);
 }
