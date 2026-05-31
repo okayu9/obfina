@@ -46,11 +46,17 @@
 	const weight = $derived(scaleSqrt().domain([1, maxCount]).range([0.18, 1]).clamp(true));
 
 	// Equirectangular so the map is a clean rectangle that tiles horizontally.
-	// fitSize against the clipped bounding box so the visible world fills the height.
+	// Fit to height using the no-Antarctica bounds so lat=90 sits at y=0 and
+	// lat=-60 sits at y=height — Antarctica falls below the viewport and is
+	// never visible on initial load.
 	const projection = $derived.by(() => {
 		if (!width || !height) return null;
 		const p = geoEquirectangular();
-		p.fitSize([width, height], BOUNDS_NO_ANTARCTICA as never);
+		p.fitHeight(height, BOUNDS_NO_ANTARCTICA as never);
+		const b = geoPath(p).bounds(SPHERE);
+		const mapW = b[1][0] - b[0][0];
+		const t = p.translate();
+		p.translate([t[0] + (width - mapW) / 2 - b[0][0], t[1]]);
 		return p;
 	});
 	const path = $derived(projection ? geoPath(projection) : null);
