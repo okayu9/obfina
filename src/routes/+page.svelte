@@ -66,18 +66,16 @@
 		<LoadingScreen message={t.loading.default} />
 	{:else if showFailed}
 		<LoadingScreen message={t.loading.unavailable} />
-	{:else}
-		{#if viewState.id === 'map'}
-			<MapView />
-		{:else if viewState.id === 'hosting'}
-			<CentralizationView />
-		{:else if viewState.id === 'paths'}
-			<PathBiasView />
-		{:else if viewState.id === 'growth'}
-			<TrendsView />
-		{:else if viewState.id === 'circuits'}
-			<CircuitView />
-		{/if}
+	{:else if viewState.id === 'map'}
+		<MapView />
+	{:else if viewState.id === 'hosting'}
+		<CentralizationView />
+	{:else if viewState.id === 'paths'}
+		<PathBiasView />
+	{:else if viewState.id === 'growth'}
+		<TrendsView />
+	{:else if viewState.id === 'circuits'}
+		<CircuitView />
 	{/if}
 
 	{#if !showLoading}
@@ -95,8 +93,12 @@
 	}
 
 	@keyframes fade-in {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	:global(.scene > *) {

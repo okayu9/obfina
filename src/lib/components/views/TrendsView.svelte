@@ -45,9 +45,7 @@
 		const xOf = (i: number) => PAD_L + (i / (n - 1)) * (w - PAD_L - PAD_R);
 		const yOf = (v: number) => PAD_T + (1 - v / max) * (h - PAD_T - PAD_B);
 		const up = top.map((v, i) => `${i === 0 ? 'M' : 'L'} ${xOf(i)} ${yOf(v)}`);
-		const down = bottom
-			.map((_, i) => `L ${xOf(n - 1 - i)} ${yOf(bottom[n - 1 - i])}`)
-			.slice(1);
+		const down = bottom.map((_, i) => `L ${xOf(n - 1 - i)} ${yOf(bottom[n - 1 - i])}`).slice(1);
 		return `${up.join(' ')} ${down.join(' ')} Z`;
 	}
 	function compact(n: number): string {
@@ -141,10 +139,7 @@
 							onpointermove={(e) => onChartMove(e, 'size', sizeVals.length)}
 							onpointerleave={clearHover}
 						>
-							<path
-								d={linePath(sizeVals, sizeMax, sizeW, sizeH)}
-								class="line cyan"
-							/>
+							<path d={linePath(sizeVals, sizeMax, sizeW, sizeH)} class="line cyan" />
 							{#if hover?.chart === 'size'}
 								<line
 									class="cursor-line"
@@ -181,8 +176,12 @@
 					<div class="big">{(util() * 100).toFixed(0)}%</div>
 					<div class="cap">{t.growth.capacityUsed}</div>
 					<div class="legend">
-						<span><i class="sw cyan"></i>{formatBandwidth(last(adv) ?? 0)} {t.growth.advertised}</span>
-						<span><i class="sw green"></i>{formatBandwidth(last(con) ?? 0)} {t.growth.consumed}</span>
+						<span
+							><i class="sw cyan"></i>{formatBandwidth(last(adv) ?? 0)} {t.growth.advertised}</span
+						>
+						<span
+							><i class="sw green"></i>{formatBandwidth(last(con) ?? 0)} {t.growth.consumed}</span
+						>
 					</div>
 				</div>
 				<div class="chart" bind:clientWidth={bwW} bind:clientHeight={bwH}>

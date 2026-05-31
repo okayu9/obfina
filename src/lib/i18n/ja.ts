@@ -118,7 +118,8 @@ export const ja: Messages = {
 	// Circuits view
 	circuits: {
 		title: '回路シミュレーション',
-		subtitle: '実際のリレーデータに基づく統計的シミュレーションです。実際の通信を示すものではありません。',
+		subtitle:
+			'実際のリレーデータに基づく統計的シミュレーションです。実際の通信を示すものではありません。',
 		unknownAs: '不明なAS',
 		guardLabel: 'ガード',
 		middleLabel: 'ミドル',

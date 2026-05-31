@@ -30,7 +30,7 @@
 	</div>
 </div>
 
-<CountryPanel stats={selectedStats} relays={relayStore.relays} totalBandwidth={totalBandwidth} />
+<CountryPanel stats={selectedStats} relays={relayStore.relays} {totalBandwidth} />
 
 <style>
 	.hud {
@@ -53,7 +53,9 @@
 		font-variant-numeric: tabular-nums;
 		letter-spacing: 0.05em;
 		color: var(--accent-cyan);
-		text-shadow: 0 0 20px rgba(0, 212, 255, 0.7), 0 0 40px rgba(0, 212, 255, 0.3);
+		text-shadow:
+			0 0 20px rgba(0, 212, 255, 0.7),
+			0 0 40px rgba(0, 212, 255, 0.3);
 	}
 	.unit {
 		font-size: 0.8rem;

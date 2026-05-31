@@ -55,8 +55,5 @@ export function initViewFromUrl(): void {
 export function syncViewToUrl(): void {
 	if (!browser) return;
 	// obfina only uses the `view` query param, so a plain rewrite is enough.
-	replaceState(
-		`${location.pathname}?view=${viewState.id}${location.hash}`,
-		history.state
-	);
+	replaceState(`${location.pathname}?view=${viewState.id}${location.hash}`, history.state);
 }

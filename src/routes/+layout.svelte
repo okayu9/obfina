@@ -45,7 +45,9 @@
 {@render children()}
 
 <footer>
-	© 2026 <a href="https://okayu.jp" target="_blank" rel="noopener noreferrer">Yumeto Inaoka</a>.{#if relayStore.publishedAt} · {t.footer.dataAsOf} {formatPublishedAt(relayStore.publishedAt)}{/if}
+	© 2026 <a href="https://okayu.jp" target="_blank" rel="noopener noreferrer">Yumeto Inaoka</a
+	>.{#if relayStore.publishedAt}
+		· {t.footer.dataAsOf} {formatPublishedAt(relayStore.publishedAt)}{/if}
 </footer>
 
 <style>

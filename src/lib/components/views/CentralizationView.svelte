@@ -80,7 +80,7 @@
 	);
 
 	const selectedGroup = $derived(
-		selectedAsKey !== null ? groupsAll.find((g) => g.key === selectedAsKey) ?? null : null
+		selectedAsKey !== null ? (groupsAll.find((g) => g.key === selectedAsKey) ?? null) : null
 	);
 
 	const totalBandwidth = $derived(relayStore.relays.reduce((s, r) => s + r.bandwidth, 0));
@@ -160,193 +160,209 @@
 </script>
 
 <div class="view">
-<div class="content">
-	<header>
-		<h1>{t.hosting.title}</h1>
-		<p>{t.hosting.description}</p>
-	</header>
+	<div class="content">
+		<header>
+			<h1>{t.hosting.title}</h1>
+			<p>{t.hosting.description}</p>
+		</header>
 
-	<div class="body">
-		<figure class="plot" class:exit={scope === 'exit'}>
-			<svg
-				bind:this={svgEl}
-				viewBox="0 0 100 100"
-				preserveAspectRatio="none"
-				role="img"
-				aria-label="Lorenz curves"
-				onpointerdown={onDown}
-				onpointermove={onMove}
-				onpointerup={onUp}
-				onpointerleave={onUp}
-			>
-				<line x1="0" y1="100" x2="100" y2="0" class="equality" vector-effect="non-scaling-stroke" />
-				<path d={area(scope === 'all' ? lorenzAll : lorenzExit)} class="fill {scope}" />
-				<path
-					d={curve(lorenzAll)}
-					class="line all"
-					class:dim={scope !== 'all'}
-					vector-effect="non-scaling-stroke"
-				/>
-				<path
-					d={curve(lorenzExit)}
-					class="line exit"
-					class:dim={scope !== 'exit'}
-					vector-effect="non-scaling-stroke"
-				/>
-
-				{#if N > 0}
+		<div class="body">
+			<figure class="plot" class:exit={scope === 'exit'}>
+				<svg
+					bind:this={svgEl}
+					viewBox="0 0 100 100"
+					preserveAspectRatio="none"
+					role="img"
+					aria-label="Lorenz curves"
+					onpointerdown={onDown}
+					onpointermove={onMove}
+					onpointerup={onUp}
+					onpointerleave={onUp}
+				>
 					<line
-						x1={dotX}
-						y1="0"
-						x2={dotX}
-						y2="100"
-						class="cursor-line"
+						x1="0"
+						y1="100"
+						x2="100"
+						y2="0"
+						class="equality"
 						vector-effect="non-scaling-stroke"
 					/>
-					<circle cx={dotX} cy={dotY} r="2.4" class="cursor-dot {scope}" />
-				{/if}
-			</svg>
-			<figcaption>
-				<span>{t.hosting.fewerAses}</span>
-				<span>{t.hosting.cumulativeShare}</span>
-			</figcaption>
-		</figure>
+					<path d={area(scope === 'all' ? lorenzAll : lorenzExit)} class="fill {scope}" />
+					<path
+						d={curve(lorenzAll)}
+						class="line all"
+						class:dim={scope !== 'all'}
+						vector-effect="non-scaling-stroke"
+					/>
+					<path
+						d={curve(lorenzExit)}
+						class="line exit"
+						class:dim={scope !== 'exit'}
+						vector-effect="non-scaling-stroke"
+					/>
 
-		<div class="side">
-			<div class="toggle" role="tablist">
-				<button class:on={scope === 'all'} onclick={() => (scope = 'all')} role="tab">
-					{t.hosting.allRelays}
-				</button>
-				<button class:on={scope === 'exit'} onclick={() => (scope = 'exit')} role="tab">
-					{t.hosting.exitOnly}
-				</button>
-			</div>
+					{#if N > 0}
+						<line
+							x1={dotX}
+							y1="0"
+							x2={dotX}
+							y2="100"
+							class="cursor-line"
+							vector-effect="non-scaling-stroke"
+						/>
+						<circle cx={dotX} cy={dotY} r="2.4" class="cursor-dot {scope}" />
+					{/if}
+				</svg>
+				<figcaption>
+					<span>{t.hosting.fewerAses}</span>
+					<span>{t.hosting.cumulativeShare}</span>
+				</figcaption>
+			</figure>
 
-			<div class="ginis">
-				<div class="gbox all" class:em={scope === 'all'}>
-					<span class="g">{giniAll.toFixed(2)}</span>
-					<span class="l">{t.hosting.giniAll}</span>
+			<div class="side">
+				<div class="toggle" role="tablist">
+					<button class:on={scope === 'all'} onclick={() => (scope = 'all')} role="tab">
+						{t.hosting.allRelays}
+					</button>
+					<button class:on={scope === 'exit'} onclick={() => (scope = 'exit')} role="tab">
+						{t.hosting.exitOnly}
+					</button>
 				</div>
-				<div class="gbox exit" class:em={scope === 'exit'}>
-					<span class="g">{giniExit.toFixed(2)}</span>
-					<span class="l">{t.hosting.giniExit}</span>
-				</div>
-			</div>
 
-			{#if N > 0}
-				<div class="readout">
-					<div class="big {scope}">{pct(topSelShare)}</div>
-					<div class="sub">
-						{t.hosting.heldByTop} <b>{m}</b> {t.hosting.of} {N.toLocaleString()} {t.hosting.providers}
-						{#if marginal}<span class="muted">· #{m} {marginal.label}</span>{/if}
+				<div class="ginis">
+					<div class="gbox all" class:em={scope === 'all'}>
+						<span class="g">{giniAll.toFixed(2)}</span>
+						<span class="l">{t.hosting.giniAll}</span>
+					</div>
+					<div class="gbox exit" class:em={scope === 'exit'}>
+						<span class="g">{giniExit.toFixed(2)}</span>
+						<span class="l">{t.hosting.giniExit}</span>
 					</div>
 				</div>
 
-				<div class="presets">
-					{#each presets as p (p)}
-						{#if p < N}
-							<button class:on={m === p} onclick={() => (pickM = p)}>{t.hosting.top} {p}</button>
-						{/if}
-					{/each}
-					<button class:on={m === N} onclick={() => (pickM = N)}>{t.hosting.all} {N}</button>
-				</div>
+				{#if N > 0}
+					<div class="readout">
+						<div class="big {scope}">{pct(topSelShare)}</div>
+						<div class="sub">
+							{t.hosting.heldByTop} <b>{m}</b>
+							{t.hosting.of}
+							{N.toLocaleString()}
+							{t.hosting.providers}
+							{#if marginal}<span class="muted">· #{m} {marginal.label}</span>{/if}
+						</div>
+					</div>
 
-				<ul class="bars" class:exit={scope === 'exit'}>
-					{#each listed as g, i (g.key)}
-						<li>
-							<button
-								class:sel={i < m}
-								class:active={selectedAsKey === g.key}
-								onclick={() => selectProvider(g)}
+					<div class="presets">
+						{#each presets as p (p)}
+							{#if p < N}
+								<button class:on={m === p} onclick={() => (pickM = p)}>{t.hosting.top} {p}</button>
+							{/if}
+						{/each}
+						<button class:on={m === N} onclick={() => (pickM = N)}>{t.hosting.all} {N}</button>
+					</div>
+
+					<ul class="bars" class:exit={scope === 'exit'}>
+						{#each listed as g, i (g.key)}
+							<li>
+								<button
+									class:sel={i < m}
+									class:active={selectedAsKey === g.key}
+									onclick={() => selectProvider(g)}
+								>
+									<span class="rank">{i + 1}</span>
+									<span class="as" title={g.key}>{g.label}</span>
+									<span class="track"><i style:width={pct(share(g))}></i></span>
+									<span class="v">{pct(share(g))}</span>
+								</button>
+							</li>
+						{/each}
+						{#if tailCount > 0}
+							<li class="rest" class:sel={m > LIST_N}>
+								<span class="rank">·</span>
+								<span class="as">+{tailCount.toLocaleString()} {t.hosting.moreProviders}</span>
+								<span class="track"><i style:width={pct(tailShare)}></i></span>
+								<span class="v">{pct(tailShare)}</span>
+							</li>
+						{/if}
+					</ul>
+				{/if}
+			</div>
+
+			<!-- Provider detail panel -->
+			{#if selectedAsKey !== null && selectedGroup !== null}
+				<div class="detail-panel">
+					<div class="detail-header">
+						<div class="detail-title">
+							<span class="detail-as-key">{selectedAsKey}</span>
+							<span class="detail-as-name">{selectedGroup.label}</span>
+						</div>
+						<button class="close-btn" onclick={closePanel} aria-label="Close panel">&#x2715;</button
+						>
+					</div>
+
+					<div class="detail-stats">
+						<div class="stat">
+							<span class="stat-val">{selectedRelays.length}</span>
+							<span class="stat-lbl">{t.hosting.relays}</span>
+						</div>
+						<div class="stat">
+							<span class="stat-val"
+								>{totalBandwidth > 0
+									? (
+											(selectedRelays.reduce((s, r) => s + r.bandwidth, 0) / totalBandwidth) *
+											100
+										).toFixed(1)
+									: '0'}%</span
 							>
-								<span class="rank">{i + 1}</span>
-								<span class="as" title={g.key}>{g.label}</span>
-								<span class="track"><i style:width={pct(share(g))}></i></span>
-								<span class="v">{pct(share(g))}</span>
-							</button>
+							<span class="stat-lbl">{t.hosting.bandwidthShare}</span>
+						</div>
+						<div class="stat">
+							<span class="stat-val"
+								>{totalConsensus > 0
+									? ((selectedGroup.weight / totalConsensus) * 100).toFixed(1)
+									: '0'}%</span
+							>
+							<span class="stat-lbl">{t.hosting.consensusShare}</span>
+						</div>
+					</div>
+
+					<ul class="relay-list">
+						<li class="relay-header">
+							<span class="rn">{t.hosting.nickname}</span>
+							<span class="rc">{t.hosting.cc}</span>
+							<span class="rb">{t.hosting.bandwidth}</span>
+							<span class="rf">{t.hosting.flags}</span>
 						</li>
-					{/each}
-					{#if tailCount > 0}
-						<li class="rest" class:sel={m > LIST_N}>
-							<span class="rank">·</span>
-							<span class="as">+{tailCount.toLocaleString()} {t.hosting.moreProviders}</span>
-							<span class="track"><i style:width={pct(tailShare)}></i></span>
-							<span class="v">{pct(tailShare)}</span>
-						</li>
-					{/if}
-				</ul>
+						{#each selectedRelays as r (r.nickname + r.bandwidth)}
+							<li class="relay-row">
+								<span class="rn" title={r.nickname}>{r.nickname}</span>
+								<span class="rc">{r.country.toUpperCase()}</span>
+								<span class="rb">
+									<span class="rb-bar-wrap">
+										<span
+											class="rb-bar"
+											style:width="{maxRelayBw > 0 ? (r.bandwidth / maxRelayBw) * 100 : 0}%"
+											style:background={bwColor(r.bandwidth)}
+										></span>
+									</span>
+									<span class="rb-text" style:color={bwColor(r.bandwidth)}
+										>{fmtBw(r.bandwidth)}</span
+									>
+								</span>
+								<span class="rf">
+									{#if hasFlag(r, 'Guard')}<span class="flag guard">G</span>{/if}
+									{#if hasFlag(r, 'Middle') || (!hasFlag(r, 'Guard') && !hasFlag(r, 'Exit'))}<span
+											class="flag middle">M</span
+										>{/if}
+									{#if hasFlag(r, 'Exit')}<span class="flag exit">E</span>{/if}
+								</span>
+							</li>
+						{/each}
+					</ul>
+				</div>
 			{/if}
 		</div>
-
-		<!-- Provider detail panel -->
-		{#if selectedAsKey !== null && selectedGroup !== null}
-			<div class="detail-panel">
-				<div class="detail-header">
-					<div class="detail-title">
-						<span class="detail-as-key">{selectedAsKey}</span>
-						<span class="detail-as-name">{selectedGroup.label}</span>
-					</div>
-					<button class="close-btn" onclick={closePanel} aria-label="Close panel">&#x2715;</button>
-				</div>
-
-				<div class="detail-stats">
-					<div class="stat">
-						<span class="stat-val">{selectedRelays.length}</span>
-						<span class="stat-lbl">{t.hosting.relays}</span>
-					</div>
-					<div class="stat">
-						<span class="stat-val"
-							>{totalBandwidth > 0
-								? ((selectedRelays.reduce((s, r) => s + r.bandwidth, 0) / totalBandwidth) * 100).toFixed(1)
-								: '0'}%</span
-						>
-						<span class="stat-lbl">{t.hosting.bandwidthShare}</span>
-					</div>
-					<div class="stat">
-						<span class="stat-val"
-							>{totalConsensus > 0
-								? ((selectedGroup.weight / totalConsensus) * 100).toFixed(1)
-								: '0'}%</span
-						>
-						<span class="stat-lbl">{t.hosting.consensusShare}</span>
-					</div>
-				</div>
-
-				<ul class="relay-list">
-					<li class="relay-header">
-						<span class="rn">{t.hosting.nickname}</span>
-						<span class="rc">{t.hosting.cc}</span>
-						<span class="rb">{t.hosting.bandwidth}</span>
-						<span class="rf">{t.hosting.flags}</span>
-					</li>
-					{#each selectedRelays as r (r.nickname + r.bandwidth)}
-						<li class="relay-row">
-							<span class="rn" title={r.nickname}>{r.nickname}</span>
-							<span class="rc">{r.country.toUpperCase()}</span>
-							<span class="rb">
-								<span class="rb-bar-wrap">
-									<span
-										class="rb-bar"
-										style:width="{maxRelayBw > 0 ? (r.bandwidth / maxRelayBw) * 100 : 0}%"
-										style:background={bwColor(r.bandwidth)}
-									></span>
-								</span>
-								<span class="rb-text" style:color={bwColor(r.bandwidth)}>{fmtBw(r.bandwidth)}</span>
-							</span>
-							<span class="rf">
-								{#if hasFlag(r, 'Guard')}<span class="flag guard">G</span>{/if}
-								{#if hasFlag(r, 'Middle') || (!hasFlag(r, 'Guard') && !hasFlag(r, 'Exit'))}<span
-										class="flag middle">M</span
-									>{/if}
-								{#if hasFlag(r, 'Exit')}<span class="flag exit">E</span>{/if}
-							</span>
-						</li>
-					{/each}
-				</ul>
-			</div>
-		{/if}
 	</div>
-</div>
 </div>
 
 <style>
@@ -617,7 +633,9 @@
 		opacity: 0.5;
 		border-radius: 5px;
 		padding: 0.25rem 0.3rem;
-		transition: opacity 0.15s, background 0.12s;
+		transition:
+			opacity 0.15s,
+			background 0.12s;
 		width: 100%;
 		background: none;
 		border: none;
@@ -756,7 +774,9 @@
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
-		transition: color 0.12s, border-color 0.12s;
+		transition:
+			color 0.12s,
+			border-color 0.12s;
 	}
 	.close-btn:hover {
 		color: #e6f1ff;

@@ -33,7 +33,8 @@
 			href: 'https://svn-archive.torproject.org/svn/projects/design-paper/tor-design.pdf',
 			name: 'Tor Design Paper',
 			desc: 'Dingledine, Mathewson & Syverson (2004). Describes the onion routing architecture, path selection algorithm, and threat model that Tor is built on.',
-			descJa: 'Dingledine・Mathewson・Syverson（2004年）。Torの基盤となるオニオンルーティングの仕組み、経路選択アルゴリズム、脅威モデルを解説した論文。',
+			descJa:
+				'Dingledine・Mathewson・Syverson（2004年）。Torの基盤となるオニオンルーティングの仕組み、経路選択アルゴリズム、脅威モデルを解説した論文。',
 			url: 'svn-archive.torproject.org'
 		},
 		{
@@ -61,7 +62,8 @@
 			href: 'https://www.ohmygodel.com/publications/usersrouted-ccs13.pdf',
 			name: '"Users Get Routed"',
 			desc: 'Traffic correlation attack analysis showing how an adversary controlling AS-level positions can deanonymize Tor users.',
-			descJa: 'ASレベルの経路を制御する攻撃者がTorユーザーを匿名解除できることを示したトラフィック相関攻撃の分析。',
+			descJa:
+				'ASレベルの経路を制御する攻撃者がTorユーザーを匿名解除できることを示したトラフィック相関攻撃の分析。',
 			url: 'ohmygodel.com (ccs13)'
 		},
 		{
@@ -75,7 +77,8 @@
 			href: 'https://ooni.org/',
 			name: 'OONI',
 			desc: 'Measures internet censorship worldwide; contextualises where Tor usage data reflects blocked access rather than voluntary adoption.',
-			descJa: '世界各地のインターネット検閲を計測するプロジェクト。Torの利用データが自発的な採用ではなくアクセス遮断を反映している地域の文脈理解に役立つ。',
+			descJa:
+				'世界各地のインターネット検閲を計測するプロジェクト。Torの利用データが自発的な採用ではなくアクセス遮断を反映している地域の文脈理解に役立つ。',
 			url: 'ooni.org'
 		}
 	];
@@ -85,21 +88,24 @@
 			href: 'https://www.eff.org/',
 			name: 'Electronic Frontier Foundation',
 			desc: 'Digital rights organisation that has long advocated for and supported the Tor Project, and publishes Surveillance Self-Defense guides.',
-			descJa: 'Torプロジェクトを長年支援してきたデジタル権利団体。「自己防衛監視ガイド」も公開している。',
+			descJa:
+				'Torプロジェクトを長年支援してきたデジタル権利団体。「自己防衛監視ガイド」も公開している。',
 			url: 'eff.org'
 		},
 		{
 			href: 'https://freedom.press/',
 			name: 'Freedom of the Press Foundation',
 			desc: 'Trains journalists in digital security tools including Tor Browser; a major institutional supporter of the Tor network.',
-			descJa: 'Tor Browserを含むデジタルセキュリティツールをジャーナリストに教育する団体であり、Torネットワークの主要な支援者。',
+			descJa:
+				'Tor Browserを含むデジタルセキュリティツールをジャーナリストに教育する団体であり、Torネットワークの主要な支援者。',
 			url: 'freedom.press'
 		},
 		{
 			href: 'https://www.accessnow.org/',
 			name: 'Access Now',
 			desc: 'Defends and extends the digital rights of users at risk globally, with a focus on circumvention tools in high-censorship regions.',
-			descJa: '高度な検閲環境下での迂回ツールに重点を置きつつ、世界中のリスクにさらされたユーザーのデジタル権利を守り拡大する団体。',
+			descJa:
+				'高度な検閲環境下での迂回ツールに重点を置きつつ、世界中のリスクにさらされたユーザーのデジタル権利を守り拡大する団体。',
 			url: 'accessnow.org'
 		}
 	];
@@ -109,7 +115,8 @@
 			href: 'https://okayu.jp',
 			name: 'Yumeto Inaoka',
 			desc: 'Software engineer based in Japan. Built obfina to make Tor network health legible to a wider audience.',
-			descJa: '日本在住のソフトウェアエンジニア。Torネットワークの状態をより多くの人に伝えるためにobfinaを制作。',
+			descJa:
+				'日本在住のソフトウェアエンジニア。Torネットワークの状態をより多くの人に伝えるためにobfinaを制作。',
 			url: 'okayu.jp'
 		}
 	];

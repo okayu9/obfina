@@ -116,7 +116,8 @@ export const en = {
 	// Circuits view
 	circuits: {
 		title: 'Circuit Simulation',
-		subtitle: 'A statistical simulation based on real relay data. These are not actual live circuits.',
+		subtitle:
+			'A statistical simulation based on real relay data. These are not actual live circuits.',
 		unknownAs: 'unknown AS',
 		guardLabel: 'Guard',
 		middleLabel: 'Middle',

@@ -84,12 +84,10 @@
 	// Unique AS count
 	const uniqueAS = $derived(new Set(countryRelays.map((r) => r.as).filter(Boolean)).size);
 
-
 	// Max bandwidth among filtered relays (for relative color scale)
 	const maxRelayBw = $derived(
 		filteredRelays.length > 0 ? Math.max(...filteredRelays.map((r) => r.bandwidth)) : 1
 	);
-
 
 	// Top AS providers by bandwidth share within country
 	interface AsEntry {
@@ -145,7 +143,11 @@
 </script>
 
 {#if stats}
-	<aside class="panel" class:panel--expanded={expanded} transition:fly={{ x: 320, duration: 350, easing: cubicOut }}>
+	<aside
+		class="panel"
+		class:panel--expanded={expanded}
+		transition:fly={{ x: 320, duration: 350, easing: cubicOut }}
+	>
 		<button class="close" onclick={close} aria-label="close">×</button>
 
 		<div class="flag">{flagEmoji(stats.country)}</div>
@@ -190,7 +192,13 @@
 				xmlns="http://www.w3.org/2000/svg"
 				aria-hidden="true"
 			>
-				<path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+				<path
+					d="M2 4l4 4 4-4"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
 			</svg>
 		</button>
 
@@ -229,10 +237,38 @@
 				{#if countryRelays.length > 0}
 					<div class="section-title">{t.countryPanel.relayList}</div>
 					<div class="role-filter">
-						<button class="rf-btn" class:active={roleFilter === 'all'} onclick={() => { roleFilter = 'all'; selectedRelay = null; }}>All</button>
-						<button class="rf-btn" class:active={roleFilter === 'guard'} onclick={() => { roleFilter = 'guard'; selectedRelay = null; }}>G</button>
-						<button class="rf-btn" class:active={roleFilter === 'middle'} onclick={() => { roleFilter = 'middle'; selectedRelay = null; }}>M</button>
-						<button class="rf-btn" class:active={roleFilter === 'exit'} onclick={() => { roleFilter = 'exit'; selectedRelay = null; }}>E</button>
+						<button
+							class="rf-btn"
+							class:active={roleFilter === 'all'}
+							onclick={() => {
+								roleFilter = 'all';
+								selectedRelay = null;
+							}}>All</button
+						>
+						<button
+							class="rf-btn"
+							class:active={roleFilter === 'guard'}
+							onclick={() => {
+								roleFilter = 'guard';
+								selectedRelay = null;
+							}}>G</button
+						>
+						<button
+							class="rf-btn"
+							class:active={roleFilter === 'middle'}
+							onclick={() => {
+								roleFilter = 'middle';
+								selectedRelay = null;
+							}}>M</button
+						>
+						<button
+							class="rf-btn"
+							class:active={roleFilter === 'exit'}
+							onclick={() => {
+								roleFilter = 'exit';
+								selectedRelay = null;
+							}}>E</button
+						>
 					</div>
 					<ul class="relay-list">
 						{#each filteredRelays.slice(0, 10) as r, i (r.nickname + r.bandwidth)}
@@ -248,16 +284,24 @@
 										<span class="rn">{r.nickname}</span>
 										<span class="rf">
 											{#if hasFlag(r, 'Guard')}<span class="rflag guard">G</span>{/if}
-											{#if !hasFlag(r, 'Guard') && !hasFlag(r, 'Exit')}<span class="rflag middle">M</span>{/if}
+											{#if !hasFlag(r, 'Guard') && !hasFlag(r, 'Exit')}<span class="rflag middle"
+													>M</span
+												>{/if}
 											{#if hasFlag(r, 'Exit')}<span class="rflag exit">E</span>{/if}
 										</span>
 									</span>
 									<span class="rrank-empty"></span>
 									<span class="rb">
 										<span class="rb-bar-wrap">
-											<span class="rb-bar" style:width="{(r.bandwidth / maxRelayBw * 100).toFixed(1)}%" style:background={bwColor(r.bandwidth)}></span>
+											<span
+												class="rb-bar"
+												style:width="{((r.bandwidth / maxRelayBw) * 100).toFixed(1)}%"
+												style:background={bwColor(r.bandwidth)}
+											></span>
 										</span>
-										<span class="rb-text" style:color={bwColor(r.bandwidth)}>{fmtBw(r.bandwidth)}</span>
+										<span class="rb-text" style:color={bwColor(r.bandwidth)}
+											>{fmtBw(r.bandwidth)}</span
+										>
 									</span>
 								</button>
 							</li>
@@ -272,7 +316,9 @@
 							<div class="rd-nickname">{selectedRelay.nickname}</div>
 							<div class="rd-flags">
 								{#if hasFlag(selectedRelay, 'Guard')}<span class="rflag guard">G</span>{/if}
-								{#if !hasFlag(selectedRelay, 'Guard') && !hasFlag(selectedRelay, 'Exit')}<span class="rflag middle">M</span>{/if}
+								{#if !hasFlag(selectedRelay, 'Guard') && !hasFlag(selectedRelay, 'Exit')}<span
+										class="rflag middle">M</span
+									>{/if}
 								{#if hasFlag(selectedRelay, 'Exit')}<span class="rflag exit">E</span>{/if}
 							</div>
 							<div class="rd-row">
@@ -293,7 +339,11 @@
 							</div>
 							<div class="rd-row">
 								<span class="rd-lbl">Role prob.</span>
-								<span class="rd-val">G {(selectedRelay.guardProb * 100).toFixed(1)}% / M {(selectedRelay.middleProb * 100).toFixed(1)}% / E {(selectedRelay.exitProb * 100).toFixed(1)}%</span>
+								<span class="rd-val"
+									>G {(selectedRelay.guardProb * 100).toFixed(1)}% / M {(
+										selectedRelay.middleProb * 100
+									).toFixed(1)}% / E {(selectedRelay.exitProb * 100).toFixed(1)}%</span
+								>
 							</div>
 						</div>
 					{/if}
@@ -475,7 +525,10 @@
 		font-size: 0.72rem;
 		letter-spacing: 0.08em;
 		cursor: pointer;
-		transition: background 0.15s, border-color 0.15s, color 0.15s;
+		transition:
+			background 0.15s,
+			border-color 0.15s,
+			color 0.15s;
 	}
 	.expand-btn:hover {
 		background: rgba(0, 212, 255, 0.12);
@@ -770,7 +823,9 @@
 		color: #6f8aa3;
 		cursor: pointer;
 		font-family: inherit;
-		transition: color 0.15s, border-color 0.15s;
+		transition:
+			color 0.15s,
+			border-color 0.15s;
 	}
 	.rf-btn:hover {
 		color: #9fc6e0;

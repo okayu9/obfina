@@ -54,76 +54,86 @@
 </script>
 
 <div class="view">
-<div class="content">
-	<header>
-		<h1>{t.paths.title}</h1>
-		<p>{t.paths.description}</p>
-	</header>
+	<div class="content">
+		<header>
+			<h1>{t.paths.title}</h1>
+			<p>{t.paths.description}</p>
+		</header>
 
-	<div class="body">
-		<figure class="plot">
-			<svg
-				bind:this={svgEl}
-				viewBox="0 0 100 100"
-				preserveAspectRatio="none"
-				role="img"
-				aria-label="relay concentration curve"
-				onpointerdown={onDown}
-				onpointermove={onMove}
-				onpointerup={onUp}
-				onpointerleave={onUp}
-			>
-				<line x1="0" y1="100" x2="100" y2="0" class="equality" vector-effect="non-scaling-stroke" />
-				<path d={path(curveGuard)} class="line guard" vector-effect="non-scaling-stroke" />
-				<path d={path(curveExit)} class="line exit" vector-effect="non-scaling-stroke" />
-				<path d={path(curveMain)} class="line main" vector-effect="non-scaling-stroke" />
+		<div class="body">
+			<figure class="plot">
+				<svg
+					bind:this={svgEl}
+					viewBox="0 0 100 100"
+					preserveAspectRatio="none"
+					role="img"
+					aria-label="relay concentration curve"
+					onpointerdown={onDown}
+					onpointermove={onMove}
+					onpointerup={onUp}
+					onpointerleave={onUp}
+				>
+					<line
+						x1="0"
+						y1="100"
+						x2="100"
+						y2="0"
+						class="equality"
+						vector-effect="non-scaling-stroke"
+					/>
+					<path d={path(curveGuard)} class="line guard" vector-effect="non-scaling-stroke" />
+					<path d={path(curveExit)} class="line exit" vector-effect="non-scaling-stroke" />
+					<path d={path(curveMain)} class="line main" vector-effect="non-scaling-stroke" />
 
-				<line
-					x1={frac * 100}
-					y1="0"
-					x2={frac * 100}
-					y2="100"
-					class="marker"
-					vector-effect="non-scaling-stroke"
-				/>
-				<circle cx={frac * 100} cy={(1 - markShare) * 100} r="2.4" class="dot" />
-			</svg>
-			<figcaption><span>{t.paths.topRelays}</span><span>{t.paths.shareOfTraffic}</span></figcaption>
-		</figure>
+					<line
+						x1={frac * 100}
+						y1="0"
+						x2={frac * 100}
+						y2="100"
+						class="marker"
+						vector-effect="non-scaling-stroke"
+					/>
+					<circle cx={frac * 100} cy={(1 - markShare) * 100} r="2.4" class="dot" />
+				</svg>
+				<figcaption>
+					<span>{t.paths.topRelays}</span><span>{t.paths.shareOfTraffic}</span>
+				</figcaption>
+			</figure>
 
-		<div class="side">
-			<div class="readout">
-				<div class="big">{pct(markShare)}</div>
-				<div class="sub">
-					{t.paths.ofTrafficRidesOn}
-					<b>{pct(frac, frac < 0.1 ? 1 : 0)}</b>
-					{t.paths.ofRelays}
-					<span class="muted">(~{markCount.toLocaleString()} of {nRelays.toLocaleString()})</span>
+			<div class="side">
+				<div class="readout">
+					<div class="big">{pct(markShare)}</div>
+					<div class="sub">
+						{t.paths.ofTrafficRidesOn}
+						<b>{pct(frac, frac < 0.1 ? 1 : 0)}</b>
+						{t.paths.ofRelays}
+						<span class="muted">(~{markCount.toLocaleString()} of {nRelays.toLocaleString()})</span>
+					</div>
 				</div>
-			</div>
 
-			<div class="presets">
-				{#each presets as p (p)}
-					<button class:on={Math.abs(frac - p) < 1e-6} onclick={() => (frac = p)}>
-						{t.paths.top} {pct(p, p < 0.1 ? 1 : 0)}
-					</button>
-				{/each}
-			</div>
+				<div class="presets">
+					{#each presets as p (p)}
+						<button class:on={Math.abs(frac - p) < 1e-6} onclick={() => (frac = p)}>
+							{t.paths.top}
+							{pct(p, p < 0.1 ? 1 : 0)}
+						</button>
+					{/each}
+				</div>
 
-			<div class="gbox">
-				<span class="g">{giniMain.toFixed(2)}</span>
-				<span class="l">{t.paths.giniConsensus}</span>
-			</div>
+				<div class="gbox">
+					<span class="g">{giniMain.toFixed(2)}</span>
+					<span class="l">{t.paths.giniConsensus}</span>
+				</div>
 
-			<ul class="key">
-				<li><i class="sw main"></i>{t.paths.legendConsensus}</li>
-				<li><i class="sw guard"></i>{t.paths.legendGuard}</li>
-				<li><i class="sw exit"></i>{t.paths.legendExit}</li>
-				<li><i class="sw eq"></i>{t.paths.legendEquality}</li>
-			</ul>
+				<ul class="key">
+					<li><i class="sw main"></i>{t.paths.legendConsensus}</li>
+					<li><i class="sw guard"></i>{t.paths.legendGuard}</li>
+					<li><i class="sw exit"></i>{t.paths.legendExit}</li>
+					<li><i class="sw eq"></i>{t.paths.legendEquality}</li>
+				</ul>
+			</div>
 		</div>
 	</div>
-</div>
 </div>
 
 <style>

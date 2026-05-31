@@ -39,16 +39,16 @@ flowchart TD
 
 Major technology choices are recorded individually as Architecture Decision Records (ADRs) in [`docs/decisions/`](decisions/). Each ADR documents the context, the decision, and its consequences — including tradeoffs.
 
-| ADR                                             | Decision                                             |
-| ----------------------------------------------- | ---------------------------------------------------- |
-| [ADR-001](decisions/001-sveltekit.md)           | Use SvelteKit as the application framework           |
-| [ADR-002](decisions/002-threlte.md)             | Use Threlte + Three.js for 3D rendering (superseded) |
-| [ADR-003](decisions/003-d3.md)                  | Use D3.js for geography and data-driven visuals      |
-| [ADR-004](decisions/004-cloudflare-stack.md)    | Host entirely on Cloudflare                          |
-| [ADR-005](decisions/005-cloudflare-kv-cache.md) | Use Cloudflare KV for API response caching           |
-| [ADR-006](decisions/006-terraform.md)           | Use Terraform for infrastructure management          |
-| [ADR-007](decisions/007-2d-map-over-globe.md)   | Use a 2D D3 map instead of a 3D globe                |
-| [ADR-008](decisions/008-value-by-alpha.md)      | Use a value-by-alpha encoding for the country map    |
+| ADR                                             | Decision                                                   |
+| ----------------------------------------------- | ---------------------------------------------------------- |
+| [ADR-001](decisions/001-sveltekit.md)           | Use SvelteKit as the application framework                 |
+| [ADR-002](decisions/002-threlte.md)             | Use Threlte + Three.js for 3D rendering (superseded)       |
+| [ADR-003](decisions/003-d3.md)                  | Use D3.js for geography and data-driven visuals            |
+| [ADR-004](decisions/004-cloudflare-stack.md)    | Host entirely on Cloudflare                                |
+| [ADR-005](decisions/005-cloudflare-kv-cache.md) | Use Cloudflare KV for API response caching                 |
+| [ADR-006](decisions/006-terraform.md)           | Use Terraform for infrastructure management                |
+| [ADR-007](decisions/007-2d-map-over-globe.md)   | Use a 2D D3 map instead of a 3D globe                      |
+| [ADR-008](decisions/008-value-by-alpha.md)      | Use a value-by-alpha encoding for the country map          |
 | [ADR-009](decisions/009-multi-view.md)          | Add linked views (hosting, paths, growth, circuits, about) |
 
 ## Caching strategy

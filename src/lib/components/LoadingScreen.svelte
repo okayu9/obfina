@@ -23,11 +23,7 @@
 
 			<!-- Travelling packet -->
 			<circle class="packet" r="3.5">
-				<animateMotion
-					dur="2.4s"
-					repeatCount="indefinite"
-					path="M60,14 L99.9,83 L20.1,83 Z"
-				/>
+				<animateMotion dur="2.4s" repeatCount="indefinite" path="M60,14 L99.9,83 L20.1,83 Z" />
 			</circle>
 
 			<!-- Core pulse -->
@@ -160,37 +156,85 @@
 		opacity: 0.6;
 		animation: eq 1.1s ease-in-out infinite;
 	}
-	.bar-1 { animation-delay: 0s;    height: 30%; }
-	.bar-2 { animation-delay: 0.15s; height: 70%; }
-	.bar-3 { animation-delay: 0.3s;  height: 50%; }
-	.bar-4 { animation-delay: 0.45s; height: 90%; }
-	.bar-5 { animation-delay: 0.6s;  height: 40%; }
+	.bar-1 {
+		animation-delay: 0s;
+		height: 30%;
+	}
+	.bar-2 {
+		animation-delay: 0.15s;
+		height: 70%;
+	}
+	.bar-3 {
+		animation-delay: 0.3s;
+		height: 50%;
+	}
+	.bar-4 {
+		animation-delay: 0.45s;
+		height: 90%;
+	}
+	.bar-5 {
+		animation-delay: 0.6s;
+		height: 40%;
+	}
 
 	/* Keyframes */
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 	@keyframes dash {
-		to { stroke-dashoffset: -16; }
+		to {
+			stroke-dashoffset: -16;
+		}
 	}
 	@keyframes pulse-core {
-		0%, 100% { opacity: 0.4; transform: scale(0.85); transform-origin: 60px 60px; }
-		50% { opacity: 1; transform: scale(1.2); transform-origin: 60px 60px; }
+		0%,
+		100% {
+			opacity: 0.4;
+			transform: scale(0.85);
+			transform-origin: 60px 60px;
+		}
+		50% {
+			opacity: 1;
+			transform: scale(1.2);
+			transform-origin: 60px 60px;
+		}
 	}
 	@keyframes glow-cyan {
-		0%, 100% { opacity: 0.7; }
-		50% { opacity: 1; }
+		0%,
+		100% {
+			opacity: 0.7;
+		}
+		50% {
+			opacity: 1;
+		}
 	}
 	@keyframes glow-mid {
-		0%, 100% { opacity: 0.6; }
-		50% { opacity: 1; }
+		0%,
+		100% {
+			opacity: 0.6;
+		}
+		50% {
+			opacity: 1;
+		}
 	}
 	@keyframes glow-green {
-		0%, 100% { opacity: 0.7; }
-		50% { opacity: 1; }
+		0%,
+		100% {
+			opacity: 0.7;
+		}
+		50% {
+			opacity: 1;
+		}
 	}
 	@keyframes eq {
-		0%, 100% { transform: scaleY(0.3); }
-		50% { transform: scaleY(1); }
+		0%,
+		100% {
+			transform: scaleY(0.3);
+		}
+		50% {
+			transform: scaleY(1);
+		}
 	}
 </style>

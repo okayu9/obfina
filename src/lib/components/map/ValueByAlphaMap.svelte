@@ -30,7 +30,15 @@
 		type: 'Feature',
 		geometry: {
 			type: 'Polygon',
-			coordinates: [[[-180, -60], [180, -60], [180, 90], [-180, 90], [-180, -60]]]
+			coordinates: [
+				[
+					[-180, -60],
+					[180, -60],
+					[180, 90],
+					[-180, 90],
+					[-180, -60]
+				]
+			]
 		},
 		properties: {}
 	} as const;
@@ -64,8 +72,12 @@
 
 	// One world's pixel width (a full 360° of longitude) at scale 1.
 	const worldW = $derived(projection ? projection([180, 0])![0] - projection([-180, 0])![0] : 0);
-	const mapTop = $derived(projection ? geoPath(projection).bounds(BOUNDS_NO_ANTARCTICA as never)[0][1] : 0);
-	const mapBottom = $derived(projection ? geoPath(projection).bounds(BOUNDS_NO_ANTARCTICA as never)[1][1] : 0);
+	const mapTop = $derived(
+		projection ? geoPath(projection).bounds(BOUNDS_NO_ANTARCTICA as never)[0][1] : 0
+	);
+	const mapBottom = $derived(
+		projection ? geoPath(projection).bounds(BOUNDS_NO_ANTARCTICA as never)[1][1] : 0
+	);
 
 	// Side copies left/right of the centre so horizontal panning never shows an edge.
 	const COPIES = [-1, 0, 1, 2];

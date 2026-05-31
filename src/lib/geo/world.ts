@@ -44,10 +44,7 @@ for (const f of countryFeatures) {
  * @param code  lowercase alpha-2 country code
  * @param maxTries  maximum rejection-sampling attempts before falling back
  */
-export function randomPointInCountry(
-	code: string,
-	maxTries = 40
-): [number, number] | null {
+export function randomPointInCountry(code: string, maxTries = 40): [number, number] | null {
 	const f = featureByCode.get(code);
 	if (!f) return centroidByCode.get(code) ?? null;
 
@@ -59,10 +56,7 @@ export function randomPointInCountry(
 	const dLat = latMax - latMin;
 
 	for (let i = 0; i < maxTries; i++) {
-		const pt: [number, number] = [
-			lonMin + Math.random() * dLon,
-			latMin + Math.random() * dLat
-		];
+		const pt: [number, number] = [lonMin + Math.random() * dLon, latMin + Math.random() * dLat];
 		if (geoContains(f as never, pt)) return pt;
 	}
 
@@ -75,7 +69,15 @@ const BOUNDS_NO_ANTARCTICA = {
 	type: 'Feature',
 	geometry: {
 		type: 'Polygon',
-		coordinates: [[[-180, -60], [180, -60], [180, 90], [-180, 90], [-180, -60]]]
+		coordinates: [
+			[
+				[-180, -60],
+				[180, -60],
+				[180, 90],
+				[-180, 90],
+				[-180, -60]
+			]
+		]
 	},
 	properties: {}
 } as const;
