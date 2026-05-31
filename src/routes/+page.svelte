@@ -8,6 +8,7 @@
 	import CircuitView from '$lib/components/views/CircuitView.svelte';
 	import AboutView from '$lib/components/views/AboutView.svelte';
 	import LoadingScreen from '$lib/components/LoadingScreen.svelte';
+	import KonamiEgg from '$lib/components/KonamiEgg.svelte';
 	import { relayStore, loadRelays } from '$lib/stores/relays.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
 	import { getMessages } from '$lib/i18n/index.svelte';
@@ -56,6 +57,7 @@
 </script>
 
 <svelte:window onkeydown={onKeydown} />
+<KonamiEgg />
 
 <div class="scene">
 	{#if viewState.id === 'about'}
