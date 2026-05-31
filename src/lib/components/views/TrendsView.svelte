@@ -74,6 +74,20 @@
 	function userSeries(cc: string): number[] {
 		return users.series.map((s) => s.values[cc] ?? 0);
 	}
+
+	// --- chart cursor ---
+	// One shared hover state; each chart tracks the index under the pointer and
+	// draws its own guide line, dots and a floating readout at that date.
+	let hover = $state<{ chart: 'size' | 'bw' | 'users'; i: number } | null>(null);
+	function onChartMove(e: PointerEvent, chart: 'size' | 'bw' | 'users', n: number) {
+		if (n < 2) return;
+		const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+		const frac = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+		hover = { chart, i: Math.round(frac * (n - 1)) };
+	}
+	const clearHover = () => (hover = null);
+	const xAt = (i: number, n: number) => (n > 1 ? (i / (n - 1)) * 100 : 0);
+	const yAt = (v: number, max: number) => (max > 0 ? (1 - v / max) * 100 : 100);
 </script>
 
 <div class="view">
@@ -99,13 +113,42 @@
 				</div>
 				<div class="chart">
 					{#if sizeVals.length > 1}
-						<svg viewBox="0 0 100 100" preserveAspectRatio="none">
+						<svg
+							viewBox="0 0 100 100"
+							preserveAspectRatio="none"
+							role="img"
+							aria-label="running relays over time"
+							onpointermove={(e) => onChartMove(e, 'size', sizeVals.length)}
+							onpointerleave={clearHover}
+						>
 							<path
 								d={linePath(sizeVals, sizeMax)}
 								class="line cyan"
 								vector-effect="non-scaling-stroke"
 							/>
+							{#if hover?.chart === 'size'}
+								<line
+									class="cursor-line"
+									x1={xAt(hover.i, sizeVals.length)}
+									y1="0"
+									x2={xAt(hover.i, sizeVals.length)}
+									y2="100"
+									vector-effect="non-scaling-stroke"
+								/>
+								<circle
+									class="cursor-dot cyan"
+									cx={xAt(hover.i, sizeVals.length)}
+									cy={yAt(sizeVals[hover.i], sizeMax)}
+									r="2.4"
+								/>
+							{/if}
 						</svg>
+						{#if hover?.chart === 'size'}
+							<div class="tip" style:left={`${xAt(hover.i, sizeVals.length)}%`}>
+								<span class="tip-d">{data.networkSize[hover.i].date}</span>
+								<span class="tip-v">{compact(sizeVals[hover.i])} relays</span>
+							</div>
+						{/if}
 						<span class="t0">{data.networkSize[0].date}</span>
 						<span class="t1">{last(data.networkSize)?.date}</span>
 					{:else}
@@ -126,7 +169,14 @@
 				</div>
 				<div class="chart">
 					{#if bw.length > 1}
-						<svg viewBox="0 0 100 100" preserveAspectRatio="none">
+						<svg
+							viewBox="0 0 100 100"
+							preserveAspectRatio="none"
+							role="img"
+							aria-label="advertised vs consumed bandwidth over time"
+							onpointermove={(e) => onChartMove(e, 'bw', bw.length)}
+							onpointerleave={clearHover}
+						>
 							<path d={areaPath(adv, con, bwMax)} class="fill" />
 							<path d={linePath(adv, bwMax)} class="line cyan" vector-effect="non-scaling-stroke" />
 							<path
@@ -134,7 +184,36 @@
 								class="line green"
 								vector-effect="non-scaling-stroke"
 							/>
+							{#if hover?.chart === 'bw'}
+								<line
+									class="cursor-line"
+									x1={xAt(hover.i, bw.length)}
+									y1="0"
+									x2={xAt(hover.i, bw.length)}
+									y2="100"
+									vector-effect="non-scaling-stroke"
+								/>
+								<circle
+									class="cursor-dot cyan"
+									cx={xAt(hover.i, bw.length)}
+									cy={yAt(adv[hover.i], bwMax)}
+									r="2.4"
+								/>
+								<circle
+									class="cursor-dot green"
+									cx={xAt(hover.i, bw.length)}
+									cy={yAt(con[hover.i], bwMax)}
+									r="2.4"
+								/>
+							{/if}
 						</svg>
+						{#if hover?.chart === 'bw'}
+							<div class="tip" style:left={`${xAt(hover.i, bw.length)}%`}>
+								<span class="tip-d">{bw[hover.i].date}</span>
+								<span class="tip-v"><i class="sw cyan"></i>{formatBandwidth(adv[hover.i])}</span>
+								<span class="tip-v"><i class="sw green"></i>{formatBandwidth(con[hover.i])}</span>
+							</div>
+						{/if}
 						<span class="t0">{bw[0].date}</span>
 						<span class="t1">{last(bw)?.date}</span>
 					{:else}
@@ -150,7 +229,14 @@
 				</div>
 				<div class="chart">
 					{#if users.series.length > 1}
-						<svg viewBox="0 0 100 100" preserveAspectRatio="none">
+						<svg
+							viewBox="0 0 100 100"
+							preserveAspectRatio="none"
+							role="img"
+							aria-label="estimated daily users by country over time"
+							onpointermove={(e) => onChartMove(e, 'users', users.series.length)}
+							onpointerleave={clearHover}
+						>
 							{#each users.countries as cc, i (cc)}
 								<path
 									d={linePath(userSeries(cc), userMax)}
@@ -159,7 +245,41 @@
 									vector-effect="non-scaling-stroke"
 								/>
 							{/each}
+							{#if hover?.chart === 'users'}
+								<line
+									class="cursor-line"
+									x1={xAt(hover.i, users.series.length)}
+									y1="0"
+									x2={xAt(hover.i, users.series.length)}
+									y2="100"
+									vector-effect="non-scaling-stroke"
+								/>
+								{#each users.countries as cc, i (cc)}
+									<circle
+										cx={xAt(hover.i, users.series.length)}
+										cy={yAt(userSeries(cc)[hover.i], userMax)}
+										r="1.8"
+										class="cursor-dot"
+										style:fill={ramp(i / Math.max(1, users.countries.length - 1))}
+									/>
+								{/each}
+							{/if}
 						</svg>
+						{#if hover?.chart === 'users'}
+							<div class="tip wide" style:left={`${xAt(hover.i, users.series.length)}%`}>
+								<span class="tip-d">{users.series[hover.i].date}</span>
+								{#each users.countries as cc, i (cc)}
+									<span class="tip-row">
+										<i
+											class="sw"
+											style:background={ramp(i / Math.max(1, users.countries.length - 1))}
+										></i>
+										<span>{countryName(cc)}</span>
+										<b>{compact(userSeries(cc)[hover.i] ?? 0)}</b>
+									</span>
+								{/each}
+							</div>
+						{/if}
 						<span class="t0">{users.series[0].date}</span>
 						<span class="t1">{last(users.series)?.date}</span>
 					{:else}
@@ -261,11 +381,68 @@
 		position: relative;
 		flex: 1;
 		min-height: 90px;
+		touch-action: none;
 	}
 	.chart svg {
 		width: 100%;
 		height: 100%;
 		display: block;
+		cursor: crosshair;
+	}
+	.cursor-line {
+		stroke: rgba(230, 241, 255, 0.45);
+		stroke-width: 1;
+		pointer-events: none;
+	}
+	.cursor-dot {
+		fill: #fff;
+		stroke: rgba(8, 20, 31, 0.8);
+		stroke-width: 0.5;
+		pointer-events: none;
+	}
+	.cursor-dot.cyan {
+		fill: var(--accent-cyan);
+	}
+	.cursor-dot.green {
+		fill: var(--accent-green);
+	}
+	.tip {
+		position: absolute;
+		top: 0;
+		transform: translateX(-50%);
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+		padding: 0.35rem 0.5rem;
+		background: rgba(8, 20, 31, 0.92);
+		border: 1px solid rgba(58, 93, 120, 0.5);
+		border-radius: 6px;
+		font-size: 0.64rem;
+		color: #e6f1ff;
+		white-space: nowrap;
+		pointer-events: none;
+		z-index: 2;
+	}
+	.tip.wide {
+		gap: 0.15rem;
+	}
+	.tip-d {
+		color: #6f8aa3;
+		letter-spacing: 0.04em;
+	}
+	.tip-v,
+	.tip-row {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.tip-row span {
+		color: #9fc6e0;
+	}
+	.tip-row b {
+		margin-left: auto;
+		color: #e6f1ff;
 	}
 	.line {
 		fill: none;
