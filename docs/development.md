@@ -25,7 +25,7 @@ cp .env.example .env.local
 | Variable                | Description                                   |
 | ----------------------- | --------------------------------------------- |
 | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID                    |
-| `KV_NAMESPACE_ID`       | KV namespace ID for local dev (from Wrangler) |
+| `CLOUDFLARE_API_TOKEN`  | API token used by `pnpm cloudflare:bootstrap` |
 
 For local development, Wrangler emulates Cloudflare KV in memory. You do not need a live Cloudflare account or KV namespace to run the app. Leave these variables empty and the dev server will use in-memory emulation.
 
@@ -35,7 +35,11 @@ For local development, Wrangler emulates Cloudflare KV in memory. You do not nee
 pnpm dev
 ```
 
-This must invoke `wrangler dev` (not bare `vite dev`) so that the Cloudflare Workers runtime is emulated locally. The `package.json` dev script should call `wrangler dev` directly. If it calls `vite dev` instead, KV bindings will be absent and the server routes will fail. Confirm `wrangler.toml` declares the KV namespace binding before running.
+The default dev server uses Vite. KV bindings are optional in the server routes,
+so local development works without Cloudflare credentials. To test Cloudflare KV
+bindings locally, first run `pnpm cloudflare:bootstrap` with Cloudflare
+credentials exported; this writes `wrangler.toml` with the `RELAY_CACHE`
+binding.
 
 The app is available at `http://localhost:5173`.
 
@@ -86,6 +90,7 @@ obfina/
 │   │       └── trends/       # proxies Tor Metrics CSVs (downsampled)
 │   ├── app.css               # global styles + Tailwind v4 import
 │   └── app.html
+├── scripts/cloudflare-bootstrap.ts  # create/find KV namespaces and write wrangler.toml
 ├── scripts/screenshot.ts     # headless visual-check helper
 ├── scripts/smoke.ts          # end-to-end smoke test across all views
 ├── scripts/click-test.ts     # panel open/close interaction test
@@ -96,10 +101,8 @@ obfina/
 ├── eslint.config.js
 └── .prettierrc
 
-# planned (see infrastructure.md), not yet in the repo:
-#   infra/              Terraform
-#   .github/workflows/  CI/CD
-#   wrangler.toml       Cloudflare Workers config
+# generated locally by pnpm cloudflare:bootstrap:
+#   wrangler.toml       Cloudflare Pages config with account-specific KV IDs
 ```
 
 Useful documentation links while navigating the codebase:

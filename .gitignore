@@ -1,4 +1,5 @@
 node_modules
+.pnpm-store
 
 # Output
 .output
@@ -7,6 +8,7 @@ node_modules
 .wrangler
 /.svelte-kit
 /build
+.claude
 
 # OS
 .DS_Store
@@ -17,6 +19,7 @@ Thumbs.db
 .env.*
 !.env.example
 !.env.test
+wrangler.toml
 
 # Vite
 vite.config.js.timestamp-*

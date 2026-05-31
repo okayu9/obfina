@@ -52,7 +52,7 @@ export function sampleFrom(
 		const pick = s.items[lo];
 		if (!exclude || !exclude.has(pick)) return pick;
 	}
-	return s.items[s.items.length - 1] ?? null;
+	return s.items.find((item) => !exclude?.has(item)) ?? null;
 }
 
 export interface Samplers {

@@ -57,7 +57,7 @@ describe('sampleCircuit', () => {
 	];
 
 	it('returns three distinct relays for the three positions', () => {
-		const c = sampleCircuit(buildSamplers(relays));
+		const c = sampleCircuit(buildSamplers(relays), seq([0, 0, 0, 0.6, 0]));
 		expect(c).not.toBeNull();
 		if (!c) return;
 		const ids = new Set([c.guard, c.middle, c.exit]);

@@ -3,9 +3,12 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
+	"packageManager": "pnpm@11.5.0",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"cloudflare:bootstrap": "tsx scripts/cloudflare-bootstrap.ts",
+		"cloudflare:deploy": "pnpm build && pnpm cloudflare:bootstrap && wrangler pages deploy .svelte-kit/cloudflare --project-name=obfina",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -42,7 +45,8 @@
 		"typescript": "^6.0.2",
 		"typescript-eslint": "^8.58.1",
 		"vite": "^8.0.7",
-		"vitest": "^4.1.7"
+		"vitest": "^4.1.7",
+		"wrangler": "^4.95.0"
 	},
 	"dependencies": {
 		"d3-geo": "^3.1.1",

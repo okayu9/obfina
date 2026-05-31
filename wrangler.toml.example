@@ -1,0 +1,8 @@
+name = "obfina"
+compatibility_date = "2026-05-31"
+pages_build_output_dir = ".svelte-kit/cloudflare"
+
+[[kv_namespaces]]
+binding = "RELAY_CACHE"
+id = "replace-with-obfina-cache-prod-id"
+preview_id = "replace-with-obfina-cache-preview-id"
