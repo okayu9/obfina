@@ -65,6 +65,9 @@
 		flex-direction: column;
 		gap: 0.15rem;
 		z-index: 20;
+		background: #08141f;
+		border: 1px solid rgba(58, 93, 120, 0.35);
+		border-radius: 10px;
 	}
 	.item {
 		display: flex;
