@@ -14,21 +14,39 @@
 		loadTrends();
 	});
 
-	function linePath(values: number[], max: number): string {
+	// Padding constants (pixels)
+	const PAD_L = 4;
+	const PAD_R = 4;
+	const PAD_T = 4;
+	const PAD_B = 4;
+
+	// Per-chart pixel dimensions bound from the DOM
+	let sizeW = $state(0);
+	let sizeH = $state(0);
+	let bwW = $state(0);
+	let bwH = $state(0);
+	let usersW = $state(0);
+	let usersH = $state(0);
+
+	function linePath(values: number[], max: number, w: number, h: number): string {
 		const n = values.length;
-		if (n < 2 || max <= 0) return '';
+		if (n < 2 || max <= 0 || w <= 0 || h <= 0) return '';
 		return values
-			.map((v, i) => `${i === 0 ? 'M' : 'L'} ${(i / (n - 1)) * 100} ${(1 - v / max) * 100}`)
+			.map((v, i) => {
+				const x = PAD_L + (i / (n - 1)) * (w - PAD_L - PAD_R);
+				const y = PAD_T + (1 - v / max) * (h - PAD_T - PAD_B);
+				return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
+			})
 			.join(' ');
 	}
-	function areaPath(top: number[], bottom: number[], max: number): string {
+	function areaPath(top: number[], bottom: number[], max: number, w: number, h: number): string {
 		const n = top.length;
-		if (n < 2 || max <= 0) return '';
-		const up = top.map(
-			(v, i) => `${i === 0 ? 'M' : 'L'} ${(i / (n - 1)) * 100} ${(1 - v / max) * 100}`
-		);
+		if (n < 2 || max <= 0 || w <= 0 || h <= 0) return '';
+		const xOf = (i: number) => PAD_L + (i / (n - 1)) * (w - PAD_L - PAD_R);
+		const yOf = (v: number) => PAD_T + (1 - v / max) * (h - PAD_T - PAD_B);
+		const up = top.map((v, i) => `${i === 0 ? 'M' : 'L'} ${xOf(i)} ${yOf(v)}`);
 		const down = bottom
-			.map((v, i) => `L ${((n - 1 - i) / (n - 1)) * 100} ${(1 - bottom[n - 1 - i] / max) * 100}`)
+			.map((_, i) => `L ${xOf(n - 1 - i)} ${yOf(bottom[n - 1 - i])}`)
 			.slice(1);
 		return `${up.join(' ')} ${down.join(' ')} Z`;
 	}
@@ -70,8 +88,6 @@
 	}
 
 	// --- chart cursor ---
-	// One shared hover state; each chart tracks the index under the pointer and
-	// draws its own guide line, dots and a floating readout at that date.
 	let hover = $state<{ chart: 'size' | 'bw' | 'users'; i: number } | null>(null);
 	function onChartMove(e: PointerEvent, chart: 'size' | 'bw' | 'users', n: number) {
 		if (n < 2) return;
@@ -80,23 +96,18 @@
 		hover = { chart, i: Math.round(frac * (n - 1)) };
 	}
 	const clearHover = () => (hover = null);
-	const xAt = (i: number, n: number) => (n > 1 ? (i / (n - 1)) * 100 : 0);
-	const yAt = (v: number, max: number) => (max > 0 ? (1 - v / max) * 100 : 100);
 
-	// Per-chart container dimensions for computing non-distorted dot radii.
-	// Each chart uses viewBox="0 0 100 100" with preserveAspectRatio="none", so
-	// a <circle r="N"> becomes an ellipse on non-square containers. We compensate
-	// by using <ellipse> with rx/ry scaled by the viewBox-to-pixel ratio.
-	let sizeW = $state(1);
-	let sizeH = $state(1);
-	let bwW = $state(1);
-	let bwH = $state(1);
-	let usersW = $state(1);
-	let usersH = $state(1);
-	// Desired visual radius in pixels → converted to viewBox units per axis.
-	const DOT_R_PX = 3.5;
-	const dotRx = (w: number) => (DOT_R_PX / w) * 100;
-	const dotRy = (h: number) => (DOT_R_PX / h) * 100;
+	// Pixel-space coordinate helpers
+	function xAt(i: number, n: number, w: number): number {
+		return n > 1 ? PAD_L + (i / (n - 1)) * (w - PAD_L - PAD_R) : PAD_L;
+	}
+	function yAt(v: number, max: number, h: number): number {
+		return max > 0 ? PAD_T + (1 - v / max) * (h - PAD_T - PAD_B) : h - PAD_B;
+	}
+	// Percentage position for the CSS tooltip (0–100%)
+	function xPct(i: number, n: number): number {
+		return n > 1 ? (i / (n - 1)) * 100 : 0;
+	}
 </script>
 
 <div class="view">
@@ -120,38 +131,35 @@
 				<div class="chart" bind:clientWidth={sizeW} bind:clientHeight={sizeH}>
 					{#if sizeVals.length > 1}
 						<svg
-							viewBox="0 0 100 100"
-							preserveAspectRatio="none"
+							width={sizeW}
+							height={sizeH}
 							role="img"
 							aria-label="running relays over time"
 							onpointermove={(e) => onChartMove(e, 'size', sizeVals.length)}
 							onpointerleave={clearHover}
 						>
 							<path
-								d={linePath(sizeVals, sizeMax)}
+								d={linePath(sizeVals, sizeMax, sizeW, sizeH)}
 								class="line cyan"
-								vector-effect="non-scaling-stroke"
 							/>
 							{#if hover?.chart === 'size'}
 								<line
 									class="cursor-line"
-									x1={xAt(hover.i, sizeVals.length)}
+									x1={xAt(hover.i, sizeVals.length, sizeW)}
 									y1="0"
-									x2={xAt(hover.i, sizeVals.length)}
-									y2="100"
-									vector-effect="non-scaling-stroke"
+									x2={xAt(hover.i, sizeVals.length, sizeW)}
+									y2={sizeH}
 								/>
-								<ellipse
+								<circle
 									class="cursor-dot cyan"
-									cx={xAt(hover.i, sizeVals.length)}
-									cy={yAt(sizeVals[hover.i], sizeMax)}
-									rx={dotRx(sizeW)}
-									ry={dotRy(sizeH)}
+									cx={xAt(hover.i, sizeVals.length, sizeW)}
+									cy={yAt(sizeVals[hover.i], sizeMax, sizeH)}
+									r="3.5"
 								/>
 							{/if}
 						</svg>
 						{#if hover?.chart === 'size'}
-							<div class="tip" style:left={`${xAt(hover.i, sizeVals.length)}%`}>
+							<div class="tip" style:left={`${xPct(hover.i, sizeVals.length)}%`}>
 								<span class="tip-d">{data.networkSize[hover.i].date}</span>
 								<span class="tip-v">{compact(sizeVals[hover.i])} {t.growth.relays}</span>
 							</div>
@@ -177,47 +185,40 @@
 				<div class="chart" bind:clientWidth={bwW} bind:clientHeight={bwH}>
 					{#if bw.length > 1}
 						<svg
-							viewBox="0 0 100 100"
-							preserveAspectRatio="none"
+							width={bwW}
+							height={bwH}
 							role="img"
 							aria-label="advertised vs consumed bandwidth over time"
 							onpointermove={(e) => onChartMove(e, 'bw', bw.length)}
 							onpointerleave={clearHover}
 						>
-							<path d={areaPath(adv, con, bwMax)} class="fill" />
-							<path d={linePath(adv, bwMax)} class="line cyan" vector-effect="non-scaling-stroke" />
-							<path
-								d={linePath(con, bwMax)}
-								class="line green"
-								vector-effect="non-scaling-stroke"
-							/>
+							<path d={areaPath(adv, con, bwMax, bwW, bwH)} class="fill" />
+							<path d={linePath(adv, bwMax, bwW, bwH)} class="line cyan" />
+							<path d={linePath(con, bwMax, bwW, bwH)} class="line green" />
 							{#if hover?.chart === 'bw'}
 								<line
 									class="cursor-line"
-									x1={xAt(hover.i, bw.length)}
+									x1={xAt(hover.i, bw.length, bwW)}
 									y1="0"
-									x2={xAt(hover.i, bw.length)}
-									y2="100"
-									vector-effect="non-scaling-stroke"
+									x2={xAt(hover.i, bw.length, bwW)}
+									y2={bwH}
 								/>
-								<ellipse
+								<circle
 									class="cursor-dot cyan"
-									cx={xAt(hover.i, bw.length)}
-									cy={yAt(adv[hover.i], bwMax)}
-									rx={dotRx(bwW)}
-									ry={dotRy(bwH)}
+									cx={xAt(hover.i, bw.length, bwW)}
+									cy={yAt(adv[hover.i], bwMax, bwH)}
+									r="3.5"
 								/>
-								<ellipse
+								<circle
 									class="cursor-dot green"
-									cx={xAt(hover.i, bw.length)}
-									cy={yAt(con[hover.i], bwMax)}
-									rx={dotRx(bwW)}
-									ry={dotRy(bwH)}
+									cx={xAt(hover.i, bw.length, bwW)}
+									cy={yAt(con[hover.i], bwMax, bwH)}
+									r="3.5"
 								/>
 							{/if}
 						</svg>
 						{#if hover?.chart === 'bw'}
-							<div class="tip" style:left={`${xAt(hover.i, bw.length)}%`}>
+							<div class="tip" style:left={`${xPct(hover.i, bw.length)}%`}>
 								<span class="tip-d">{bw[hover.i].date}</span>
 								<span class="tip-v"><i class="sw cyan"></i>{formatBandwidth(adv[hover.i])}</span>
 								<span class="tip-v"><i class="sw green"></i>{formatBandwidth(con[hover.i])}</span>
@@ -239,8 +240,8 @@
 				<div class="chart" bind:clientWidth={usersW} bind:clientHeight={usersH}>
 					{#if users.series.length > 1}
 						<svg
-							viewBox="0 0 100 100"
-							preserveAspectRatio="none"
+							width={usersW}
+							height={usersH}
 							role="img"
 							aria-label="estimated daily users by country over time"
 							onpointermove={(e) => onChartMove(e, 'users', users.series.length)}
@@ -248,27 +249,24 @@
 						>
 							{#each users.countries as cc, i (cc)}
 								<path
-									d={linePath(userSeries(cc), userMax)}
+									d={linePath(userSeries(cc), userMax, usersW, usersH)}
 									class="line"
 									style:stroke={ramp(i / Math.max(1, users.countries.length - 1))}
-									vector-effect="non-scaling-stroke"
 								/>
 							{/each}
 							{#if hover?.chart === 'users'}
 								<line
 									class="cursor-line"
-									x1={xAt(hover.i, users.series.length)}
+									x1={xAt(hover.i, users.series.length, usersW)}
 									y1="0"
-									x2={xAt(hover.i, users.series.length)}
-									y2="100"
-									vector-effect="non-scaling-stroke"
+									x2={xAt(hover.i, users.series.length, usersW)}
+									y2={usersH}
 								/>
 								{#each users.countries as cc, i (cc)}
-									<ellipse
-										cx={xAt(hover.i, users.series.length)}
-										cy={yAt(userSeries(cc)[hover.i], userMax)}
-										rx={dotRx(usersW)}
-										ry={dotRy(usersH)}
+									<circle
+										cx={xAt(hover.i, users.series.length, usersW)}
+										cy={yAt(userSeries(cc)[hover.i], userMax, usersH)}
+										r="3.5"
 										class="cursor-dot"
 										style:fill={ramp(i / Math.max(1, users.countries.length - 1))}
 									/>
@@ -276,7 +274,7 @@
 							{/if}
 						</svg>
 						{#if hover?.chart === 'users'}
-							<div class="tip wide" style:left={`${xAt(hover.i, users.series.length)}%`}>
+							<div class="tip wide" style:left={`${xPct(hover.i, users.series.length)}%`}>
 								<span class="tip-d">{users.series[hover.i].date}</span>
 								{#each users.countries as cc, i (cc)}
 									<span class="tip-row">
@@ -407,7 +405,7 @@
 	.cursor-dot {
 		fill: #fff;
 		stroke: rgba(8, 20, 31, 0.8);
-		stroke-width: 0.5;
+		stroke-width: 1;
 		pointer-events: none;
 	}
 	.cursor-dot.cyan {
