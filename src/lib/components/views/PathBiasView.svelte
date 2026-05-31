@@ -130,7 +130,7 @@
 		inset: 0;
 		display: flex;
 		flex-direction: column;
-		padding: 4.5rem 2rem 2rem 14rem;
+		padding: 4.5rem 2rem 2rem 2rem;
 		gap: 1.2rem;
 		overflow: auto;
 	}
