@@ -25,6 +25,15 @@
 	};
 	const borders = mesh(topology, topology.objects.countries as never);
 	const SPHERE = { type: 'Sphere' } as const;
+	// GeoJSON polygon covering lat -60 to +90 (clips Antarctica).
+	const BOUNDS_NO_ANTARCTICA = {
+		type: 'Feature',
+		geometry: {
+			type: 'Polygon',
+			coordinates: [[[-180, -60], [180, -60], [180, 90], [-180, 90], [-180, -60]]]
+		},
+		properties: {}
+	} as const;
 
 	function codeFor(id?: string | number): string | null {
 		if (id == null) return null;
@@ -37,12 +46,13 @@
 	const weight = $derived(scaleSqrt().domain([1, maxCount]).range([0.18, 1]).clamp(true));
 
 	// Equirectangular so the map is a clean rectangle that tiles horizontally.
-	// Fit to height → poles sit exactly at the top/bottom edges (no empty space
-	// above the North Pole or below the South Pole).
+	// Fit to height using the no-Antarctica bounds so lat=90 sits at y=0 and
+	// lat=-60 sits at y=height — Antarctica falls below the viewport and is
+	// never visible on initial load.
 	const projection = $derived.by(() => {
 		if (!width || !height) return null;
 		const p = geoEquirectangular();
-		p.fitHeight(height, SPHERE);
+		p.fitHeight(height, BOUNDS_NO_ANTARCTICA as never);
 		const b = geoPath(p).bounds(SPHERE);
 		const mapW = b[1][0] - b[0][0];
 		const t = p.translate();
@@ -54,8 +64,8 @@
 
 	// One world's pixel width (a full 360° of longitude) at scale 1.
 	const worldW = $derived(projection ? projection([180, 0])![0] - projection([-180, 0])![0] : 0);
-	const mapTop = $derived(projection ? geoPath(projection).bounds(SPHERE)[0][1] : 0);
-	const mapBottom = $derived(projection ? geoPath(projection).bounds(SPHERE)[1][1] : 0);
+	const mapTop = $derived(projection ? geoPath(projection).bounds(BOUNDS_NO_ANTARCTICA as never)[0][1] : 0);
+	const mapBottom = $derived(projection ? geoPath(projection).bounds(BOUNDS_NO_ANTARCTICA as never)[1][1] : 0);
 
 	// Side copies left/right of the centre so horizontal panning never shows an edge.
 	const COPIES = [-1, 0, 1, 2];

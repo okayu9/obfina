@@ -70,13 +70,24 @@ export function randomPointInCountry(
 	return centroidByCode.get(code) ?? null;
 }
 
+// GeoJSON polygon covering lat -60 to +90 (clips Antarctica).
+const BOUNDS_NO_ANTARCTICA = {
+	type: 'Feature',
+	geometry: {
+		type: 'Polygon',
+		coordinates: [[[-180, -60], [180, -60], [180, 90], [-180, 90], [-180, -60]]]
+	},
+	properties: {}
+} as const;
+
 /**
  * Equirectangular projection fitted to height and horizontally centred —
- * identical to ValueByAlphaMap so the poles sit at the top/bottom edges.
+ * identical to ValueByAlphaMap so lat=90 is at y=0 and lat=-60 is at y=height,
+ * keeping Antarctica out of the initial viewport.
  */
 export function makeProjection(width: number, height: number) {
 	const p = geoEquirectangular();
-	p.fitHeight(height, SPHERE);
+	p.fitHeight(height, BOUNDS_NO_ANTARCTICA as never);
 	const b = geoPath(p).bounds(SPHERE);
 	const mapW = b[1][0] - b[0][0];
 	const t = p.translate();
