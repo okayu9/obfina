@@ -6,6 +6,7 @@
 	import PathBiasView from '$lib/components/views/PathBiasView.svelte';
 	import TrendsView from '$lib/components/views/TrendsView.svelte';
 	import CircuitView from '$lib/components/views/CircuitView.svelte';
+	import AboutView from '$lib/components/views/AboutView.svelte';
 	import LoadingScreen from '$lib/components/LoadingScreen.svelte';
 	import { relayStore, loadRelays } from '$lib/stores/relays.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
@@ -19,7 +20,7 @@
 	} from '$lib/stores/view.svelte';
 
 	// Views that render off live relay data; GROWTH fetches its own time-series.
-	const needsRelays = $derived(viewState.id !== 'growth');
+	const needsRelays = $derived(viewState.id !== 'growth' && viewState.id !== 'about');
 	const showLoading = $derived(needsRelays && relayStore.loading);
 	const showFailed = $derived(needsRelays && relayStore.failed);
 
@@ -54,7 +55,9 @@
 <svelte:window onkeydown={onKeydown} />
 
 <div class="scene">
-	{#if showLoading}
+	{#if viewState.id === 'about'}
+		<AboutView />
+	{:else if showLoading}
 		<LoadingScreen />
 	{:else if showFailed}
 		<LoadingScreen message="Relay data unavailable" />

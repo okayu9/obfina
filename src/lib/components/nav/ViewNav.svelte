@@ -18,33 +18,7 @@
 			</span>
 		</button>
 	{/each}
-	<div class="hint">1–5 · ← →</div>
-
-	<div class="links-section">
-		<div class="section-label">データソース</div>
-		<a href="https://metrics.torproject.org/" target="_blank" rel="noopener noreferrer" class="link-item">
-			<span class="link-title">Tor Metrics</span>
-			<span class="link-desc">リレー統計・帯域幅・ユーザー数</span>
-		</a>
-		<a href="https://onionoo.torproject.org/" target="_blank" rel="noopener noreferrer" class="link-item">
-			<span class="link-title">Onionoo</span>
-			<span class="link-desc">リレー詳細データ API</span>
-		</a>
-		<a href="https://www.caida.org/" target="_blank" rel="noopener noreferrer" class="link-item">
-			<span class="link-title">CAIDA / WHOIS</span>
-			<span class="link-desc">AS・ISP 情報</span>
-		</a>
-
-		<div class="section-label" style="margin-top: 0.6rem;">参考</div>
-		<a href="https://svn.torproject.org/svn/projects/design-paper/tor-design.pdf" target="_blank" rel="noopener noreferrer" class="link-item">
-			<span class="link-title">Tor Design Paper</span>
-			<span class="link-desc">Tor のアーキテクチャ</span>
-		</a>
-		<a href="https://www.torproject.org/" target="_blank" rel="noopener noreferrer" class="link-item">
-			<span class="link-title">Tor Project</span>
-			<span class="link-desc">公式サイト</span>
-		</a>
-	</div>
+	<div class="hint">1–6 · ← →</div>
 </nav>
 
 <style>
