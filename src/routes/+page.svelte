@@ -87,5 +87,6 @@
 	.scene {
 		position: fixed;
 		inset: 0;
+		padding-left: 200px;
 	}
 </style>
