@@ -3,6 +3,7 @@
  * is mirrored to the `?view=` query param so views are deep-linkable.
  */
 import { replaceState } from '$app/navigation';
+import { browser } from '$app/environment';
 
 export interface ViewDef {
 	id: ViewId;
@@ -52,7 +53,7 @@ export function initViewFromUrl(): void {
 
 /** Reflect the current view into the URL without adding history entries. */
 export function syncViewToUrl(): void {
-	if (typeof location === 'undefined') return;
+	if (!browser) return;
 	// obfina only uses the `view` query param, so a plain rewrite is enough.
 	replaceState(
 		`${location.pathname}?view=${viewState.id}${location.hash}`,
