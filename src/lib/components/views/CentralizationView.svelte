@@ -84,6 +84,21 @@
 	const totalBandwidth = $derived(relayStore.relays.reduce((s, r) => s + r.bandwidth, 0));
 	const totalConsensus = $derived(relayStore.relays.reduce((s, r) => s + r.consensusWeight, 0));
 
+	// Max bandwidth among the selected provider's relays (for normalising the mini bar).
+	const maxRelayBw = $derived(
+		selectedRelays.length > 0 ? Math.max(...selectedRelays.map((r) => r.bandwidth)) : 1
+	);
+
+	// Linearly interpolate between dark-grey (#3a5266) and accent-cyan (#00d4ff)
+	// based on normalised bandwidth so bright = fast, dim = slow.
+	function bwColor(bw: number): string {
+		const t = maxRelayBw > 0 ? bw / maxRelayBw : 0;
+		const r = Math.round(0x3a + t * (0x00 - 0x3a));
+		const g = Math.round(0x52 + t * (0xd4 - 0x52));
+		const b = Math.round(0x66 + t * (0xff - 0x66));
+		return `rgb(${r},${g},${b})`;
+	}
+
 	function selectProvider(g: Group) {
 		if (selectedAsKey === g.key) {
 			selectedAsKey = null;
@@ -310,7 +325,16 @@
 						<li class="relay-row">
 							<span class="rn" title={r.nickname}>{r.nickname}</span>
 							<span class="rc">{r.country.toUpperCase()}</span>
-							<span class="rb">{fmtBw(r.bandwidth)}</span>
+							<span class="rb">
+								<span class="rb-bar-wrap">
+									<span
+										class="rb-bar"
+										style:width="{maxRelayBw > 0 ? (r.bandwidth / maxRelayBw) * 100 : 0}%"
+										style:background={bwColor(r.bandwidth)}
+									></span>
+								</span>
+								<span class="rb-text" style:color={bwColor(r.bandwidth)}>{fmtBw(r.bandwidth)}</span>
+							</span>
 							<span class="rf">
 								{#if hasFlag(r, 'Guard')}<span class="flag guard">G</span>{/if}
 								{#if hasFlag(r, 'Middle') || (!hasFlag(r, 'Guard') && !hasFlag(r, 'Exit'))}<span
@@ -732,6 +756,10 @@
 		top: 0;
 		background: rgba(4, 12, 20, 0.9);
 	}
+	.relay-header .rb {
+		display: block;
+		text-align: right;
+	}
 	.relay-row {
 		display: grid;
 		grid-template-columns: 1fr 2.2rem 5.5rem 3.5rem;
@@ -760,9 +788,28 @@
 		letter-spacing: 0.06em;
 	}
 	.rb {
-		color: #9fc6e0;
 		font-variant-numeric: tabular-nums;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		align-items: stretch;
+	}
+	.rb-bar-wrap {
+		height: 3px;
+		background: rgba(255, 255, 255, 0.06);
+		border-radius: 2px;
+		overflow: hidden;
+	}
+	.rb-bar {
+		display: block;
+		height: 100%;
+		border-radius: 2px;
+		transition: width 0.2s ease;
+	}
+	.rb-text {
+		font-size: 0.68rem;
 		text-align: right;
+		transition: color 0.2s ease;
 	}
 	.rf {
 		display: flex;
