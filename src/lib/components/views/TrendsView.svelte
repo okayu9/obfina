@@ -82,6 +82,21 @@
 	const clearHover = () => (hover = null);
 	const xAt = (i: number, n: number) => (n > 1 ? (i / (n - 1)) * 100 : 0);
 	const yAt = (v: number, max: number) => (max > 0 ? (1 - v / max) * 100 : 100);
+
+	// Per-chart container dimensions for computing non-distorted dot radii.
+	// Each chart uses viewBox="0 0 100 100" with preserveAspectRatio="none", so
+	// a <circle r="N"> becomes an ellipse on non-square containers. We compensate
+	// by using <ellipse> with rx/ry scaled by the viewBox-to-pixel ratio.
+	let sizeW = $state(1);
+	let sizeH = $state(1);
+	let bwW = $state(1);
+	let bwH = $state(1);
+	let usersW = $state(1);
+	let usersH = $state(1);
+	// Desired visual radius in pixels → converted to viewBox units per axis.
+	const DOT_R_PX = 3.5;
+	const dotRx = (w: number) => (DOT_R_PX / w) * 100;
+	const dotRy = (h: number) => (DOT_R_PX / h) * 100;
 </script>
 
 <div class="view">
@@ -102,7 +117,7 @@
 					<div class="big">{compact(last(sizeVals) ?? 0)}</div>
 					<div class="cap">{t.growth.runningRelays}</div>
 				</div>
-				<div class="chart">
+				<div class="chart" bind:clientWidth={sizeW} bind:clientHeight={sizeH}>
 					{#if sizeVals.length > 1}
 						<svg
 							viewBox="0 0 100 100"
@@ -126,11 +141,12 @@
 									y2="100"
 									vector-effect="non-scaling-stroke"
 								/>
-								<circle
+								<ellipse
 									class="cursor-dot cyan"
 									cx={xAt(hover.i, sizeVals.length)}
 									cy={yAt(sizeVals[hover.i], sizeMax)}
-									r="2.4"
+									rx={dotRx(sizeW)}
+									ry={dotRy(sizeH)}
 								/>
 							{/if}
 						</svg>
@@ -158,7 +174,7 @@
 						<span><i class="sw green"></i>{formatBandwidth(last(con) ?? 0)} {t.growth.consumed}</span>
 					</div>
 				</div>
-				<div class="chart">
+				<div class="chart" bind:clientWidth={bwW} bind:clientHeight={bwH}>
 					{#if bw.length > 1}
 						<svg
 							viewBox="0 0 100 100"
@@ -184,17 +200,19 @@
 									y2="100"
 									vector-effect="non-scaling-stroke"
 								/>
-								<circle
+								<ellipse
 									class="cursor-dot cyan"
 									cx={xAt(hover.i, bw.length)}
 									cy={yAt(adv[hover.i], bwMax)}
-									r="2.4"
+									rx={dotRx(bwW)}
+									ry={dotRy(bwH)}
 								/>
-								<circle
+								<ellipse
 									class="cursor-dot green"
 									cx={xAt(hover.i, bw.length)}
 									cy={yAt(con[hover.i], bwMax)}
-									r="2.4"
+									rx={dotRx(bwW)}
+									ry={dotRy(bwH)}
 								/>
 							{/if}
 						</svg>
@@ -218,7 +236,7 @@
 				<div class="head">
 					<div class="cap">{t.growth.dailyUsers}</div>
 				</div>
-				<div class="chart">
+				<div class="chart" bind:clientWidth={usersW} bind:clientHeight={usersH}>
 					{#if users.series.length > 1}
 						<svg
 							viewBox="0 0 100 100"
@@ -246,10 +264,11 @@
 									vector-effect="non-scaling-stroke"
 								/>
 								{#each users.countries as cc, i (cc)}
-									<circle
+									<ellipse
 										cx={xAt(hover.i, users.series.length)}
 										cy={yAt(userSeries(cc)[hover.i], userMax)}
-										r="1.8"
+										rx={dotRx(usersW)}
+										ry={dotRy(usersH)}
 										class="cursor-dot"
 										style:fill={ramp(i / Math.max(1, users.countries.length - 1))}
 									/>
