@@ -28,7 +28,7 @@
 	</div>
 </div>
 
-<CountryPanel stats={selectedStats} />
+<CountryPanel stats={selectedStats} relays={relayStore.relays} totalBandwidth={totalBandwidth} />
 
 <style>
 	.hud {
