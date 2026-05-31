@@ -1,7 +1,118 @@
 <script lang="ts">
-	import { getMessages } from '$lib/i18n/index.svelte';
+	import { getMessages, getLocale } from '$lib/i18n/index.svelte';
 
 	const t = $derived(getMessages());
+	const locale = $derived(getLocale());
+
+	const dataSources = [
+		{
+			href: 'https://metrics.torproject.org/',
+			name: 'Tor Metrics',
+			desc: 'Relay statistics, bandwidth history, and user counts published by the Tor Project.',
+			descJa: 'Torプロジェクトが公開するリレー統計、帯域幅の履歴、利用者数データ。',
+			url: 'metrics.torproject.org'
+		},
+		{
+			href: 'https://onionoo.torproject.org/',
+			name: 'Onionoo API',
+			desc: 'JSON API providing per-relay details including flags, bandwidth, country, and AS information.',
+			descJa: 'フラグ、帯域幅、国、AS情報などリレーごとの詳細を提供するJSON API。',
+			url: 'onionoo.torproject.org'
+		},
+		{
+			href: 'https://asrank.caida.org/',
+			name: 'CAIDA AS Rank',
+			desc: 'Autonomous system and ISP information used to assess hosting concentration risk.',
+			descJa: 'ホスティング集中リスクの評価に使用する自律システム（AS）およびISP情報。',
+			url: 'asrank.caida.org'
+		}
+	];
+
+	const references = [
+		{
+			href: 'https://svn.torproject.org/svn/projects/design-paper/tor-design.pdf',
+			name: 'Tor Design Paper',
+			desc: 'Dingledine, Mathewson & Syverson (2004). Describes the onion routing architecture, path selection algorithm, and threat model that Tor is built on.',
+			descJa: 'Dingledine・Mathewson・Syverson（2004年）。Torの基盤となるオニオンルーティングの仕組み、経路選択アルゴリズム、脅威モデルを解説した論文。',
+			url: 'tor-design.pdf'
+		},
+		{
+			href: 'https://www.torproject.org/',
+			name: 'The Tor Project',
+			desc: 'Official website of the non-profit organization that develops and maintains the Tor network.',
+			descJa: 'Torネットワークを開発・維持する非営利組織の公式サイト。',
+			url: 'torproject.org'
+		},
+		{
+			href: 'https://metrics.torproject.org/rs.html',
+			name: 'Tor Relay Search (Atlas)',
+			desc: 'Browse and search currently live Tor relays and bridges, inspect flags, bandwidth, and uptime.',
+			descJa: '稼働中のTorリレーやブリッジを検索し、フラグ・帯域幅・稼働時間を確認できるツール。',
+			url: 'metrics.torproject.org/rs.html'
+		},
+		{
+			href: 'https://spec.torproject.org/',
+			name: 'Tor Specifications',
+			desc: 'The canonical technical specification for the Tor protocol, directory protocol, and path selection algorithm.',
+			descJa: 'Torプロトコル、ディレクトリプロトコル、経路選択アルゴリズムの公式技術仕様書。',
+			url: 'spec.torproject.org'
+		},
+		{
+			href: 'https://www.usenix.org/system/files/conference/usenixsecurity14/sec14-paper-sun.pdf',
+			name: '"Users Get Routed"',
+			desc: 'Traffic correlation attack analysis showing how an adversary controlling AS-level positions can deanonymize Tor users.',
+			descJa: 'ASレベルの経路を制御する攻撃者がTorユーザーを匿名解除できることを示したトラフィック相関攻撃の分析。',
+			url: 'usenix.org (sec14)'
+		},
+		{
+			href: 'https://community.torproject.org/',
+			name: 'Tor Community Portal',
+			desc: 'Official guides for relay operators, bridge operators, and contributors who keep the Tor network running.',
+			descJa: 'Torネットワークを支えるリレー運営者、ブリッジ運営者、貢献者向けの公式ガイド。',
+			url: 'community.torproject.org'
+		},
+		{
+			href: 'https://ooni.org/',
+			name: 'OONI',
+			desc: 'Measures internet censorship worldwide; contextualises where Tor usage data reflects blocked access rather than voluntary adoption.',
+			descJa: '世界各地のインターネット検閲を計測するプロジェクト。Torの利用データが自発的な採用ではなくアクセス遮断を反映している地域の文脈理解に役立つ。',
+			url: 'ooni.org'
+		}
+	];
+
+	const relatedOrgs = [
+		{
+			href: 'https://www.eff.org/',
+			name: 'Electronic Frontier Foundation',
+			desc: 'Digital rights organisation that has long advocated for and supported the Tor Project, and publishes Surveillance Self-Defense guides.',
+			descJa: 'Torプロジェクトを長年支援してきたデジタル権利団体。「自己防衛監視ガイド」も公開している。',
+			url: 'eff.org'
+		},
+		{
+			href: 'https://freedom.press/',
+			name: 'Freedom of the Press Foundation',
+			desc: 'Trains journalists in digital security tools including Tor Browser; a major institutional supporter of the Tor network.',
+			descJa: 'Tor Browserを含むデジタルセキュリティツールをジャーナリストに教育する団体であり、Torネットワークの主要な支援者。',
+			url: 'freedom.press'
+		},
+		{
+			href: 'https://www.accessnow.org/',
+			name: 'Access Now',
+			desc: 'Defends and extends the digital rights of users at risk globally, with a focus on circumvention tools in high-censorship regions.',
+			descJa: '高度な検閲環境下での迂回ツールに重点を置きつつ、世界中のリスクにさらされたユーザーのデジタル権利を守り拡大する団体。',
+			url: 'accessnow.org'
+		}
+	];
+
+	const authors = [
+		{
+			href: 'https://github.com/yumeto-inaoka',
+			name: 'Yumeto Inaoka',
+			desc: 'Software engineer based in Japan. Built obfina to make Tor network health legible to a wider audience.',
+			descJa: '日本在住のソフトウェアエンジニア。Torネットワークの状態をより多くの人に伝えるためにobfinaを制作。',
+			url: 'github.com/yumeto-inaoka'
+		}
+	];
 </script>
 
 <div class="view">
@@ -14,78 +125,52 @@
 		<section>
 			<h2>{t.about.dataSources}</h2>
 			<div class="cards">
-				<a
-					href="https://metrics.torproject.org/"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="card"
-				>
-					<div class="card-name">Tor Metrics</div>
-					<div class="card-desc">
-						Relay statistics, bandwidth history, and user counts published by the Tor Project.
-					</div>
-					<div class="card-url">metrics.torproject.org</div>
-				</a>
-
-				<a
-					href="https://onionoo.torproject.org/"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="card"
-				>
-					<div class="card-name">Onionoo API</div>
-					<div class="card-desc">
-						JSON API providing per-relay details including flags, bandwidth, country, and AS
-						information.
-					</div>
-					<div class="card-url">onionoo.torproject.org</div>
-				</a>
-
-				<a
-					href="https://asrank.caida.org/"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="card"
-				>
-					<div class="card-name">CAIDA AS Rank</div>
-					<div class="card-desc">
-						Autonomous system and ISP information used to assess hosting concentration risk.
-					</div>
-					<div class="card-url">asrank.caida.org</div>
-				</a>
+				{#each dataSources as card}
+					<a href={card.href} target="_blank" rel="noopener noreferrer" class="card">
+						<div class="card-name">{card.name}</div>
+						<div class="card-desc">{locale === 'ja' ? card.descJa : card.desc}</div>
+						<div class="card-url">{card.url}</div>
+					</a>
+				{/each}
 			</div>
 		</section>
 
 		<section>
 			<h2>{t.about.references}</h2>
 			<div class="cards">
-				<a
-					href="https://svn.torproject.org/svn/projects/design-paper/tor-design.pdf"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="card"
-				>
-					<div class="card-name">Tor Design Paper</div>
-					<div class="card-desc">
-						Dingledine, Mathewson &amp; Syverson (2004). Describes the onion routing architecture,
-						path selection algorithm, and threat model that Tor is built on.
-					</div>
-					<div class="card-url">tor-design.pdf</div>
-				</a>
+				{#each references as card}
+					<a href={card.href} target="_blank" rel="noopener noreferrer" class="card">
+						<div class="card-name">{card.name}</div>
+						<div class="card-desc">{locale === 'ja' ? card.descJa : card.desc}</div>
+						<div class="card-url">{card.url}</div>
+					</a>
+				{/each}
+			</div>
+		</section>
 
-				<a
-					href="https://www.torproject.org/"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="card"
-				>
-					<div class="card-name">The Tor Project</div>
-					<div class="card-desc">
-						Official website of the non-profit organization that develops and maintains the Tor
-						network.
-					</div>
-					<div class="card-url">torproject.org</div>
-				</a>
+		<section>
+			<h2>{locale === 'ja' ? '関連組織' : 'Related Organisations'}</h2>
+			<div class="cards">
+				{#each relatedOrgs as card}
+					<a href={card.href} target="_blank" rel="noopener noreferrer" class="card">
+						<div class="card-name">{card.name}</div>
+						<div class="card-desc">{locale === 'ja' ? card.descJa : card.desc}</div>
+						<div class="card-url">{card.url}</div>
+					</a>
+				{/each}
+			</div>
+		</section>
+
+		<section>
+			<h2>{locale === 'ja' ? '作者' : 'Author'}</h2>
+			<div class="cards">
+				{#each authors as card}
+					<a href={card.href} target="_blank" rel="noopener noreferrer" class="card">
+						<div class="card-name">{card.name}</div>
+						<div class="card-desc">{locale === 'ja' ? card.descJa : card.desc}</div>
+						<div class="card-url">{card.url}</div>
+					</a>
+				{/each}
 			</div>
 		</section>
 	</div>
