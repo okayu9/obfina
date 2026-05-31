@@ -160,6 +160,7 @@
 </script>
 
 <div class="view">
+<div class="content">
 	<header>
 		<h1>{t.hosting.title}</h1>
 		<p>{t.hosting.description}</p>
@@ -347,16 +348,23 @@
 		{/if}
 	</div>
 </div>
+</div>
 
 <style>
 	.view {
 		position: fixed;
 		inset: 0;
+		overflow: auto;
+	}
+	.content {
+		max-width: 960px;
+		margin-left: auto;
+		margin-right: auto;
 		display: flex;
 		flex-direction: column;
 		padding: 4.5rem 2rem 2rem 2rem;
 		gap: 1.2rem;
-		overflow: auto;
+		min-height: 100%;
 	}
 	header h1 {
 		margin: 0;
