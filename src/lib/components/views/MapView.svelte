@@ -4,7 +4,7 @@
 	import { aggregateByCountry, formatBandwidth } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
 	import { relayStore } from '$lib/stores/relays.svelte';
-	import { getMessages } from '$lib/i18n';
+	import { getMessages } from '$lib/i18n/index.svelte';
 
 	const t = $derived(getMessages());
 	const byCountry = $derived(aggregateByCountry(relayStore.relays));

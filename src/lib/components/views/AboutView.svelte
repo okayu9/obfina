@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getMessages } from '$lib/i18n';
+	import { getMessages } from '$lib/i18n/index.svelte';
 
 	const t = $derived(getMessages());
 </script>

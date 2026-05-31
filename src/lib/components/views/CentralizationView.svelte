@@ -2,7 +2,7 @@
 	import { relayStore } from '$lib/stores/relays.svelte';
 	import { gini, lorenz, groupBy, type LorenzPoint, type Group } from '$lib/analysis/concentration';
 	import type { Relay } from '$lib/types';
-	import { getMessages } from '$lib/i18n';
+	import { getMessages } from '$lib/i18n/index.svelte';
 
 	const t = $derived(getMessages());
 	let scope = $state<'all' | 'exit'>('all');

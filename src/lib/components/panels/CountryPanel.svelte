@@ -4,7 +4,7 @@
 	import { countryName, flagEmoji, formatBandwidth, type CountryStats } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
 	import type { Relay } from '$lib/types';
-	import { getMessages } from '$lib/i18n';
+	import { getMessages } from '$lib/i18n/index.svelte';
 
 	let {
 		stats,

@@ -10,7 +10,7 @@
 	import LoadingScreen from '$lib/components/LoadingScreen.svelte';
 	import { relayStore, loadRelays } from '$lib/stores/relays.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
-	import { getMessages } from '$lib/i18n';
+	import { getMessages } from '$lib/i18n/index.svelte';
 	import {
 		VIEWS,
 		viewState,

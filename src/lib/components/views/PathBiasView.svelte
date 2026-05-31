@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { relayStore } from '$lib/stores/relays.svelte';
-	import { getMessages } from '$lib/i18n';
+	import { getMessages } from '$lib/i18n/index.svelte';
 	import {
 		gini,
 		topShare,

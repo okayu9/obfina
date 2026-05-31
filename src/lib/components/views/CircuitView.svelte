@@ -6,7 +6,7 @@
 	import { flagEmoji, countryName } from '$lib/relay-stats';
 	import { relayStore } from '$lib/stores/relays.svelte';
 	import type { Relay } from '$lib/types';
-	import { getMessages } from '$lib/i18n';
+	import { getMessages } from '$lib/i18n/index.svelte';
 
 	const MAX = 7;
 	const LIFE = 5600; // ms a circuit is animated before it fades out

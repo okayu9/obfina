@@ -3,7 +3,7 @@
 	import { formatBandwidth, countryName } from '$lib/relay-stats';
 	import LoadingScreen from '$lib/components/LoadingScreen.svelte';
 	import { trendsStore, loadTrends } from '$lib/stores/trends.svelte';
-	import { getMessages } from '$lib/i18n';
+	import { getMessages } from '$lib/i18n/index.svelte';
 
 	const t = $derived(getMessages());
 	const data = $derived(trendsStore.data);

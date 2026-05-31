@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { VIEWS, viewState, setView } from '$lib/stores/view.svelte';
-	import { getMessages, getLocale, setLocale, type Locale } from '$lib/i18n';
+	import { getMessages, getLocale, setLocale, type Locale } from '$lib/i18n/index.svelte';
 
 	const t = $derived(getMessages());
 	const locale = $derived(getLocale());
