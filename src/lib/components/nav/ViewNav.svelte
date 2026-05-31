@@ -19,6 +19,32 @@
 		</button>
 	{/each}
 	<div class="hint">1–5 · ← →</div>
+
+	<div class="links-section">
+		<div class="section-label">データソース</div>
+		<a href="https://metrics.torproject.org/" target="_blank" rel="noopener noreferrer" class="link-item">
+			<span class="link-title">Tor Metrics</span>
+			<span class="link-desc">リレー統計・帯域幅・ユーザー数</span>
+		</a>
+		<a href="https://onionoo.torproject.org/" target="_blank" rel="noopener noreferrer" class="link-item">
+			<span class="link-title">Onionoo</span>
+			<span class="link-desc">リレー詳細データ API</span>
+		</a>
+		<a href="https://www.caida.org/" target="_blank" rel="noopener noreferrer" class="link-item">
+			<span class="link-title">CAIDA / WHOIS</span>
+			<span class="link-desc">AS・ISP 情報</span>
+		</a>
+
+		<div class="section-label" style="margin-top: 0.6rem;">参考</div>
+		<a href="https://svn.torproject.org/svn/projects/design-paper/tor-design.pdf" target="_blank" rel="noopener noreferrer" class="link-item">
+			<span class="link-title">Tor Design Paper</span>
+			<span class="link-desc">Tor のアーキテクチャ</span>
+		</a>
+		<a href="https://www.torproject.org/" target="_blank" rel="noopener noreferrer" class="link-item">
+			<span class="link-title">Tor Project</span>
+			<span class="link-desc">公式サイト</span>
+		</a>
+	</div>
 </nav>
 
 <style>
@@ -90,5 +116,41 @@
 		font-size: 0.6rem;
 		letter-spacing: 0.15em;
 		color: #3a5266;
+	}
+	.links-section {
+		margin-top: 1.2rem;
+		padding-top: 0.8rem;
+		border-top: 1px solid #1e3044;
+		display: flex;
+		flex-direction: column;
+		gap: 0.05rem;
+	}
+	.section-label {
+		font-size: 0.6rem;
+		letter-spacing: 0.15em;
+		color: #3a5266;
+		padding: 0 0.55rem 0.25rem;
+		text-transform: uppercase;
+	}
+	.link-item {
+		display: flex;
+		flex-direction: column;
+		padding: 0.25rem 0.55rem;
+		text-decoration: none;
+		color: #4a6880;
+		line-height: 1.2;
+		transition: color 0.18s;
+	}
+	.link-item:hover {
+		color: #7aa8c7;
+	}
+	.link-title {
+		font-size: 0.72rem;
+		letter-spacing: 0.06em;
+	}
+	.link-desc {
+		font-size: 0.58rem;
+		letter-spacing: 0.02em;
+		opacity: 0.65;
 	}
 </style>
