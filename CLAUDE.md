@@ -10,7 +10,7 @@ Follow these instructions in addition to any task-specific prompt you receive.
 This section is for the main Claude Code session that coordinates subagents — not for subagents themselves.
 
 ### Delegating tasks to subagents
-- Each user task is delegated to a **separate subagent with `isolation: worktree`** running in the background. Never do development work in the main session directly.
+- Each user task is delegated to a **separate subagent with `isolation: worktree`** running in the background. **Never do development work in the main session directly — this applies even to trivial one-line fixes.** If the cause is already known and the fix is obvious, that is not a reason to bypass the subagent; the worktree isolation and commit history still matter.
 - Spawn subagents as soon as a task arrives — do not wait to batch them unless they clearly conflict on the same files.
 - Prompt subagents with: the task goal, specific file paths to investigate, relevant patterns from this CLAUDE.md (design system, existing component references), and what to do on completion (commit + update docs if needed).
 - If two subagents are likely to touch the same file, note it in each prompt so they are aware; resolve conflicts at merge time.
