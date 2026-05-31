@@ -45,16 +45,6 @@
 	const maxCount = $derived(Math.max(1, ...[...byCountry.values()].map((s) => s.count)));
 	const weight = $derived(scaleSqrt().domain([1, maxCount]).range([0.18, 1]).clamp(true));
 
-	// Clip Antarctica (below −60°) so it doesn't waste vertical space.
-	const BOUNDS_NO_ANTARCTICA = {
-		type: 'Feature',
-		geometry: {
-			type: 'Polygon',
-			coordinates: [[[-180, -60], [180, -60], [180, 90], [-180, 90], [-180, -60]]]
-		},
-		properties: {}
-	};
-
 	// Equirectangular so the map is a clean rectangle that tiles horizontally.
 	// fitSize against the clipped bounding box so the visible world fills the height.
 	const projection = $derived.by(() => {
