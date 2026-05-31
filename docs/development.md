@@ -86,7 +86,9 @@ obfina/
 │   │       └── trends/       # proxies Tor Metrics CSVs (downsampled)
 │   ├── app.css               # global styles + Tailwind v4 import
 │   └── app.html
-├── scripts/screenshot.mjs    # headless visual-check helper
+├── scripts/screenshot.ts     # headless visual-check helper
+├── scripts/smoke.ts          # end-to-end smoke test across all views
+├── scripts/click-test.ts     # panel open/close interaction test
 ├── docs/
 │   └── decisions/            # Architecture Decision Records (ADRs)
 ├── svelte.config.js          # SvelteKit config
@@ -126,17 +128,19 @@ pnpm test
 ```
 
 Test files live next to their sources as `*.test.ts`. The map component is
-verified manually via `scripts/screenshot.mjs` (see below) rather than in unit
+verified manually via `scripts/screenshot.ts` (see below) rather than in unit
 tests.
 
 ## Visual verification
 
-`scripts/screenshot.mjs` loads the running app in a headless browser, captures a
+`scripts/screenshot.ts` loads the running app in a headless browser, captures a
 screenshot, and reports the relay count, how many country paths rendered, and
 console errors. With the dev server running:
 
 ```bash
-node scripts/screenshot.mjs [url] [outPath] [waitMs]
+pnpm tsx scripts/screenshot.ts [url] [outPath] [waitMs]
+pnpm tsx scripts/smoke.ts [baseUrl] [waitMs]
+pnpm tsx scripts/click-test.ts
 ```
 
 ## Building for production

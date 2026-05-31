@@ -3,19 +3,20 @@
  * count, how many data countries rendered, and any console errors. Used to
  * visually verify map changes without a manual browser.
  *
- * Usage: node scripts/screenshot.mjs [url] [outPath] [waitMs]
+ * Usage: pnpm tsx scripts/screenshot.ts [url] [outPath] [waitMs]
  *   (the dev server must already be running, e.g. `pnpm dev`)
  */
 import { chromium } from 'playwright';
+import type { Browser, Page } from 'playwright';
 
-const url = process.argv[2] ?? 'http://localhost:5173/';
-const out = process.argv[3] ?? '/tmp/obfina-map.png';
-const waitMs = Number(process.argv[4] ?? 6000);
+const url: string = process.argv[2] ?? 'http://localhost:5173/';
+const out: string = process.argv[3] ?? '/tmp/obfina-map.png';
+const waitMs: number = Number(process.argv[4] ?? 6000);
 
-const browser = await chromium.launch({ args: ['--ignore-gpu-blocklist'] });
-const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+const browser: Browser = await chromium.launch({ args: ['--ignore-gpu-blocklist'] });
+const page: Page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 
-const errors = [];
+const errors: string[] = [];
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 page.on('pageerror', (e) => errors.push('PAGEERROR: ' + e.message));
 
