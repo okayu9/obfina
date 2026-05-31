@@ -11,8 +11,8 @@ export const ja: Messages = {
 		pathsDesc: 'パス選択の偏り',
 		growth: '成長',
 		growthDesc: 'キャパシティと使用量の推移',
-		circuits: '回路',
-		circuitsDesc: 'ライブ回路シミュレーション',
+		circuits: 'シミュレーション',
+		circuitsDesc: 'Tor回路構築の統計的シミュレーション',
 		about: 'このアプリについて',
 		aboutDesc: 'データソースと参考文献',
 		hint: '1–6 · ← →'
@@ -117,8 +117,8 @@ export const ja: Messages = {
 
 	// Circuits view
 	circuits: {
-		title: 'ライブ回路',
-		subtitle: 'ガード → ミドル → 出口、実際のリレーから選択重みでサンプリング',
+		title: '回路シミュレーション',
+		subtitle: '実際のリレーデータに基づく統計的シミュレーションです。実際の通信を示すものではありません。',
 		unknownAs: '不明なAS',
 		guardLabel: 'ガード',
 		middleLabel: 'ミドル',

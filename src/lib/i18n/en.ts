@@ -9,8 +9,8 @@ export const en = {
 		pathsDesc: 'Path-selection bias',
 		growth: 'GROWTH',
 		growthDesc: 'Capacity & usage over time',
-		circuits: 'CIRCUITS',
-		circuitsDesc: 'Live circuit simulation',
+		circuits: 'SIMULATION',
+		circuitsDesc: 'Statistical simulation of Tor circuit building',
 		about: 'ABOUT',
 		aboutDesc: 'Data sources & references',
 		hint: '1–6 · ← →'
@@ -115,8 +115,8 @@ export const en = {
 
 	// Circuits view
 	circuits: {
-		title: 'Live circuits',
-		subtitle: 'Guard → Middle → Exit, sampled from real relays by their selection weight',
+		title: 'Circuit Simulation',
+		subtitle: 'A statistical simulation based on real relay data. These are not actual live circuits.',
 		unknownAs: 'unknown AS',
 		guardLabel: 'Guard',
 		middleLabel: 'Middle',
