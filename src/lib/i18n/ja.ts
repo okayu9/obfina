@@ -132,5 +132,10 @@ export const ja: Messages = {
 			'このビジュアライゼーションは、Torプロジェクトおよびネットワークリサーチコミュニティによるオープンデータを使用しています。',
 		dataSources: 'データソース',
 		references: '参考文献'
+	},
+
+	// Footer
+	footer: {
+		dataAsOf: 'データ取得時刻'
 	}
 };
