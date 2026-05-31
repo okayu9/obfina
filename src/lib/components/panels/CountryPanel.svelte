@@ -211,31 +211,28 @@
 					</ul>
 				{/if}
 
-				<!-- Relay list -->
+				<!-- Relay list (top 10 by bandwidth) -->
 				{#if countryRelays.length > 0}
 					<div class="section-title">{t.countryPanel.relayList}</div>
-					<ul class="relay-list">
-						<li class="relay-header">
-							<span class="rn">{t.countryPanel.nickname}</span>
-							<span class="rb">{t.countryPanel.bandwidth}</span>
-							<span class="rf">{t.countryPanel.flags}</span>
-						</li>
-						{#each countryRelays as r (r.nickname + r.bandwidth)}
-							<li class="relay-row">
-								<span class="rn" title="{r.nickname}{r.asName ? ' · ' + r.asName : ''}">{r.nickname}</span>
-								<span class="rb">
-									<span class="rb-bar-wrap">
-										<span class="rb-bar" style:width="{(r.bandwidth / maxRelayBw * 100).toFixed(1)}%" style:background={bwColor(r.bandwidth)}></span>
-									</span>
-									<span class="rb-text" style:color={bwColor(r.bandwidth)}>{fmtBw(r.bandwidth)}</span>
+					<ul class="relay-bars">
+						{#each countryRelays.slice(0, 10) as r, i (r.nickname + r.bandwidth)}
+							<li>
+								<span class="relay-rank">{i + 1}</span>
+								<span class="relay-name" title="{r.nickname}{r.asName ? ' · ' + r.asName : ''}">{r.nickname}</span>
+								<span class="relay-track">
+									<i style:width="{(r.bandwidth / maxRelayBw * 100).toFixed(1)}%" style:background={bwColor(r.bandwidth)}></i>
 								</span>
-								<span class="rf">
+								<span class="relay-bw" style:color={bwColor(r.bandwidth)}>{fmtBw(r.bandwidth)}</span>
+								<span class="relay-flags">
 									{#if hasFlag(r, 'Guard')}<span class="rflag guard">G</span>{/if}
 									{#if !hasFlag(r, 'Guard') && !hasFlag(r, 'Exit')}<span class="rflag middle">M</span>{/if}
 									{#if hasFlag(r, 'Exit')}<span class="rflag exit">E</span>{/if}
 								</span>
 							</li>
 						{/each}
+						{#if countryRelays.length > 10}
+							<li class="relay-more">…and {countryRelays.length - 10} more</li>
+						{/if}
 					</ul>
 				{/if}
 			</div>
@@ -517,101 +514,65 @@
 		align-self: center;
 	}
 
-	/* Relay list table */
-	.relay-list {
+	/* Relay bars list — mirrors CentralizationView .bars aesthetic */
+	.relay-bars {
 		list-style: none;
 		margin: 0;
-		padding: 0;
+		padding: 0.1rem 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0;
-		max-height: 260px;
-		overflow-y: auto;
-		border: 1px solid rgba(58, 93, 120, 0.25);
-		border-radius: 6px;
-		background: rgba(4, 12, 20, 0.4);
-		scrollbar-width: thin;
-		scrollbar-color: rgba(58, 93, 120, 0.5) transparent;
+		gap: 0.35rem;
 	}
-	.relay-list::-webkit-scrollbar {
-		width: 4px;
-	}
-	.relay-list::-webkit-scrollbar-track {
-		background: transparent;
-	}
-	.relay-list::-webkit-scrollbar-thumb {
-		background: rgba(58, 93, 120, 0.5);
-		border-radius: 2px;
-	}
-	.relay-list::-webkit-scrollbar-thumb:hover {
-		background: rgba(0, 212, 255, 0.4);
-	}
-	.relay-header {
+	.relay-bars li {
 		display: grid;
-		grid-template-columns: 1fr 5rem 3rem;
-		gap: 0.3rem;
-		padding: 0.3rem 0.6rem;
-		font-size: 0.58rem;
-		letter-spacing: 0.1em;
-		color: #3a5266;
-		text-transform: uppercase;
-		border-bottom: 1px solid rgba(58, 93, 120, 0.2);
-		position: sticky;
-		top: 0;
-		background: rgba(4, 12, 20, 0.92);
-	}
-	.relay-row {
-		display: grid;
-		grid-template-columns: 1fr 5rem 3rem;
-		gap: 0.3rem;
-		padding: 0.25rem 0.6rem;
-		font-size: 0.68rem;
+		grid-template-columns: 1.4rem 1fr 3.5rem 2.8rem;
 		align-items: center;
-		border-bottom: 1px solid rgba(58, 93, 120, 0.08);
-		transition: background 0.1s;
+		gap: 0.45rem;
+		font-size: 0.72rem;
+		border-radius: 4px;
+		padding: 0.22rem 0.2rem;
 	}
-	.relay-row:last-child {
-		border-bottom: none;
+	.relay-rank {
+		text-align: right;
+		font-variant-numeric: tabular-nums;
+		font-size: 0.64rem;
+		color: #6f8aa3;
 	}
-	.relay-row:hover {
-		background: rgba(0, 212, 255, 0.04);
-	}
-	.rn {
+	.relay-name {
 		color: #9fc6e0;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-	.rb {
-		display: flex;
-		flex-direction: column;
-		gap: 1px;
-		align-items: stretch;
-	}
-	.relay-header .rb {
-		display: block;
-		text-align: right;
-	}
-	.rb-bar-wrap {
-		height: 3px;
-		background: rgba(255, 255, 255, 0.06);
-		border-radius: 2px;
+	.relay-track {
+		height: 8px;
+		background: rgba(255, 255, 255, 0.05);
+		border-radius: 4px;
 		overflow: hidden;
 	}
-	.rb-bar {
+	.relay-track i {
 		display: block;
 		height: 100%;
-		border-radius: 2px;
+		border-radius: 4px;
+		min-width: 2px;
 	}
-	.rb-text {
+	.relay-bw {
 		font-variant-numeric: tabular-nums;
+		font-size: 0.64rem;
 		text-align: right;
-		font-size: inherit;
+		white-space: nowrap;
 	}
-	.rf {
+	.relay-flags {
 		display: flex;
 		gap: 0.15rem;
 		justify-content: flex-end;
+	}
+	.relay-more {
+		grid-template-columns: 1fr !important;
+		font-size: 0.64rem;
+		color: #6f8aa3;
+		padding: 0.15rem 0.2rem !important;
+		text-align: left;
 	}
 	.rflag {
 		font-size: 0.56rem;
