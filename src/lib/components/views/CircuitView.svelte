@@ -163,7 +163,10 @@
 <style>
 	.map {
 		position: fixed;
-		inset: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 200px;
 		background: radial-gradient(ellipse at 50% 40%, #122436 0%, #0a141f 70%, #070d16 100%);
 	}
 	svg {
@@ -204,7 +207,7 @@
 	.hud {
 		position: fixed;
 		bottom: 1.5rem;
-		left: 1.5rem;
+		left: calc(200px + 1.5rem);
 		pointer-events: none;
 	}
 	.title {
@@ -222,7 +225,7 @@
 	.readout {
 		position: fixed;
 		bottom: 4rem;
-		left: 1.5rem;
+		left: calc(200px + 1.5rem);
 		width: 240px;
 		padding: 1.2rem;
 		background: rgba(8, 14, 22, 0.82);
