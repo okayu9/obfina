@@ -1,0 +1,150 @@
+# CLAUDE.md — Agent Instructions for obfina
+
+This file is read by AI agents (Claude Code subagents) working in this repository.
+Follow these instructions in addition to any task-specific prompt you receive.
+
+---
+
+## Workflow
+
+### Before you finish
+1. Run `pnpm run check` — fix all TypeScript errors before committing.
+2. **Commit everything.** Never leave uncommitted changes in the worktree. If you created files but didn't commit them, they will be lost when the worktree is cleaned up.
+3. **Update documentation** if your changes affect the feature set, views, or architecture. Specifically:
+   - `README.md` — if views, keyboard shortcuts, or top-level features changed
+   - `docs/architecture.md` — if the view list, system diagram, or design principles changed
+   - `docs/decisions/009-multi-view.md` — if a view was added or removed
+   - `docs/development.md` — if the directory structure or build process changed
+   Do this in the same commit as the feature, not as a separate task.
+
+### Constraints
+- Do not write to `.claude/settings.json` — that path is outside the worktree scope and will be rejected.
+- Do not add features, refactoring, or abstractions beyond what the task requires.
+- Do not add comments that explain *what* code does — only *why* when non-obvious.
+
+---
+
+## Project overview
+
+**obfina** is a SvelteKit + TypeScript + Cloudflare Workers app that visualizes the Tor network.
+Stack: SvelteKit, D3.js, Svelte 5 runes (`$state`, `$derived`, `$effect`), pnpm, Cloudflare KV.
+
+### Views (keyboard `1`–`6`, or `←`/`→`)
+| Key | `?view=` | Component | Description |
+|-----|----------|-----------|-------------|
+| 1 | `map` | `MapView.svelte` | Value-by-alpha world map; click country for detail panel |
+| 2 | `hosting` | `CentralizationView.svelte` | Lorenz curve + Gini; click AS for relay detail panel |
+| 3 | `growth` | `TrendsView.svelte` | Time-series charts; data cached in-session |
+| 4 | `paths` | `PathsView.svelte` | Per-relay path-selection concentration |
+| 5 | `circuits` | `CircuitView.svelte` | Guard → Middle → Exit animation over the map |
+| 6 | `about` | `AboutView.svelte` | Data sources and references |
+
+### Key source paths
+```
+src/
+  lib/
+    analysis/       concentration.ts, circuit-sampling utilities
+    components/
+      nav/          ViewNav.svelte (sidebar navigation)
+      panels/       CountryPanel.svelte (map detail panel)
+      views/        One .svelte file per view + LoadingScreen.svelte
+    geo/            world.ts  — projection, randomPointInCountry(), geoContains
+    stores/         relays.svelte.ts, trends.svelte.ts, view.svelte.ts, selection.svelte.ts
+    types.ts        Relay, CountryStats, …
+  routes/
+    +page.svelte    Top-level router (view switching)
+    +layout.svelte  Shell with footer
+    api/            trends/, relays/, stats/, censorship/ — server-side KV-cached proxies
+```
+
+---
+
+## Design system
+
+### Colors
+```
+Background:    #08141f  (near-black)
+Surface:       rgba(8, 20, 31, 0.7)
+Border:        rgba(58, 93, 120, 0.35)
+Text primary:  #e6f1ff
+Text muted:    #6f8aa3
+Text secondary:#9fc6e0
+Accent cyan:   #00d4ff  (var(--accent-cyan))  — Guard nodes, primary highlight
+Accent green:  #39ff14  (var(--accent-green)) — Exit nodes
+```
+
+### Recurring UI patterns
+
+**Detail panel (slide-in)**
+A right-side panel that appears when the user clicks an item in a list. See `CentralizationView.svelte` for the canonical implementation. Key properties:
+```css
+flex: 0 0 auto; width: min(420px, 100%);
+background: rgba(8, 20, 31, 0.7);
+border: 1px solid rgba(0, 212, 255, 0.25);
+border-radius: 10px; padding: 1.1rem 1.2rem;
+animation: slide-in 0.18s ease-out;
+```
+
+**Relay list with bandwidth mini-bar**
+Used in both `CentralizationView.svelte` (hosting detail panel) and `CountryPanel.svelte` (map detail panel). The pattern: compute `maxRelayBw`, use `bwColor(bw)` to interpolate `#3a5266` → `#00d4ff`, render a 3 px tall bar + colored text. When adding a new relay list, reuse this pattern.
+
+```ts
+const maxRelayBw = $derived(Math.max(...relays.map(r => r.bandwidth), 1));
+function bwColor(bw: number): string {
+  const t = maxRelayBw > 0 ? bw / maxRelayBw : 0;
+  return `rgb(${Math.round(0x3a + t*(0x00-0x3a))},${Math.round(0x52 + t*(0xd4-0x52))},${Math.round(0x66 + t*(0xff-0x66))})`;
+}
+```
+
+**Loading screen**
+Use `<LoadingScreen message="…" />` from `$lib/components/LoadingScreen.svelte`. Do not build custom spinners.
+
+**Flag badges (G/M/E)**
+```svelte
+{#if hasFlag(r, 'Guard')}<span class="flag guard">G</span>{/if}
+{#if !hasFlag(r, 'Guard') && !hasFlag(r, 'Exit')}<span class="flag middle">M</span>{/if}
+{#if hasFlag(r, 'Exit')}<span class="flag exit">E</span>{/if}
+```
+
+### Typography
+- Section headers: `font-size: 1.1rem; letter-spacing: 0.12em; text-transform: uppercase; color: #e6f1ff`
+- Subheadings / labels: `font-size: 0.6–0.65rem; letter-spacing: 0.09–0.15em; color: #6f8aa3; text-transform: uppercase`
+- Data values: `font-variant-numeric: tabular-nums`
+- Monospace is used throughout (set globally)
+
+---
+
+## Data stores
+
+| Store | File | Contents |
+|-------|------|----------|
+| `relayStore` | `stores/relays.svelte.ts` | All relays; `loading`, `failed` flags |
+| `trendsStore` | `stores/trends.svelte.ts` | Time-series data; session-cached |
+| `selection` | `stores/selection.svelte.ts` | Selected country code |
+| view state | `stores/view.svelte.ts` | `ViewId` type, `VIEWS` array |
+
+Adding a new view: add its `id` to `ViewId` and `VIEWS` in `view.svelte.ts`, import and render it in `+page.svelte`, add it to the `needsRelays` exclusion list if it doesn't need relay data.
+
+---
+
+## API routes (server-side, Cloudflare Workers)
+
+All routes are in `src/routes/api/`. They proxy Tor APIs with Cloudflare KV caching and graceful stale fallback. When adding a new data source:
+1. Create `src/routes/api/<name>/+server.ts`
+2. Use the existing KV cache pattern from `trends/+server.ts` (check KV → fetch upstream → write KV → return)
+3. Return stale data on upstream failure rather than erroring
+
+---
+
+## Git conventions
+
+Commit message format: `type(scope): description`
+Types: `feat`, `fix`, `docs`, `refactor`
+Scopes match view names or areas: `map`, `hosting`, `circuits`, `growth`, `paths`, `about`, `nav`, `ui`, `layout`
+
+Examples from this repo:
+```
+feat(hosting): provider detail panel with relay list on AS click
+fix(circuits): place relay dots inside country polygon via rejection sampling
+docs: update documentation to reflect current 6-view implementation
+```
