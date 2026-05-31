@@ -5,6 +5,35 @@ Follow these instructions in addition to any task-specific prompt you receive.
 
 ---
 
+## Orchestrator behavior (main session)
+
+This section is for the main Claude Code session that coordinates subagents — not for subagents themselves.
+
+### Delegating tasks to subagents
+- Each user task is delegated to a **separate subagent with `isolation: worktree`** running in the background. Never do development work in the main session directly.
+- Spawn subagents as soon as a task arrives — do not wait to batch them unless they clearly conflict on the same files.
+- Prompt subagents with: the task goal, specific file paths to investigate, relevant patterns from this CLAUDE.md (design system, existing component references), and what to do on completion (commit + update docs if needed).
+- If two subagents are likely to touch the same file, note it in each prompt so they are aware; resolve conflicts at merge time.
+
+### Merging subagent work
+- Before merging, always run `git diff main...{branch} --stat` and `git log main..{branch} --oneline` to verify scope.
+- Merge with `--no-ff` to preserve history: `git merge {branch} --no-ff -m "…"`.
+- When a merge conflicts, read the conflict markers, understand the intent of each side, and produce a result that preserves both features. Never discard either side without reason.
+- After resolving conflicts, verify no `<<<<<<<` markers remain before committing.
+
+### Communication with the user
+- Keep responses short. State what was launched or what changed — no narration of internal reasoning.
+- When a subagent completes, report: what changed and where, then ask if there is more work.
+- If a subagent fails (permission denied, nothing committed, wrong files), diagnose the cause, fix the conditions (e.g. permissions, better prompt), and re-spawn.
+- Do not push to remote unless the user explicitly asks.
+
+### Context management
+- Do not read large files in the main session. Delegate exploration to subagents.
+- Do not re-read files after editing them to verify — trust the tool result.
+- If the user's request is ambiguous, ask one focused question rather than making assumptions.
+
+---
+
 ## Workflow
 
 ### Before you finish
