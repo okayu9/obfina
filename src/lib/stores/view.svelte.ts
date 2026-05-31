@@ -2,7 +2,6 @@
  * Which visualization is on screen, and the means to move between them. The id
  * is mirrored to the `?view=` query param so views are deep-linkable.
  */
-import { replaceState } from '$app/navigation';
 import { browser } from '$app/environment';
 
 export interface ViewDef {
@@ -32,13 +31,14 @@ function isViewId(v: string | null): v is ViewId {
 
 export function setView(id: ViewId): void {
 	viewState.id = id;
+	syncViewToUrl(id);
 }
 
 /** Move forward (+1) or backward (-1) through the views, wrapping around. */
 export function cycleView(dir: 1 | -1): void {
 	const i = VIEWS.findIndex((v) => v.id === viewState.id);
 	const next = (i + dir + VIEWS.length) % VIEWS.length;
-	viewState.id = VIEWS[next].id;
+	setView(VIEWS[next].id);
 }
 
 /** Read the initial view from the URL (`?view=...`). */
@@ -57,5 +57,8 @@ export function syncViewToUrl(id: ViewId = viewState.id): void {
 	const url = new URL(location.href);
 	if (id === 'map') url.searchParams.delete('view');
 	else url.searchParams.set('view', id);
-	replaceState(`${url.pathname}${url.search}${url.hash}`, history.state);
+	const next = `${url.pathname}${url.search}${url.hash}`;
+	if (next !== `${location.pathname}${location.search}${location.hash}`) {
+		history.replaceState(history.state, '', next);
+	}
 }
