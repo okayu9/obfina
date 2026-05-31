@@ -60,17 +60,30 @@ curl "http://localhost:5173/api/relays?nocache=1"
 obfina/
 ├── src/
 │   ├── lib/
+│   │   ├── analysis/         # relay analysis helpers (path bias, concentration)
+│   │   ├── assets/           # static assets (flag sprites, etc.)
 │   │   ├── components/
 │   │   │   ├── map/          # value-by-alpha world map (ValueByAlphaMap.svelte)
-│   │   │   └── panels/       # country detail panel
+│   │   │   ├── nav/          # nav rail (ViewNav.svelte)
+│   │   │   ├── panels/       # country detail panel (CountryPanel.svelte)
+│   │   │   └── views/        # one component per view:
+│   │   │       ├── MapView.svelte
+│   │   │       ├── CentralizationView.svelte   # hosting/AS centralization
+│   │   │       ├── PathBiasView.svelte
+│   │   │       ├── TrendsView.svelte           # growth over time
+│   │   │       ├── CircuitView.svelte
+│   │   │       └── AboutView.svelte
+│   │   ├── geo/              # shared map projection and world GeoJSON ($lib/geo/world)
 │   │   ├── stores/           # Svelte stores — selection state
 │   │   ├── map-encoding.ts   # exit-share → color
 │   │   ├── relay-stats.ts    # per-country aggregation, formatting, country names
 │   │   └── types.ts          # shared types
 │   ├── routes/
-│   │   ├── +page.svelte      # main entry point (map view + HUD)
+│   │   ├── +layout.svelte    # app shell: nav rail + loading screen + footer
+│   │   ├── +page.svelte      # main entry point — renders the active view
 │   │   └── api/
-│   │       └── relays/       # proxies Onionoo /details (filtered fields)
+│   │       ├── relays/       # proxies Onionoo /details (filtered fields)
+│   │       └── trends/       # proxies Tor Metrics CSVs (downsampled)
 │   ├── app.css               # global styles + Tailwind v4 import
 │   └── app.html
 ├── scripts/screenshot.mjs    # headless visual-check helper
