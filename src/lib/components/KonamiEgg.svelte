@@ -70,7 +70,7 @@
 <svelte:window onkeydown={onKeydown} />
 
 {#if visible}
-  <div class="overlay" onclick={() => { visible = false; }} role="dialog" aria-modal="true">
+  <div class="overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={() => { visible = false; }} onkeydown={(e) => { if (e.key === 'Escape') { visible = false; } }}>
     <div class="card">
       <div class="quote">"{quote.text}"</div>
       <div class="attr">
