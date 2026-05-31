@@ -1,10 +1,11 @@
 import { chromium } from 'playwright';
+import type { Browser, Page } from 'playwright';
 
-const browser = await chromium.launch({
+const browser: Browser = await chromium.launch({
 	args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist']
 });
-const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
-const errors = [];
+const page: Page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+const errors: string[] = [];
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 page.on('pageerror', (e) => errors.push('PAGEERROR: ' + e.message));
 
@@ -15,7 +16,7 @@ await page.waitForTimeout(4000);
 const marker = page.locator('.data').first();
 await marker.click({ force: true });
 await page.waitForTimeout(700);
-let opened = (await page.locator('.panel').count()) > 0;
+const opened = (await page.locator('.panel').count()) > 0;
 
 await page.waitForTimeout(500);
 const code = await page

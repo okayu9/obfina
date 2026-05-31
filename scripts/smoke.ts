@@ -2,15 +2,21 @@
  * Dev helper: load every view and report runtime/console errors plus a
  * per-view sanity selector. Verifies the multi-view app renders end to end.
  *
- * Usage: node scripts/smoke.mjs [baseUrl] [waitMs]
+ * Usage: pnpm tsx scripts/smoke.ts [baseUrl] [waitMs]
  *   (the dev server must already be running)
  */
 import { chromium } from 'playwright';
+import type { Browser, Page } from 'playwright';
 
-const base = process.argv[2] ?? 'http://localhost:5179/';
-const waitMs = Number(process.argv[3] ?? 7000);
+const base: string = process.argv[2] ?? 'http://localhost:5179/';
+const waitMs: number = Number(process.argv[3] ?? 7000);
 
-const views = [
+interface View {
+	id: string;
+	sel: string;
+}
+
+const views: View[] = [
 	{ id: 'map', sel: '.hud .count' },
 	{ id: 'hosting', sel: '.gbox .g' },
 	{ id: 'paths', sel: '.readout .big' },
@@ -18,12 +24,12 @@ const views = [
 	{ id: 'circuits', sel: '.map svg .land' }
 ];
 
-const browser = await chromium.launch({ args: ['--ignore-gpu-blocklist'] });
-const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+const browser: Browser = await chromium.launch({ args: ['--ignore-gpu-blocklist'] });
+const page: Page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 
 let failures = 0;
 for (const v of views) {
-	const errors = [];
+	const errors: string[] = [];
 	page.removeAllListeners('console');
 	page.removeAllListeners('pageerror');
 	page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
@@ -32,10 +38,10 @@ for (const v of views) {
 	const url = `${base}?view=${v.id}`;
 	await page
 		.goto(url, { waitUntil: 'networkidle' })
-		.catch((e) => errors.push('GOTO: ' + e.message));
+		.catch((e: Error) => errors.push('GOTO: ' + e.message));
 	await page.waitForTimeout(waitMs);
 
-	let selOk;
+	let selOk: boolean;
 	try {
 		await page.waitForSelector(v.sel, { timeout: 4000 });
 		selOk = true;
