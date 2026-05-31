@@ -252,18 +252,17 @@
 
 				<ul class="bars" class:exit={scope === 'exit'}>
 					{#each listed as g, i (g.key)}
-						<li
-							class:sel={i < m}
-							class:active={selectedAsKey === g.key}
-							onclick={() => selectProvider(g)}
-							role="button"
-							tabindex="0"
-							onkeydown={(e) => e.key === 'Enter' && selectProvider(g)}
-						>
-							<span class="rank">{i + 1}</span>
-							<span class="as" title={g.key}>{g.label}</span>
-							<span class="track"><i style:width={pct(share(g))}></i></span>
-							<span class="v">{pct(share(g))}</span>
+						<li>
+							<button
+								class:sel={i < m}
+								class:active={selectedAsKey === g.key}
+								onclick={() => selectProvider(g)}
+							>
+								<span class="rank">{i + 1}</span>
+								<span class="as" title={g.key}>{g.label}</span>
+								<span class="track"><i style:width={pct(share(g))}></i></span>
+								<span class="v">{pct(share(g))}</span>
+							</button>
 						</li>
 					{/each}
 					{#if tailCount > 0}
@@ -569,6 +568,9 @@
 		overflow-y: auto;
 	}
 	.bars li {
+		list-style: none;
+	}
+	.bars li button {
 		display: grid;
 		grid-template-columns: 1.4rem 7.5rem 1fr 2.8rem;
 		align-items: center;
@@ -578,17 +580,21 @@
 		border-radius: 5px;
 		padding: 0.25rem 0.3rem;
 		transition: opacity 0.15s, background 0.12s;
-	}
-	.bars li:not(.rest) {
+		width: 100%;
+		background: none;
+		border: none;
+		color: inherit;
+		font-family: inherit;
 		cursor: pointer;
+		text-align: left;
 	}
-	.bars li:not(.rest):hover {
+	.bars li button:hover {
 		background: rgba(0, 212, 255, 0.06);
 	}
-	.bars li.sel {
+	.bars li button.sel {
 		opacity: 1;
 	}
-	.bars li.active {
+	.bars li button.active {
 		background: rgba(0, 212, 255, 0.1);
 		outline: 1px solid rgba(0, 212, 255, 0.3);
 	}
@@ -603,6 +609,19 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+	.bars li.rest {
+		display: grid;
+		grid-template-columns: 1.4rem 7.5rem 1fr 2.8rem;
+		align-items: center;
+		gap: 0.55rem;
+		font-size: 0.72rem;
+		opacity: 0.5;
+		border-radius: 5px;
+		padding: 0.25rem 0.3rem;
+	}
+	.bars li.rest.sel {
+		opacity: 1;
 	}
 	.rest .as {
 		color: #6f8aa3;
