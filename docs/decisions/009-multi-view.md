@@ -37,10 +37,11 @@ question:
 | `paths`    | How biased is path selection?  | Per-relay concentration curve with draggable “top N% → M% of traffic”    |
 | `growth`   | How is the network changing?   | Time-series: relay count, advertised vs. consumed bandwidth, users by CC |
 | `circuits` | What does a circuit look like? | Real Guard→Middle→Exit paths animated over the map                       |
+| `about`    | Where does the data come from? | Data source and reference cards                                          |
 
 Navigation is intentionally cheap so the views read as one exhibit:
 
-- a fixed nav rail (click), number keys `1`–`5`, and `←`/`→` (or `[`/`]`);
+- a fixed nav rail (click), number keys `1`–`6`, and `←`/`→` (or `[`/`]`);
 - the active view is mirrored to `?view=…` so any view is deep-linkable.
 
 Geography stays meaningful where it appears: the `circuits` view reuses the same
