@@ -215,24 +215,23 @@
 				{#if countryRelays.length > 0}
 					<div class="section-title">{t.countryPanel.relayList}</div>
 					<ul class="relay-list">
-						<li class="relay-header">
-							<span class="rn">{t.countryPanel.nickname}</span>
-							<span class="rb">{t.countryPanel.bandwidth}</span>
-							<span class="rf">{t.countryPanel.flags}</span>
-						</li>
-						{#each countryRelays as r (r.nickname + r.bandwidth)}
+						{#each countryRelays as r, i (r.nickname + r.bandwidth)}
 							<li class="relay-row">
-								<span class="rn" title="{r.nickname}{r.asName ? ' · ' + r.asName : ''}">{r.nickname}</span>
+								<span class="rrank">{i + 1}</span>
+								<span class="rname-flags" title="{r.nickname}{r.asName ? ' · ' + r.asName : ''}">
+									<span class="rn">{r.nickname}</span>
+									<span class="rf">
+										{#if hasFlag(r, 'Guard')}<span class="rflag guard">G</span>{/if}
+										{#if !hasFlag(r, 'Guard') && !hasFlag(r, 'Exit')}<span class="rflag middle">M</span>{/if}
+										{#if hasFlag(r, 'Exit')}<span class="rflag exit">E</span>{/if}
+									</span>
+								</span>
+								<span class="rrank-empty"></span>
 								<span class="rb">
 									<span class="rb-bar-wrap">
 										<span class="rb-bar" style:width="{(r.bandwidth / maxRelayBw * 100).toFixed(1)}%" style:background={bwColor(r.bandwidth)}></span>
 									</span>
 									<span class="rb-text" style:color={bwColor(r.bandwidth)}>{fmtBw(r.bandwidth)}</span>
-								</span>
-								<span class="rf">
-									{#if hasFlag(r, 'Guard')}<span class="rflag guard">G</span>{/if}
-									{#if !hasFlag(r, 'Guard') && !hasFlag(r, 'Exit')}<span class="rflag middle">M</span>{/if}
-									{#if hasFlag(r, 'Exit')}<span class="rflag exit">E</span>{/if}
 								</span>
 							</li>
 						{/each}
@@ -546,27 +545,14 @@
 	.relay-list::-webkit-scrollbar-thumb:hover {
 		background: rgba(0, 212, 255, 0.4);
 	}
-	.relay-header {
-		display: grid;
-		grid-template-columns: 1fr 5rem 3rem;
-		gap: 0.3rem;
-		padding: 0.3rem 0.6rem;
-		font-size: 0.58rem;
-		letter-spacing: 0.1em;
-		color: #3a5266;
-		text-transform: uppercase;
-		border-bottom: 1px solid rgba(58, 93, 120, 0.2);
-		position: sticky;
-		top: 0;
-		background: rgba(4, 12, 20, 0.92);
-	}
 	.relay-row {
 		display: grid;
-		grid-template-columns: 1fr 5rem 3rem;
-		gap: 0.3rem;
-		padding: 0.25rem 0.6rem;
+		grid-template-columns: 1.2rem 1fr;
+		grid-template-rows: auto auto;
+		column-gap: 0.3rem;
+		row-gap: 0.15rem;
+		padding: 0.3rem 0.6rem;
 		font-size: 0.68rem;
-		align-items: center;
 		border-bottom: 1px solid rgba(58, 93, 120, 0.08);
 		transition: background 0.1s;
 	}
@@ -576,23 +562,45 @@
 	.relay-row:hover {
 		background: rgba(0, 212, 255, 0.04);
 	}
+	.rrank {
+		grid-column: 1;
+		grid-row: 1;
+		font-size: 0.58rem;
+		color: #3a5266;
+		font-variant-numeric: tabular-nums;
+		text-align: right;
+		padding-top: 0.1rem;
+	}
+	.rname-flags {
+		grid-column: 2;
+		grid-row: 1;
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+		min-width: 0;
+		overflow: hidden;
+	}
 	.rn {
 		color: #9fc6e0;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		flex-shrink: 1;
+		min-width: 0;
+	}
+	.rrank-empty {
+		grid-column: 1;
+		grid-row: 2;
 	}
 	.rb {
+		grid-column: 2;
+		grid-row: 2;
 		display: flex;
-		flex-direction: column;
-		gap: 1px;
-		align-items: stretch;
-	}
-	.relay-header .rb {
-		display: block;
-		text-align: right;
+		align-items: center;
+		gap: 0.3rem;
 	}
 	.rb-bar-wrap {
+		flex: 1;
 		height: 3px;
 		background: rgba(255, 255, 255, 0.06);
 		border-radius: 2px;
@@ -605,13 +613,14 @@
 	}
 	.rb-text {
 		font-variant-numeric: tabular-nums;
-		text-align: right;
-		font-size: inherit;
+		font-size: 0.62rem;
+		white-space: nowrap;
+		flex-shrink: 0;
 	}
 	.rf {
 		display: flex;
 		gap: 0.15rem;
-		justify-content: flex-end;
+		flex-shrink: 0;
 	}
 	.rflag {
 		font-size: 0.56rem;
