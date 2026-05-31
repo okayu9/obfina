@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { fly, slide } from ‘svelte/transition’;
-	import { cubicOut } from ‘svelte/easing’;
-	import { countryName, flagEmoji, formatBandwidth, type CountryStats } from ‘$lib/relay-stats’;
-	import { selection } from ‘$lib/stores/selection.svelte’;
-	import type { Relay } from ‘$lib/types’;
+	import { fly, slide } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
+	import { countryName, flagEmoji, formatBandwidth, type CountryStats } from '$lib/relay-stats';
+	import { selection } from '$lib/stores/selection.svelte';
+	import type { Relay } from '$lib/types';
 
 	let {
 		stats,
@@ -32,21 +32,21 @@
 		stats
 			? [
 					{
-						key: ‘guard’,
-						name: ‘Guard’,
-						desc: ‘entry — a client’s first hop into Tor’,
+						key: 'guard',
+						name: 'Guard',
+						desc: "entry — a client's first hop into Tor",
 						count: stats.guard
 					},
 					{
-						key: ‘middle’,
-						name: ‘Middle’,
-						desc: ‘relays traffic between guard and exit’,
+						key: 'middle',
+						name: 'Middle',
+						desc: 'relays traffic between guard and exit',
 						count: stats.middle
 					},
 					{
-						key: ‘exit’,
-						name: ‘Exit’,
-						desc: ‘last hop — connects out to the destination’,
+						key: 'exit',
+						name: 'Exit',
+						desc: 'last hop — connects out to the destination',
 						count: stats.exit
 					}
 				]
@@ -89,8 +89,8 @@
 		const totalCountryBw = stats.bandwidth || 1;
 		const map = new Map<string, AsEntry>();
 		for (const r of countryRelays) {
-			const key = r.as ?? ‘unknown’;
-			const name = r.asName ?? r.as ?? ‘Unknown’;
+			const key = r.as ?? 'unknown';
+			const name = r.asName ?? r.as ?? 'Unknown';
 			const existing = map.get(key);
 			if (existing) {
 				existing.bw += r.bandwidth;
