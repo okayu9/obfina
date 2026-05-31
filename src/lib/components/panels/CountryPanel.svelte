@@ -14,6 +14,7 @@
 
 	let expanded = $state(false);
 	let selectedRelay = $state<Relay | null>(null);
+	let roleFilter = $state<'all' | 'guard' | 'middle' | 'exit'>('all');
 	const t = $derived(getMessages());
 
 	function close() {
@@ -26,6 +27,7 @@
 		if (stats?.country) {
 			expanded = false;
 			selectedRelay = null;
+			roleFilter = 'all';
 		}
 	});
 
@@ -64,6 +66,16 @@
 			: []
 	);
 
+	const filteredRelays = $derived(
+		roleFilter === 'all'
+			? countryRelays
+			: roleFilter === 'guard'
+				? countryRelays.filter((r) => r.flags.includes('Guard'))
+				: roleFilter === 'exit'
+					? countryRelays.filter((r) => r.flags.includes('Exit'))
+					: countryRelays.filter((r) => !r.flags.includes('Guard') && !r.flags.includes('Exit'))
+	);
+
 	// Bandwidth share in the network
 	const bwShare = $derived(
 		totalBandwidth > 0 && stats ? (stats.bandwidth / totalBandwidth) * 100 : 0
@@ -73,9 +85,9 @@
 	const uniqueAS = $derived(new Set(countryRelays.map((r) => r.as).filter(Boolean)).size);
 
 
-	// Max bandwidth among relays in this country (for relative color scale)
+	// Max bandwidth among filtered relays (for relative color scale)
 	const maxRelayBw = $derived(
-		countryRelays.length > 0 ? Math.max(...countryRelays.map((r) => r.bandwidth)) : 1
+		filteredRelays.length > 0 ? Math.max(...filteredRelays.map((r) => r.bandwidth)) : 1
 	);
 
 
@@ -216,8 +228,14 @@
 				<!-- Relay list -->
 				{#if countryRelays.length > 0}
 					<div class="section-title">{t.countryPanel.relayList}</div>
+					<div class="role-filter">
+						<button class="rf-btn" class:active={roleFilter === 'all'} onclick={() => { roleFilter = 'all'; selectedRelay = null; }}>All</button>
+						<button class="rf-btn" class:active={roleFilter === 'guard'} onclick={() => { roleFilter = 'guard'; selectedRelay = null; }}>G</button>
+						<button class="rf-btn" class:active={roleFilter === 'middle'} onclick={() => { roleFilter = 'middle'; selectedRelay = null; }}>M</button>
+						<button class="rf-btn" class:active={roleFilter === 'exit'} onclick={() => { roleFilter = 'exit'; selectedRelay = null; }}>E</button>
+					</div>
 					<ul class="relay-list">
-						{#each countryRelays as r, i (r.nickname + r.bandwidth)}
+						{#each filteredRelays.slice(0, 10) as r, i (r.nickname + r.bandwidth)}
 							<li class="relay-row" class:relay-row--selected={selectedRelay === r}>
 								<button
 									class="relay-row-btn"
@@ -245,6 +263,9 @@
 							</li>
 						{/each}
 					</ul>
+					{#if filteredRelays.length > 10}
+						<div class="more-relays">…and {filteredRelays.length - 10} more</div>
+					{/if}
 
 					{#if selectedRelay}
 						<div class="relay-detail" transition:slide={{ duration: 180, easing: cubicOut }}>
@@ -732,5 +753,37 @@
 	.rflag.exit {
 		color: var(--accent-green);
 		background: rgba(57, 255, 20, 0.1);
+	}
+
+	.role-filter {
+		display: flex;
+		gap: 0.3rem;
+		margin-bottom: 0.5rem;
+	}
+	.rf-btn {
+		font-size: 0.6rem;
+		letter-spacing: 0.1em;
+		padding: 0.15rem 0.5rem;
+		border: 1px solid rgba(58, 93, 120, 0.4);
+		border-radius: 3px;
+		background: none;
+		color: #6f8aa3;
+		cursor: pointer;
+		font-family: inherit;
+		transition: color 0.15s, border-color 0.15s;
+	}
+	.rf-btn:hover {
+		color: #9fc6e0;
+	}
+	.rf-btn.active {
+		color: var(--accent-cyan);
+		border-color: var(--accent-cyan);
+	}
+
+	.more-relays {
+		font-size: 0.62rem;
+		color: #3a5266;
+		text-align: center;
+		padding: 0.25rem 0;
 	}
 </style>
