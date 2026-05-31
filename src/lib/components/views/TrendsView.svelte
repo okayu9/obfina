@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { formatBandwidth, countryName } from '$lib/relay-stats';
 	import type { TrendsResponse } from '$lib/types';
+	import LoadingScreen from '$lib/components/LoadingScreen.svelte';
 
 	let data = $state<TrendsResponse | null>(null);
 	let loading = $state(true);
@@ -100,9 +101,9 @@
 	</header>
 
 	{#if loading}
-		<div class="status pulse"></div>
+		<LoadingScreen message="Fetching Tor Metrics…" />
 	{:else if failed}
-		<div class="status err">historical data unavailable</div>
+		<LoadingScreen message="Historical data unavailable" />
 	{:else if data}
 		<div class="panels">
 			<!-- GROWTH -->
@@ -509,35 +510,8 @@
 	.sw.green {
 		background: var(--accent-green);
 	}
-	.status {
-		margin: 4rem auto;
-		color: #6f8aa3;
-		font-size: 0.8rem;
-		letter-spacing: 0.1em;
-	}
-	.status.pulse {
-		width: 14px;
-		height: 14px;
-		border-radius: 50%;
-		background: var(--accent-cyan);
-		animation: pulse 1.4s ease-in-out infinite;
-	}
-	.status.err {
-		color: #ff6b6b;
-	}
 	.note {
 		font-size: 0.66rem;
 		color: #6f8aa3;
-	}
-	@keyframes pulse {
-		0%,
-		100% {
-			opacity: 0.2;
-			transform: scale(0.8);
-		}
-		50% {
-			opacity: 1;
-			transform: scale(1.3);
-		}
 	}
 </style>
