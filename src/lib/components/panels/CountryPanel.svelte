@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { fly, slide } from 'svelte/transition';
-	import { cubicOut } from 'svelte/easing';
-	import { countryName, flagEmoji, formatBandwidth, type CountryStats } from '$lib/relay-stats';
-	import { selection } from '$lib/stores/selection.svelte';
-	import type { Relay } from '$lib/types';
+	import { fly, slide } from ‘svelte/transition’;
+	import { cubicOut } from ‘svelte/easing’;
+	import { countryName, flagEmoji, formatBandwidth, type CountryStats } from ‘$lib/relay-stats’;
+	import { selection } from ‘$lib/stores/selection.svelte’;
+	import type { Relay } from ‘$lib/types’;
 
 	let {
 		stats,
@@ -32,21 +32,21 @@
 		stats
 			? [
 					{
-						key: 'guard',
-						name: 'Guard',
-						desc: 'entry — a client’s first hop into Tor',
+						key: ‘guard’,
+						name: ‘Guard’,
+						desc: ‘entry — a client’s first hop into Tor’,
 						count: stats.guard
 					},
 					{
-						key: 'middle',
-						name: 'Middle',
-						desc: 'relays traffic between guard and exit',
+						key: ‘middle’,
+						name: ‘Middle’,
+						desc: ‘relays traffic between guard and exit’,
 						count: stats.middle
 					},
 					{
-						key: 'exit',
-						name: 'Exit',
-						desc: 'last hop — connects out to the destination',
+						key: ‘exit’,
+						name: ‘Exit’,
+						desc: ‘last hop — connects out to the destination’,
 						count: stats.exit
 					}
 				]
@@ -68,6 +68,13 @@
 	// Unique AS count
 	const uniqueAS = $derived(new Set(countryRelays.map((r) => r.as).filter(Boolean)).size);
 
+
+	// Max bandwidth among relays in this country (for relative color scale)
+	const maxRelayBw = $derived(
+		countryRelays.length > 0 ? Math.max(...countryRelays.map((r) => r.bandwidth)) : 1
+	);
+
+
 	// Top AS providers by bandwidth share within country
 	interface AsEntry {
 		key: string;
@@ -82,8 +89,8 @@
 		const totalCountryBw = stats.bandwidth || 1;
 		const map = new Map<string, AsEntry>();
 		for (const r of countryRelays) {
-			const key = r.as ?? 'unknown';
-			const name = r.asName ?? r.as ?? 'Unknown';
+			const key = r.as ?? ‘unknown’;
+			const name = r.asName ?? r.as ?? ‘Unknown’;
 			const existing = map.get(key);
 			if (existing) {
 				existing.bw += r.bandwidth;
@@ -110,6 +117,14 @@
 		if (bps >= 1e6) return `${(bps / 1e6).toFixed(1)} MB/s`;
 		if (bps >= 1e3) return `${(bps / 1e3).toFixed(0)} KB/s`;
 		return `${bps} B/s`;
+	}
+
+	function bwColor(bw: number): string {
+		const t = maxRelayBw > 0 ? bw / maxRelayBw : 0;
+		const r = Math.round(0x3a + t * (0x00 - 0x3a));
+		const g = Math.round(0x52 + t * (0xd4 - 0x52));
+		const b = Math.round(0x66 + t * (0xff - 0x66));
+		return `rgb(${r},${g},${b})`;
 	}
 </script>
 
@@ -206,7 +221,12 @@
 						{#each countryRelays as r (r.nickname + r.bandwidth)}
 							<li class="relay-row">
 								<span class="rn" title="{r.nickname}{r.asName ? ' · ' + r.asName : ''}">{r.nickname}</span>
-								<span class="rb">{fmtBw(r.bandwidth)}</span>
+								<span class="rb">
+									<span class="rb-bar-wrap">
+										<span class="rb-bar" style:width="{(r.bandwidth / maxRelayBw * 100).toFixed(1)}%" style:background={bwColor(r.bandwidth)}></span>
+									</span>
+									<span class="rb-text" style:color={bwColor(r.bandwidth)}>{fmtBw(r.bandwidth)}</span>
+								</span>
 								<span class="rf">
 									{#if hasFlag(r, 'Guard')}<span class="rflag guard">G</span>{/if}
 									{#if !hasFlag(r, 'Guard') && !hasFlag(r, 'Exit')}<span class="rflag middle">M</span>{/if}
@@ -529,10 +549,29 @@
 		text-overflow: ellipsis;
 	}
 	.rb {
-		color: #9fc6e0;
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+		align-items: stretch;
+	}
+	.relay-header .rb {
+		display: block;
+		text-align: right;
+	}
+	.rb-bar-wrap {
+		height: 3px;
+		background: rgba(255, 255, 255, 0.06);
+		border-radius: 2px;
+		overflow: hidden;
+	}
+	.rb-bar {
+		height: 100%;
+		border-radius: 2px;
+	}
+	.rb-text {
 		font-variant-numeric: tabular-nums;
 		text-align: right;
-		font-size: 0.65rem;
+		font-size: inherit;
 	}
 	.rf {
 		display: flex;
