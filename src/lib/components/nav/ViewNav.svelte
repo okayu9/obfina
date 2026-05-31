@@ -65,6 +65,12 @@
 		flex-direction: column;
 		gap: 0.15rem;
 		z-index: 20;
+		padding: 0.5rem 0.4rem;
+		background: rgba(8, 20, 31, 0.65);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border: 1px solid rgba(58, 93, 120, 0.25);
+		border-radius: 10px;
 	}
 	.item {
 		display: flex;
