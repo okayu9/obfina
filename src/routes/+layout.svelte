@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { initLocale, getMessages } from '$lib/i18n/index.svelte';
+	import { initLocale, getLocale, getMessages } from '$lib/i18n/index.svelte';
 	import { relayStore } from '$lib/stores/relays.svelte';
 
 	let { children } = $props();
@@ -21,6 +21,10 @@
 
 	onMount(() => {
 		initLocale();
+	});
+
+	$effect(() => {
+		document.documentElement.lang = getLocale();
 	});
 </script>
 
