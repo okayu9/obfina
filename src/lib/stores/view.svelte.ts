@@ -2,6 +2,7 @@
  * Which visualization is on screen, and the means to move between them. The id
  * is mirrored to the `?view=` query param so views are deep-linkable.
  */
+import { replaceState } from '$app/navigation';
 
 export interface ViewDef {
 	id: ViewId;
@@ -51,11 +52,10 @@ export function initViewFromUrl(): void {
 
 /** Reflect the current view into the URL without adding history entries. */
 export function syncViewToUrl(): void {
-	if (typeof location === 'undefined' || typeof history === 'undefined') return;
+	if (typeof location === 'undefined') return;
 	// obfina only uses the `view` query param, so a plain rewrite is enough.
-	history.replaceState(
-		history.state,
-		'',
-		`${location.pathname}?view=${viewState.id}${location.hash}`
+	replaceState(
+		`${location.pathname}?view=${viewState.id}${location.hash}`,
+		history.state
 	);
 }
