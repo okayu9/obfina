@@ -86,6 +86,9 @@
 	function userSeries(cc: string): number[] {
 		return users.series.map((s) => s.values[cc] ?? 0);
 	}
+	const totalUsers = $derived(
+		users.countries.reduce((sum, cc) => sum + (last(userSeries(cc)) ?? 0), 0)
+	);
 
 	// --- chart cursor ---
 	let hover = $state<{ chart: 'size' | 'bw' | 'users'; i: number } | null>(null);
@@ -235,6 +238,7 @@
 			<!-- USERS BY COUNTRY -->
 			<section class="panel wide">
 				<div class="head">
+					<div class="big">{compact(totalUsers)}</div>
 					<div class="cap">{t.growth.dailyUsers}</div>
 				</div>
 				<div class="chart" bind:clientWidth={usersW} bind:clientHeight={usersH}>
