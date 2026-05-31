@@ -260,6 +260,21 @@
 		max-height: calc(100vh - 3rem);
 		overflow-y: auto;
 		overflow-x: hidden;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(58, 93, 120, 0.5) transparent;
+	}
+	.panel::-webkit-scrollbar {
+		width: 4px;
+	}
+	.panel::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.panel::-webkit-scrollbar-thumb {
+		background: rgba(58, 93, 120, 0.5);
+		border-radius: 2px;
+	}
+	.panel::-webkit-scrollbar-thumb:hover {
+		background: rgba(0, 212, 255, 0.4);
 	}
 
 	.close {
@@ -513,6 +528,21 @@
 		border: 1px solid rgba(58, 93, 120, 0.25);
 		border-radius: 6px;
 		background: rgba(4, 12, 20, 0.4);
+		scrollbar-width: thin;
+		scrollbar-color: rgba(58, 93, 120, 0.5) transparent;
+	}
+	.relay-list::-webkit-scrollbar {
+		width: 4px;
+	}
+	.relay-list::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.relay-list::-webkit-scrollbar-thumb {
+		background: rgba(58, 93, 120, 0.5);
+		border-radius: 2px;
+	}
+	.relay-list::-webkit-scrollbar-thumb:hover {
+		background: rgba(0, 212, 255, 0.4);
 	}
 	.relay-header {
 		display: grid;
