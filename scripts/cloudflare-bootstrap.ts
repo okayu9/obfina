@@ -26,6 +26,11 @@ interface KvNamespace {
 	title: string;
 }
 
+interface PagesProject {
+	id: string;
+	name: string;
+}
+
 function requireEnv(name: string, value: string | undefined): string {
 	if (!value) throw new Error(`${name} is required`);
 	return value;
@@ -77,6 +82,29 @@ async function ensureKvNamespace(title: string): Promise<KvNamespace> {
 	return created.result;
 }
 
+async function ensurePagesProject(name: string): Promise<PagesProject> {
+	const id = requireEnv('CLOUDFLARE_ACCOUNT_ID', accountId);
+	try {
+		const existing = await cf<CloudflareSingle<PagesProject>>(
+			`/accounts/${id}/pages/projects/${name}`
+		);
+		return existing.result;
+	} catch (error) {
+		if (!(error instanceof Error) || !error.message.includes('Project not found')) {
+			throw error;
+		}
+	}
+
+	const created = await cf<CloudflareSingle<PagesProject>>(`/accounts/${id}/pages/projects`, {
+		method: 'POST',
+		body: JSON.stringify({
+			name,
+			production_branch: 'main'
+		})
+	});
+	return created.result;
+}
+
 async function writeWranglerToml(prodId: string, previewId: string): Promise<void> {
 	const toml = `name = "${projectName}"
 compatibility_date = "${compatibilityDate}"
@@ -93,8 +121,10 @@ preview_id = "${previewId}"
 
 const prod = await ensureKvNamespace(prodKvTitle);
 const preview = await ensureKvNamespace(previewKvTitle);
+const project = await ensurePagesProject(projectName);
 await writeWranglerToml(prod.id, preview.id);
 
 console.log(`Wrote wrangler.toml for Cloudflare Pages project "${projectName}".`);
+console.log(`Cloudflare Pages project: ${project.name} (${project.id})`);
 console.log(`RELAY_CACHE production namespace: ${prod.title} (${prod.id})`);
 console.log(`RELAY_CACHE preview namespace: ${preview.title} (${preview.id})`);
