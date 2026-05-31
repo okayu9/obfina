@@ -130,6 +130,11 @@ export const en = {
 			'This visualization is built on open data published by the Tor Project and the network research community.',
 		dataSources: 'Data Sources',
 		references: 'References'
+	},
+
+	// Footer
+	footer: {
+		dataAsOf: 'Data as of'
 	}
 };
 
