@@ -567,6 +567,7 @@
 		overflow: hidden;
 	}
 	.rb-bar {
+		display: block;
 		height: 100%;
 		border-radius: 2px;
 	}
