@@ -100,6 +100,9 @@
 	function onEnter(e: PointerEvent, code: string | null, stats: CountryStats | null) {
 		if (code && stats) hover = { code, count: stats.count, x: e.clientX, y: e.clientY };
 	}
+	function onEnterEmpty(e: PointerEvent, code: string | null) {
+		if (code) hover = { code, count: 0, x: e.clientX, y: e.clientY };
+	}
 
 	// Background click (ocean or a country with no data) deselects — but not when
 	// the click was actually a pan/drag.
@@ -145,6 +148,17 @@
 			<path class="land" d={s.d} />
 		{/each}
 		<path class="borders" d={bordersPath} />
+		{#each shapes as s (`e-${s.code ?? s.d.slice(0, 12)}`)}
+			{#if !s.stats && s.code}
+				<path
+					class="empty"
+					d={s.d}
+					onpointerenter={(e) => onEnterEmpty(e, s.code)}
+					onpointermove={(e) => hover && (hover = { ...hover, x: e.clientX, y: e.clientY })}
+					onpointerleave={() => (hover = null)}
+				/>
+			{/if}
+		{/each}
 		{#each shapes as s (`g-${s.code ?? s.d.slice(0, 12)}`)}
 			{#if s.stats && s.glow}
 				<path
@@ -188,7 +202,7 @@
 		<div class="tooltip" style:left="{hover.x}px" style:top="{hover.y}px">
 			<span>{flagEmoji(hover.code)}</span>
 			<span class="t-name">{countryName(hover.code)}</span>
-			<span class="t-count">{hover.count.toLocaleString()}</span>
+			{#if hover.count > 0}<span class="t-count">{hover.count.toLocaleString()}</span>{/if}
 		</div>
 	{/if}
 </div>
@@ -214,6 +228,11 @@
 		stroke-width: calc(0.5px * var(--inv-k, 1));
 		stroke-opacity: 0.8;
 		pointer-events: none;
+	}
+	.empty {
+		fill: transparent;
+		stroke: none;
+		cursor: default;
 	}
 	.data {
 		cursor: pointer;
