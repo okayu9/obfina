@@ -25,6 +25,15 @@
 	};
 	const borders = mesh(topology, topology.objects.countries as never);
 	const SPHERE = { type: 'Sphere' } as const;
+	// GeoJSON polygon covering lat -60 to +90 (clips Antarctica).
+	const BOUNDS_NO_ANTARCTICA = {
+		type: 'Feature',
+		geometry: {
+			type: 'Polygon',
+			coordinates: [[[-180, -60], [180, -60], [180, 90], [-180, 90], [-180, -60]]]
+		},
+		properties: {}
+	} as const;
 
 	function codeFor(id?: string | number): string | null {
 		if (id == null) return null;
@@ -37,16 +46,11 @@
 	const weight = $derived(scaleSqrt().domain([1, maxCount]).range([0.18, 1]).clamp(true));
 
 	// Equirectangular so the map is a clean rectangle that tiles horizontally.
-	// Fit to height → poles sit exactly at the top/bottom edges (no empty space
-	// above the North Pole or below the South Pole).
+	// fitSize against the clipped bounding box so the visible world fills the height.
 	const projection = $derived.by(() => {
 		if (!width || !height) return null;
 		const p = geoEquirectangular();
-		p.fitHeight(height, SPHERE);
-		const b = geoPath(p).bounds(SPHERE);
-		const mapW = b[1][0] - b[0][0];
-		const t = p.translate();
-		p.translate([t[0] + (width - mapW) / 2 - b[0][0], t[1]]);
+		p.fitSize([width, height], BOUNDS_NO_ANTARCTICA as never);
 		return p;
 	});
 	const path = $derived(projection ? geoPath(projection) : null);
@@ -54,8 +58,8 @@
 
 	// One world's pixel width (a full 360° of longitude) at scale 1.
 	const worldW = $derived(projection ? projection([180, 0])![0] - projection([-180, 0])![0] : 0);
-	const mapTop = $derived(projection ? geoPath(projection).bounds(SPHERE)[0][1] : 0);
-	const mapBottom = $derived(projection ? geoPath(projection).bounds(SPHERE)[1][1] : 0);
+	const mapTop = $derived(projection ? geoPath(projection).bounds(BOUNDS_NO_ANTARCTICA as never)[0][1] : 0);
+	const mapBottom = $derived(projection ? geoPath(projection).bounds(BOUNDS_NO_ANTARCTICA as never)[1][1] : 0);
 
 	// Side copies left/right of the centre so horizontal panning never shows an edge.
 	const COPIES = [-1, 0, 1, 2];
@@ -94,6 +98,9 @@
 	}
 	function onEnter(e: PointerEvent, code: string | null, stats: CountryStats | null) {
 		if (code && stats) hover = { code, count: stats.count, x: e.clientX, y: e.clientY };
+	}
+	function onEnterEmpty(e: PointerEvent, code: string | null) {
+		if (code) hover = { code, count: 0, x: e.clientX, y: e.clientY };
 	}
 
 	// Background click (ocean or a country with no data) deselects — but not when
@@ -140,6 +147,17 @@
 			<path class="land" d={s.d} />
 		{/each}
 		<path class="borders" d={bordersPath} />
+		{#each shapes as s (`e-${s.code ?? s.d.slice(0, 12)}`)}
+			{#if !s.stats && s.code}
+				<path
+					class="empty"
+					d={s.d}
+					onpointerenter={(e) => onEnterEmpty(e, s.code)}
+					onpointermove={(e) => hover && (hover = { ...hover, x: e.clientX, y: e.clientY })}
+					onpointerleave={() => (hover = null)}
+				/>
+			{/if}
+		{/each}
 		{#each shapes as s (`g-${s.code ?? s.d.slice(0, 12)}`)}
 			{#if s.stats && s.glow}
 				<path
@@ -183,14 +201,14 @@
 		<div class="tooltip" style:left="{hover.x}px" style:top="{hover.y}px">
 			<span>{flagEmoji(hover.code)}</span>
 			<span class="t-name">{countryName(hover.code)}</span>
-			<span class="t-count">{hover.count.toLocaleString()}</span>
+			{#if hover.count > 0}<span class="t-count">{hover.count.toLocaleString()}</span>{/if}
 		</div>
 	{/if}
 </div>
 
 <style>
 	.map {
-		position: fixed;
+		position: absolute;
 		inset: 0;
 		background: radial-gradient(ellipse at 50% 40%, #122436 0%, #0a141f 70%, #070d16 100%);
 	}
@@ -209,6 +227,11 @@
 		stroke-width: calc(0.5px * var(--inv-k, 1));
 		stroke-opacity: 0.8;
 		pointer-events: none;
+	}
+	.empty {
+		fill: transparent;
+		stroke: none;
+		cursor: default;
 	}
 	.data {
 		cursor: pointer;
