@@ -13,6 +13,7 @@
 	}: { stats: CountryStats | null; relays?: Relay[]; totalBandwidth?: number } = $props();
 
 	let expanded = $state(false);
+	let selectedRelay = $state<Relay | null>(null);
 	const t = $derived(getMessages());
 
 	function close() {
@@ -20,10 +21,11 @@
 		expanded = false;
 	}
 
-	// Reset expanded state when country changes
+	// Reset expanded state and selected relay when country changes
 	$effect(() => {
 		if (stats?.country) {
 			expanded = false;
+			selectedRelay = null;
 		}
 	});
 
@@ -216,26 +218,64 @@
 					<div class="section-title">{t.countryPanel.relayList}</div>
 					<ul class="relay-list">
 						{#each countryRelays as r, i (r.nickname + r.bandwidth)}
-							<li class="relay-row">
-								<span class="rrank">{i + 1}</span>
-								<span class="rname-flags" title="{r.nickname}{r.asName ? ' · ' + r.asName : ''}">
-									<span class="rn">{r.nickname}</span>
-									<span class="rf">
-										{#if hasFlag(r, 'Guard')}<span class="rflag guard">G</span>{/if}
-										{#if !hasFlag(r, 'Guard') && !hasFlag(r, 'Exit')}<span class="rflag middle">M</span>{/if}
-										{#if hasFlag(r, 'Exit')}<span class="rflag exit">E</span>{/if}
+							<li class="relay-row" class:relay-row--selected={selectedRelay === r}>
+								<button
+									class="relay-row-btn"
+									onclick={() => (selectedRelay = selectedRelay === r ? null : r)}
+									aria-pressed={selectedRelay === r}
+									aria-label="Toggle details for {r.nickname}"
+								>
+									<span class="rrank">{i + 1}</span>
+									<span class="rname-flags" title="{r.nickname}{r.asName ? ' · ' + r.asName : ''}">
+										<span class="rn">{r.nickname}</span>
+										<span class="rf">
+											{#if hasFlag(r, 'Guard')}<span class="rflag guard">G</span>{/if}
+											{#if !hasFlag(r, 'Guard') && !hasFlag(r, 'Exit')}<span class="rflag middle">M</span>{/if}
+											{#if hasFlag(r, 'Exit')}<span class="rflag exit">E</span>{/if}
+										</span>
 									</span>
-								</span>
-								<span class="rrank-empty"></span>
-								<span class="rb">
-									<span class="rb-bar-wrap">
-										<span class="rb-bar" style:width="{(r.bandwidth / maxRelayBw * 100).toFixed(1)}%" style:background={bwColor(r.bandwidth)}></span>
+									<span class="rrank-empty"></span>
+									<span class="rb">
+										<span class="rb-bar-wrap">
+											<span class="rb-bar" style:width="{(r.bandwidth / maxRelayBw * 100).toFixed(1)}%" style:background={bwColor(r.bandwidth)}></span>
+										</span>
+										<span class="rb-text" style:color={bwColor(r.bandwidth)}>{fmtBw(r.bandwidth)}</span>
 									</span>
-									<span class="rb-text" style:color={bwColor(r.bandwidth)}>{fmtBw(r.bandwidth)}</span>
-								</span>
+								</button>
 							</li>
 						{/each}
 					</ul>
+
+					{#if selectedRelay}
+						<div class="relay-detail" transition:slide={{ duration: 180, easing: cubicOut }}>
+							<div class="rd-nickname">{selectedRelay.nickname}</div>
+							<div class="rd-flags">
+								{#if hasFlag(selectedRelay, 'Guard')}<span class="rflag guard">G</span>{/if}
+								{#if !hasFlag(selectedRelay, 'Guard') && !hasFlag(selectedRelay, 'Exit')}<span class="rflag middle">M</span>{/if}
+								{#if hasFlag(selectedRelay, 'Exit')}<span class="rflag exit">E</span>{/if}
+							</div>
+							<div class="rd-row">
+								<span class="rd-lbl">Bandwidth</span>
+								<span class="rd-val">{fmtBw(selectedRelay.bandwidth)}</span>
+							</div>
+							<div class="rd-row">
+								<span class="rd-lbl">Provider</span>
+								<span class="rd-val">{selectedRelay.asName ?? selectedRelay.as ?? '—'}</span>
+							</div>
+							<div class="rd-row">
+								<span class="rd-lbl">Country</span>
+								<span class="rd-val">{countryName(selectedRelay.country ?? '')}</span>
+							</div>
+							<div class="rd-row">
+								<span class="rd-lbl">First seen</span>
+								<span class="rd-val">{selectedRelay.firstSeen?.slice(0, 10) ?? '—'}</span>
+							</div>
+							<div class="rd-row">
+								<span class="rd-lbl">Role prob.</span>
+								<span class="rd-val">G {(selectedRelay.guardProb * 100).toFixed(1)}% / M {(selectedRelay.middleProb * 100).toFixed(1)}% / E {(selectedRelay.exitProb * 100).toFixed(1)}%</span>
+							</div>
+						</div>
+					{/if}
 				{/if}
 			</div>
 		{/if}
@@ -546,6 +586,15 @@
 		background: rgba(0, 212, 255, 0.4);
 	}
 	.relay-row {
+		border-bottom: 1px solid rgba(58, 93, 120, 0.08);
+	}
+	.relay-row:last-child {
+		border-bottom: none;
+	}
+	.relay-row--selected > .relay-row-btn {
+		background: rgba(0, 212, 255, 0.1);
+	}
+	.relay-row-btn {
 		display: grid;
 		grid-template-columns: 1.2rem 1fr;
 		grid-template-rows: auto auto;
@@ -553,14 +602,57 @@
 		row-gap: 0.15rem;
 		padding: 0.3rem 0.6rem;
 		font-size: 0.68rem;
-		border-bottom: 1px solid rgba(58, 93, 120, 0.08);
+		width: 100%;
+		background: none;
+		border: none;
+		color: inherit;
+		font-family: inherit;
+		text-align: left;
+		cursor: pointer;
 		transition: background 0.1s;
 	}
-	.relay-row:last-child {
-		border-bottom: none;
+	.relay-row-btn:hover {
+		background: rgba(0, 212, 255, 0.07);
 	}
-	.relay-row:hover {
+
+	.relay-detail {
+		margin-top: 0.6rem;
+		padding: 0.75rem;
 		background: rgba(0, 212, 255, 0.04);
+		border: 1px solid rgba(0, 212, 255, 0.2);
+		border-radius: 6px;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+	.rd-nickname {
+		font-size: 0.85rem;
+		color: var(--accent-cyan);
+		font-variant-numeric: tabular-nums;
+	}
+	.rd-flags {
+		display: flex;
+		gap: 0.15rem;
+		margin-bottom: 0.1rem;
+	}
+	.rd-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 0.5rem;
+	}
+	.rd-lbl {
+		font-size: 0.58rem;
+		color: #3a5266;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		flex-shrink: 0;
+	}
+	.rd-val {
+		font-size: 0.72rem;
+		color: #9fc6e0;
+		text-align: right;
+		word-break: break-word;
 	}
 	.rrank {
 		grid-column: 1;
