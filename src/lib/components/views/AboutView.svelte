@@ -185,6 +185,21 @@
 		padding: 4.5rem 2rem 2rem 2rem;
 		gap: 1.2rem;
 		overflow: auto;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(58, 93, 120, 0.5) transparent;
+	}
+	.view::-webkit-scrollbar {
+		width: 4px;
+	}
+	.view::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.view::-webkit-scrollbar-thumb {
+		background: rgba(58, 93, 120, 0.5);
+		border-radius: 2px;
+	}
+	.view::-webkit-scrollbar-thumb:hover {
+		background: rgba(0, 212, 255, 0.4);
 	}
 	header h1 {
 		margin: 0;

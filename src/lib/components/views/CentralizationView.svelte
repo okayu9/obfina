@@ -354,6 +354,21 @@
 		position: fixed;
 		inset: 0;
 		overflow: auto;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(58, 93, 120, 0.5) transparent;
+	}
+	.view::-webkit-scrollbar {
+		width: 4px;
+	}
+	.view::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.view::-webkit-scrollbar-thumb {
+		background: rgba(58, 93, 120, 0.5);
+		border-radius: 2px;
+	}
+	.view::-webkit-scrollbar-thumb:hover {
+		background: rgba(0, 212, 255, 0.4);
 	}
 	.content {
 		max-width: 960px;
@@ -574,6 +589,21 @@
 		flex: 1;
 		min-height: 4rem;
 		overflow-y: auto;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(58, 93, 120, 0.5) transparent;
+	}
+	.bars::-webkit-scrollbar {
+		width: 4px;
+	}
+	.bars::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.bars::-webkit-scrollbar-thumb {
+		background: rgba(58, 93, 120, 0.5);
+		border-radius: 2px;
+	}
+	.bars::-webkit-scrollbar-thumb:hover {
+		background: rgba(0, 212, 255, 0.4);
 	}
 	.bars li {
 		list-style: none;
@@ -766,6 +796,21 @@
 		border: 1px solid rgba(58, 93, 120, 0.25);
 		border-radius: 6px;
 		background: rgba(4, 12, 20, 0.4);
+		scrollbar-width: thin;
+		scrollbar-color: rgba(58, 93, 120, 0.5) transparent;
+	}
+	.relay-list::-webkit-scrollbar {
+		width: 4px;
+	}
+	.relay-list::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.relay-list::-webkit-scrollbar-thumb {
+		background: rgba(58, 93, 120, 0.5);
+		border-radius: 2px;
+	}
+	.relay-list::-webkit-scrollbar-thumb:hover {
+		background: rgba(0, 212, 255, 0.4);
 	}
 	.relay-header {
 		display: grid;
