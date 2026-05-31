@@ -225,10 +225,9 @@
 		left: 1.5rem;
 		width: 240px;
 		padding: 1.2rem;
-		background: rgba(8, 14, 22, 0.82);
-		border: 1px solid rgba(0, 212, 255, 0.2);
-		border-radius: 12px;
-		backdrop-filter: blur(12px);
+		background: #08141f;
+		border: 1px solid rgba(58, 93, 120, 0.35);
+		border-radius: 8px;
 		display: flex;
 		flex-direction: column;
 		gap: 0.9rem;
