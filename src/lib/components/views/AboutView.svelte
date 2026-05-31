@@ -87,6 +87,137 @@
 					</div>
 					<div class="card-url">torproject.org</div>
 				</a>
+
+				<a
+					href="https://metrics.torproject.org/rs.html"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="card"
+				>
+					<div class="card-name">Tor Relay Search (Atlas)</div>
+					<div class="card-desc">
+						Browse and search currently live Tor relays and bridges, inspect flags, bandwidth, and
+						uptime.
+					</div>
+					<div class="card-url">metrics.torproject.org/rs.html</div>
+				</a>
+
+				<a
+					href="https://spec.torproject.org/"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="card"
+				>
+					<div class="card-name">Tor Specifications</div>
+					<div class="card-desc">
+						The canonical technical specification for the Tor protocol, directory protocol, and path
+						selection algorithm.
+					</div>
+					<div class="card-url">spec.torproject.org</div>
+				</a>
+
+				<a
+					href="https://www.usenix.org/system/files/conference/usenixsecurity13/sec13-paper_johnson.pdf"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="card"
+				>
+					<div class="card-name">"Users Get Routed" (Johnson et al., 2013)</div>
+					<div class="card-desc">
+						Traffic correlation attack analysis showing how an adversary controlling AS-level
+						positions can deanonymize Tor users.
+					</div>
+					<div class="card-url">cse.unr.edu — users-routed.pdf</div>
+				</a>
+
+				<a
+					href="https://community.torproject.org/"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="card"
+				>
+					<div class="card-name">Tor Community Portal</div>
+					<div class="card-desc">
+						Official guides for relay operators, bridge operators, and contributors who keep the Tor
+						network running.
+					</div>
+					<div class="card-url">community.torproject.org</div>
+				</a>
+
+				<a
+					href="https://ooni.org/"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="card"
+				>
+					<div class="card-name">OONI — Open Observatory of Network Interference</div>
+					<div class="card-desc">
+						Measures internet censorship worldwide; contextualises where Tor usage data reflects
+						blocked access rather than voluntary adoption.
+					</div>
+					<div class="card-url">ooni.org</div>
+				</a>
+			</div>
+		</section>
+
+		<section>
+			<h2>Related Organisations</h2>
+			<div class="cards">
+				<a
+					href="https://www.eff.org/"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="card"
+				>
+					<div class="card-name">Electronic Frontier Foundation</div>
+					<div class="card-desc">
+						Digital rights organisation that has long advocated for and supported the Tor Project,
+						and publishes Surveillance Self-Defense guides.
+					</div>
+					<div class="card-url">eff.org</div>
+				</a>
+
+				<a
+					href="https://freedom.press/"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="card"
+				>
+					<div class="card-name">Freedom of the Press Foundation</div>
+					<div class="card-desc">
+						Trains journalists in digital security tools including Tor Browser; a major institutional
+						supporter of the Tor network.
+					</div>
+					<div class="card-url">freedom.press</div>
+				</a>
+
+				<a
+					href="https://www.accessnow.org/"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="card"
+				>
+					<div class="card-name">Access Now</div>
+					<div class="card-desc">
+						Defends and extends the digital rights of users at risk globally, with a focus on
+						circumvention tools in high-censorship regions.
+					</div>
+					<div class="card-url">accessnow.org</div>
+				</a>
+			</div>
+		</section>
+
+		<section>
+			<h2>Author</h2>
+			<div class="cards">
+				<a href="https://okayu.jp" target="_blank" rel="noopener noreferrer" class="card">
+					<div class="card-name">Yumeto Inaoka</div>
+					<div class="card-desc">
+						Software engineer based in Japan. Built obfina to make Tor network health legible to a
+						wider audience.
+					</div>
+					<div class="card-url">okayu.jp</div>
+				</a>
 			</div>
 		</section>
 	</div>
