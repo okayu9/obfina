@@ -131,6 +131,21 @@
 		position: fixed;
 		inset: 0;
 		overflow: auto;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(58, 93, 120, 0.5) transparent;
+	}
+	.view::-webkit-scrollbar {
+		width: 4px;
+	}
+	.view::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.view::-webkit-scrollbar-thumb {
+		background: rgba(58, 93, 120, 0.5);
+		border-radius: 2px;
+	}
+	.view::-webkit-scrollbar-thumb:hover {
+		background: rgba(0, 212, 255, 0.4);
 	}
 	.content {
 		max-width: 960px;
