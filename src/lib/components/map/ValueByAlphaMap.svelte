@@ -36,17 +36,22 @@
 	const maxCount = $derived(Math.max(1, ...[...byCountry.values()].map((s) => s.count)));
 	const weight = $derived(scaleSqrt().domain([1, maxCount]).range([0.18, 1]).clamp(true));
 
+	// Clip Antarctica (below −60°) so it doesn't waste vertical space.
+	const BOUNDS_NO_ANTARCTICA = {
+		type: 'Feature',
+		geometry: {
+			type: 'Polygon',
+			coordinates: [[[-180, -60], [180, -60], [180, 90], [-180, 90], [-180, -60]]]
+		},
+		properties: {}
+	};
+
 	// Equirectangular so the map is a clean rectangle that tiles horizontally.
-	// Fit to height → poles sit exactly at the top/bottom edges (no empty space
-	// above the North Pole or below the South Pole).
+	// fitSize against the clipped bounding box so the visible world fills the height.
 	const projection = $derived.by(() => {
 		if (!width || !height) return null;
 		const p = geoEquirectangular();
-		p.fitHeight(height, SPHERE);
-		const b = geoPath(p).bounds(SPHERE);
-		const mapW = b[1][0] - b[0][0];
-		const t = p.translate();
-		p.translate([t[0] + (width - mapW) / 2 - b[0][0], t[1]]);
+		p.fitSize([width, height], BOUNDS_NO_ANTARCTICA as never);
 		return p;
 	});
 	const path = $derived(projection ? geoPath(projection) : null);
@@ -190,7 +195,7 @@
 
 <style>
 	.map {
-		position: fixed;
+		position: absolute;
 		inset: 0;
 		background: radial-gradient(ellipse at 50% 40%, #122436 0%, #0a141f 70%, #070d16 100%);
 	}
