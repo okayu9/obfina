@@ -10,7 +10,8 @@
 	const t = $derived(getMessages());
 
 	function formatPublishedAt(iso: string): string {
-		const d = new Date(iso);
+		// Onionoo returns "YYYY-MM-DD HH:MM:SS" with no timezone marker — treat as UTC.
+		const d = new Date(iso.includes('T') || iso.endsWith('Z') ? iso : iso.replace(' ', 'T') + 'Z');
 		const yyyy = d.getUTCFullYear();
 		const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
 		const dd = String(d.getUTCDate()).padStart(2, '0');
