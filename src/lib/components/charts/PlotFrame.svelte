@@ -34,7 +34,8 @@
 		margin: 0;
 		flex: 0 0 auto;
 		align-self: flex-start;
-		width: var(--plot-frame-width);
+		/* min(…, 100%) keeps the square chart within the inline width on narrow phones */
+		width: min(var(--plot-frame-width), 100%);
 		max-height: var(--plot-frame-max-height);
 		aspect-ratio: 1;
 		border: 1px solid rgba(58, 93, 120, 0.35);
@@ -53,8 +54,12 @@
 		inset: auto 0 -1.3rem 0;
 		display: flex;
 		justify-content: space-between;
+		gap: 0.5rem;
 		font-size: 0.6rem;
 		letter-spacing: 0.08em;
-		color: #3a5266;
+		color: #6f8aa3;
+	}
+	figcaption span:last-child {
+		text-align: right;
 	}
 </style>

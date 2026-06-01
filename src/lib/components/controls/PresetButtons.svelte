@@ -38,6 +38,15 @@
 		font-family: inherit;
 		font-size: 0.68rem;
 		cursor: pointer;
+		transition:
+			color 0.18s,
+			border-color 0.18s,
+			background 0.18s;
+	}
+	button:hover {
+		color: #9fc6e0;
+		border-color: rgba(0, 212, 255, 0.5);
+		background: rgba(0, 212, 255, 0.06);
 	}
 	button.on {
 		color: #e6f1ff;
