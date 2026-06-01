@@ -21,9 +21,9 @@
 </script>
 
 <li>
-	<button class:sel={selected} class:active onclick={() => onselect(group)}>
+	<button class:sel={selected} class:active title={group.label} onclick={() => onselect(group)}>
 		<span class="rank">{rank}</span>
-		<span class="as" title={group.key}>{group.label}</span>
+		<span class="as">{group.label}</span>
 		<span class="track" class:exit><i style:width={share}></i></span>
 		<span class="v">{share}</span>
 	</button>
