@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
-	import { cubicOut } from 'svelte/easing';
 	import type { CountryStats } from '$lib/relay-stats';
 	import { selection } from '$lib/stores/selection.svelte';
 	import type { Relay } from '$lib/types';
@@ -40,12 +38,8 @@
 </script>
 
 {#if stats}
-	<aside
-		class="panel scroll-area"
-		class:panel--expanded={expanded}
-		transition:fly={{ x: 320, duration: 350, easing: cubicOut }}
-	>
-		<button class="close" onclick={close} aria-label="close">×</button>
+	<aside class="panel scroll-area" class:panel--expanded={expanded}>
+		<button class="close-btn" onclick={close} aria-label="Close panel">&#x2715;</button>
 
 		<CountryPanelSummary {stats} t={t.countryPanel} />
 
@@ -86,20 +80,41 @@
 		max-height: calc(100vh - 3rem);
 		overflow-y: auto;
 		overflow-x: hidden;
+		animation: slide-in 0.18s ease-out;
+	}
+	@keyframes slide-in {
+		from {
+			opacity: 0;
+			transform: translateX(12px);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
 	}
 
-	.close {
+	.close-btn {
 		position: absolute;
 		top: 0.6rem;
 		right: 0.8rem;
+		flex: 0 0 auto;
 		background: none;
-		border: none;
+		border: 1px solid rgba(58, 93, 120, 0.4);
+		border-radius: 5px;
 		color: #6f8aa3;
-		font-size: 1.4rem;
-		line-height: 1;
+		font-size: 0.75rem;
+		width: 1.6rem;
+		height: 1.6rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		cursor: pointer;
+		transition:
+			color 0.12s,
+			border-color 0.12s;
 	}
-	.close:hover {
-		color: var(--accent-cyan);
+	.close-btn:hover {
+		color: #e6f1ff;
+		border-color: rgba(230, 241, 255, 0.4);
 	}
 </style>
