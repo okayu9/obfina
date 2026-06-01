@@ -39,7 +39,7 @@
 			<UserTrendChart users={data.users} valueLabel={t.growth.dailyUsers} />
 		</div>
 		{#if data.partial}
-			<p class="note">Some series were unavailable upstream and are omitted.</p>
+			<p class="note">{t.growth.partial}</p>
 		{/if}
 	{/if}
 </ViewShell>
@@ -55,5 +55,11 @@
 	.note {
 		font-size: 0.66rem;
 		color: #6f8aa3;
+	}
+
+	@media (max-width: 640px) {
+		.panels {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

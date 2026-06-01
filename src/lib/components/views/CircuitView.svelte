@@ -96,8 +96,10 @@
 	}
 	.hud {
 		position: absolute;
-		bottom: 1.5rem;
+		/* Sit clear of the fixed footer (Batch A --footer-height; fallback for standalone). */
+		bottom: calc(var(--footer-height, 2rem) + 0.5rem);
 		left: 1.5rem;
+		right: 1.5rem;
 		pointer-events: none;
 	}
 	.title {

@@ -1,5 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { getMessages } from '$lib/i18n/index.svelte';
+
+	const t = $derived(getMessages());
 
 	let {
 		width = $bindable(0),
@@ -24,7 +27,10 @@
 		<span class="t0">{startLabel}</span>
 		<span class="t1">{endLabel}</span>
 	{:else}
-		<span class="empty">—</span>
+		<div class="empty">
+			<span class="empty-mark">—</span>
+			<span class="empty-text">{t.growth.noData}</span>
+		</div>
 	{/if}
 </div>
 
@@ -46,7 +52,7 @@
 		position: absolute;
 		bottom: -1.1rem;
 		font-size: 0.58rem;
-		color: #3a5266;
+		color: var(--text-faint, #5f7d98);
 	}
 	.t0 {
 		left: 0;
@@ -57,9 +63,20 @@
 	.empty {
 		position: absolute;
 		inset: 0;
-		display: grid;
-		place-items: center;
-		color: #3a5266;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4rem;
+		color: var(--text-faint, #5f7d98);
+	}
+	.empty-mark {
 		font-size: 1.4rem;
+		line-height: 1;
+	}
+	.empty-text {
+		font-size: 0.62rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
 	}
 </style>

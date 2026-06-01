@@ -113,7 +113,9 @@ export const en = {
 		advertised: 'advertised',
 		consumed: 'consumed',
 		relays: 'relays',
-		dailyUsers: 'daily users'
+		dailyUsers: 'daily users',
+		partial: 'Some series were unavailable upstream and are omitted.',
+		noData: 'no data available'
 	},
 
 	// Circuits view
