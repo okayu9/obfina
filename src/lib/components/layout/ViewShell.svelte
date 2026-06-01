@@ -41,7 +41,7 @@
 		margin-right: auto;
 		display: flex;
 		flex-direction: column;
-		padding: 4.5rem 2rem 2rem 2rem;
+		padding: 4.5rem 2rem calc(2rem + var(--footer-height)) 2rem;
 		gap: 1.2rem;
 		min-height: 100%;
 	}

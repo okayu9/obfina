@@ -41,7 +41,7 @@
 		font-family: inherit;
 		font-size: 0.65rem;
 		letter-spacing: 0.06em;
-		color: #3a5266;
+		color: var(--text-faint);
 		cursor: pointer;
 		transition: color 0.15s;
 	}
@@ -53,7 +53,7 @@
 	}
 	.lang-sep {
 		font-size: 0.6rem;
-		color: #3a5266;
+		color: var(--text-faint);
 		pointer-events: none;
 	}
 </style>

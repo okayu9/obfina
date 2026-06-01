@@ -46,14 +46,14 @@
 		padding: 0.35rem 1rem;
 		text-align: center;
 		font-size: 0.7rem;
-		color: rgba(58, 93, 120, 0.6);
+		color: var(--text-faint);
 		pointer-events: none;
 		background: #08141f;
 		border-top: 1px solid rgba(58, 93, 120, 0.35);
 	}
 
 	footer a {
-		color: rgba(58, 93, 120, 0.6);
+		color: var(--text-faint);
 		text-decoration: none;
 		pointer-events: auto;
 	}
