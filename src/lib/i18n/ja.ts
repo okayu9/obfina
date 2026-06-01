@@ -141,5 +141,11 @@ export const ja: Messages = {
 	// Footer
 	footer: {
 		dataAsOf: 'データ取得時刻'
+	},
+
+	// Error / status states
+	status: {
+		relaysFailed: 'リレーデータを読み込めませんでした',
+		retry: '再試行'
 	}
 };

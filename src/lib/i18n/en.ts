@@ -139,6 +139,12 @@ export const en = {
 	// Footer
 	footer: {
 		dataAsOf: 'Data as of'
+	},
+
+	// Error / status states
+	status: {
+		relaysFailed: 'Could not load relay data',
+		retry: 'Retry'
 	}
 };
 
