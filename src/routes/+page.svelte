@@ -8,6 +8,7 @@
 	import CircuitView from '$lib/components/views/CircuitView.svelte';
 	import AboutView from '$lib/components/views/AboutView.svelte';
 	import LoadingScreen from '$lib/components/LoadingScreen.svelte';
+	import ErrorScreen from '$lib/components/ErrorScreen.svelte';
 	import KonamiEgg from '$lib/components/KonamiEgg.svelte';
 	import { relayStore, loadRelays } from '$lib/stores/relays.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
@@ -43,6 +44,11 @@
 		loadRelays();
 	});
 
+	// On failure `loaded` stays false, so loadRelays re-runs the fetch.
+	function retryRelays() {
+		loadRelays();
+	}
+
 	// Keep the URL in step with the active view, and drop any stale selection
 	// when leaving the map.
 	$effect(() => {
@@ -60,7 +66,11 @@
 	{:else if showLoading}
 		<LoadingScreen message={t.loading.default} />
 	{:else if showFailed}
-		<LoadingScreen message={t.loading.unavailable} />
+		<ErrorScreen
+			message={t.status.relaysFailed}
+			retryLabel={t.status.retry}
+			onRetry={retryRelays}
+		/>
 	{:else if viewState.id === 'map'}
 		<MapView />
 	{:else if viewState.id === 'hosting'}
