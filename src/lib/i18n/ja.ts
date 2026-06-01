@@ -112,7 +112,9 @@ export const ja: Messages = {
 		advertised: '広告済み',
 		consumed: '消費済み',
 		relays: 'リレー',
-		dailyUsers: '1日あたりのユーザー'
+		dailyUsers: '1日あたりのユーザー',
+		partial: '一部の系列は上流から取得できなかったため省略されています。',
+		noData: 'データがありません'
 	},
 
 	// Circuits view
