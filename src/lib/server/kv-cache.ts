@@ -8,7 +8,7 @@ export interface JsonCache {
 export function jsonCache(platform: App.Platform | undefined): JsonCache {
 	return {
 		kv: platform?.env?.RELAY_CACHE,
-		waitUntil: platform?.context?.waitUntil
+		waitUntil: platform?.context?.waitUntil?.bind(platform.context)
 	};
 }
 
