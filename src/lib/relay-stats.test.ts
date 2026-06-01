@@ -1,5 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import { aggregateByCountry, countryName, formatBandwidth, flagEmoji } from './relay-stats';
+import {
+	aggregateByCountry,
+	bandwidthColor,
+	countryName,
+	countryRoleBreakdown,
+	formatBandwidth,
+	flagEmoji,
+	hasFlag,
+	isExitRelay,
+	isMiddleRelay,
+	totalRelayBandwidth
+} from './relay-stats';
 import type { Relay } from './types';
 
 const relay = (country: string, bandwidth: number, flags: string[]): Relay => ({
@@ -44,12 +55,65 @@ describe('aggregateByCountry', () => {
 	});
 });
 
+describe('countryRoleBreakdown', () => {
+	it('returns role counts and safe shares', () => {
+		expect(
+			countryRoleBreakdown({
+				count: 4,
+				guard: 1,
+				middle: 2,
+				exit: 1
+			})
+		).toEqual([
+			{ key: 'guard', count: 1, share: 0.25 },
+			{ key: 'middle', count: 2, share: 0.5 },
+			{ key: 'exit', count: 1, share: 0.25 }
+		]);
+
+		expect(
+			countryRoleBreakdown({
+				count: 0,
+				guard: 0,
+				middle: 0,
+				exit: 0
+			}).map((role) => role.share)
+		).toEqual([0, 0, 0]);
+	});
+});
+
+describe('totalRelayBandwidth', () => {
+	it('sums relay bandwidth', () => {
+		expect(totalRelayBandwidth([{ bandwidth: 10 }, { bandwidth: 25 }])).toBe(35);
+		expect(totalRelayBandwidth([])).toBe(0);
+	});
+});
+
 describe('formatBandwidth', () => {
 	it('scales into human-readable units', () => {
 		expect(formatBandwidth(500)).toBe('500 B/s');
 		expect(formatBandwidth(2_000)).toBe('2.0 KB/s');
 		expect(formatBandwidth(34_528_269)).toBe('35 MB/s');
 		expect(formatBandwidth(5_000_000_000)).toBe('5.0 GB/s');
+	});
+});
+
+describe('relay helpers', () => {
+	it('detects flags and relay roles', () => {
+		const guard = relay('de', 100, ['Guard']);
+		const exit = relay('de', 100, ['Exit']);
+		const weightedExit = { ...relay('de', 100, []), exitProb: 0.2 };
+		const middle = relay('de', 100, ['Fast']);
+
+		expect(hasFlag(guard, 'Guard')).toBe(true);
+		expect(isExitRelay(exit)).toBe(true);
+		expect(isExitRelay(weightedExit)).toBe(true);
+		expect(isMiddleRelay(middle)).toBe(true);
+		expect(isMiddleRelay(guard)).toBe(false);
+	});
+
+	it('maps bandwidth to the shared cyan ramp', () => {
+		expect(bandwidthColor(0, 100)).toBe('rgb(58,82,102)');
+		expect(bandwidthColor(100, 100)).toBe('rgb(0,212,255)');
 	});
 });
 

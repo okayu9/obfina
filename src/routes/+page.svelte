@@ -12,8 +12,8 @@
 	import { relayStore, loadRelays } from '$lib/stores/relays.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
 	import { getMessages } from '$lib/i18n/index.svelte';
+	import { viewKeyAction, viewNeedsRelays } from '$lib/navigation';
 	import {
-		VIEWS,
 		viewState,
 		setView,
 		cycleView,
@@ -23,24 +23,19 @@
 
 	const t = $derived(getMessages());
 
-	// Views that render off live relay data; GROWTH fetches its own time-series.
-	const needsRelays = $derived(viewState.id !== 'growth' && viewState.id !== 'about');
+	const needsRelays = $derived(viewNeedsRelays(viewState.id));
 	const showLoading = $derived(needsRelays && relayStore.loading);
 	const showFailed = $derived(needsRelays && relayStore.failed);
 
 	function onKeydown(e: KeyboardEvent) {
-		if (e.metaKey || e.ctrlKey || e.altKey) return;
-		if (e.key === 'Escape') {
+		const action = viewKeyAction(e);
+		if (!action) return;
+		if (action.type === 'clear-selection') {
 			selection.country = null;
 			return;
 		}
-		const n = Number(e.key);
-		if (n >= 1 && n <= VIEWS.length) {
-			setView(VIEWS[n - 1].id);
-			return;
-		}
-		if (e.key === 'ArrowRight' || e.key === ']') cycleView(1);
-		else if (e.key === 'ArrowLeft' || e.key === '[') cycleView(-1);
+		if (action.type === 'set-view') setView(action.view);
+		else cycleView(action.direction);
 	}
 
 	onMount(() => {

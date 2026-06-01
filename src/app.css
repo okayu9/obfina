@@ -34,3 +34,25 @@ body::after {
 		transparent 2px
 	);
 }
+
+.scroll-area {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(58, 93, 120, 0.5) transparent;
+}
+
+.scroll-area::-webkit-scrollbar {
+	width: 4px;
+}
+
+.scroll-area::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.scroll-area::-webkit-scrollbar-thumb {
+	background: rgba(58, 93, 120, 0.5);
+	border-radius: 2px;
+}
+
+.scroll-area::-webkit-scrollbar-thumb:hover {
+	background: rgba(0, 212, 255, 0.4);
+}

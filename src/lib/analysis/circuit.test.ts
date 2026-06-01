@@ -1,5 +1,18 @@
 import { describe, it, expect } from 'vitest';
-import { buildSampler, sampleFrom, buildSamplers, sampleCircuit } from './circuit';
+import {
+	buildSampler,
+	cullLiveCircuits,
+	sampleFrom,
+	buildSamplers,
+	sampleCircuit,
+	circuitFade,
+	circuitProgress,
+	latestLiveCircuit,
+	liveCircuit,
+	packetPosition,
+	pulseRadius,
+	spawnLiveCircuit
+} from './circuit';
 import type { Relay } from '$lib/types';
 
 const relay = (over: Partial<Relay>): Relay => ({
@@ -78,5 +91,90 @@ describe('sampleCircuit', () => {
 
 	it('returns null when no relays can fill a position', () => {
 		expect(sampleCircuit(buildSamplers([]))).toBeNull();
+	});
+});
+
+describe('live circuit helpers', () => {
+	const circuit = {
+		guard: relay({ nickname: 'g', country: 'de', guardProb: 1 }),
+		middle: relay({ nickname: 'm', country: 'nl', middleProb: 1 }),
+		exit: relay({ nickname: 'e', country: 'us', exitProb: 1 })
+	};
+
+	it('builds a live circuit only when every hop has coordinates', () => {
+		expect(liveCircuit(3, circuit, 1000, () => [1, 2])).toEqual({
+			id: 3,
+			c: circuit,
+			born: 1000,
+			coords: [
+				[1, 2],
+				[1, 2],
+				[1, 2]
+			]
+		});
+		expect(
+			liveCircuit(3, circuit, 1000, (relay) => (relay.country === 'nl' ? null : [1, 2]))
+		).toBeNull();
+	});
+
+	it('spawns, caps, culls, and returns the latest live circuit', () => {
+		const spawned = spawnLiveCircuit([], buildSamplers(Object.values(circuit)), {
+			max: 2,
+			nextId: 0,
+			now: 100,
+			pointForRelay: () => [5, 6],
+			rng: seq([0, 0, 0])
+		});
+
+		expect(spawned.spawned).toBe(true);
+		expect(spawned.nextId).toBe(1);
+		expect(spawned.circuits).toHaveLength(1);
+		expect(latestLiveCircuit(spawned.circuits)?.id).toBe(0);
+
+		const capped = spawnLiveCircuit(spawned.circuits, buildSamplers(Object.values(circuit)), {
+			max: 1,
+			nextId: spawned.nextId,
+			now: 200,
+			pointForRelay: () => [5, 6]
+		});
+		expect(capped).toEqual({ circuits: spawned.circuits, nextId: 1, spawned: false });
+
+		expect(cullLiveCircuits(spawned.circuits, 5700, 5600)).toHaveLength(1);
+		expect(cullLiveCircuits(spawned.circuits, 5701, 5600)).toHaveLength(0);
+		expect(latestLiveCircuit([])).toBeNull();
+	});
+});
+
+describe('circuit animation helpers', () => {
+	it('normalizes progress into the animation lifetime', () => {
+		expect(circuitProgress(1050, 1000, 1000)).toBe(0.05);
+		expect(circuitProgress(500, 1000, 1000)).toBe(0);
+		expect(circuitProgress(2500, 1000, 1000)).toBe(1);
+	});
+
+	it('fades in, holds, and fades out', () => {
+		expect(circuitFade(0.05)).toBeCloseTo(0.5);
+		expect(circuitFade(0.5)).toBe(1);
+		expect(circuitFade(0.925)).toBeCloseTo(0.5);
+	});
+
+	it('interpolates packet position across two hops', () => {
+		const points: [number, number][] = [
+			[0, 0],
+			[10, 0],
+			[10, 10]
+		];
+		expect(packetPosition(points, 0.25)).toEqual([5, 0]);
+		expect(packetPosition(points, 0.75)).toEqual([10, 5]);
+	});
+
+	it('returns null when a hop endpoint is missing', () => {
+		expect(packetPosition([[0, 0], null, [10, 10]], 0.25)).toBeNull();
+		expect(packetPosition([[0, 0], null, [10, 10]], 0.75)).toBeNull();
+	});
+
+	it('keeps pulse radius in the intended range', () => {
+		expect(pulseRadius(0)).toBeCloseTo(2.6);
+		expect(pulseRadius((Math.PI / 2) * 260)).toBeCloseTo(3.3);
 	});
 });

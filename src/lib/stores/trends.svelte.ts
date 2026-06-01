@@ -1,4 +1,5 @@
 import type { TrendsResponse } from '$lib/types';
+import { createLoadOnce } from './load-once';
 
 /**
  * Cached trends dataset. Fetched once on first visit to the growth view;
@@ -16,26 +17,13 @@ export const trendsStore = $state<{
 	loaded: false
 });
 
-let inflight: Promise<void> | null = null;
-
-export function loadTrends(): Promise<void> {
-	if (trendsStore.loaded) return Promise.resolve();
-	if (inflight) return inflight;
-	inflight = (async () => {
-		try {
-			const res = await fetch('/api/trends');
-			const json = (await res.json()) as TrendsResponse;
-			if (json.unavailable) {
-				trendsStore.failed = true;
-			} else {
-				trendsStore.data = json;
-				trendsStore.loaded = true;
-			}
-		} catch {
-			trendsStore.failed = true;
-		} finally {
-			trendsStore.loading = false;
-		}
-	})();
-	return inflight;
-}
+export const loadTrends = createLoadOnce(trendsStore, {
+	fetchData: async () => {
+		const res = await fetch('/api/trends');
+		return (await res.json()) as TrendsResponse;
+	},
+	isUnavailable: (data) => !!data.unavailable,
+	applyData: (data) => {
+		trendsStore.data = data;
+	}
+});

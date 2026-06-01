@@ -1,5 +1,12 @@
-import { feature } from 'topojson-client';
-import { geoEquirectangular, geoPath, geoCentroid, geoContains, geoBounds } from 'd3-geo';
+import { feature, mesh } from 'topojson-client';
+import {
+	geoEquirectangular,
+	geoPath,
+	geoCentroid,
+	geoContains,
+	geoBounds,
+	type GeoProjection
+} from 'd3-geo';
 import isoCountries from 'i18n-iso-countries';
 import worldData from 'world-atlas/countries-110m.json';
 
@@ -15,6 +22,8 @@ const fc = feature(topology, topology.objects.countries as never) as unknown as 
 };
 
 export const countryFeatures = fc.features;
+export type CountryFeature = (typeof countryFeatures)[number];
+export const countryBorders = mesh(topology, topology.objects.countries as never);
 export const SPHERE = { type: 'Sphere' } as const;
 
 export function codeForId(id?: string | number): string | null {
@@ -65,7 +74,7 @@ export function randomPointInCountry(code: string, maxTries = 40): [number, numb
 }
 
 // GeoJSON polygon covering lat -60 to +90 (clips Antarctica).
-const BOUNDS_NO_ANTARCTICA = {
+export const BOUNDS_NO_ANTARCTICA = {
 	type: 'Feature',
 	geometry: {
 		type: 'Polygon',
@@ -87,7 +96,7 @@ const BOUNDS_NO_ANTARCTICA = {
  * identical to ValueByAlphaMap so lat=90 is at y=0 and lat=-60 is at y=height,
  * keeping Antarctica out of the initial viewport.
  */
-export function makeProjection(width: number, height: number) {
+export function makeProjection(width: number, height: number): GeoProjection {
 	const p = geoEquirectangular();
 	p.fitHeight(height, BOUNDS_NO_ANTARCTICA as never);
 	const b = geoPath(p).bounds(SPHERE);
@@ -95,4 +104,48 @@ export function makeProjection(width: number, height: number) {
 	const t = p.translate();
 	p.translate([t[0] + (width - mapW) / 2 - b[0][0], t[1]]);
 	return p;
+}
+
+export function worldPixelWidth(projection: GeoProjection): number {
+	return projection([180, 0])![0] - projection([-180, 0])![0];
+}
+
+export function visibleMapYBounds(projection: GeoProjection): [number, number] {
+	const bounds = geoPath(projection).bounds(BOUNDS_NO_ANTARCTICA as never);
+	return [bounds[0][1], bounds[1][1]];
+}
+
+export function pathForCountryFeature(
+	path: ReturnType<typeof geoPath>,
+	feature: CountryFeature
+): string {
+	return path(feature as never) ?? '';
+}
+
+export function countryFeaturePaths(projection: GeoProjection): string[] {
+	const path = geoPath(projection);
+	return countryFeatures.map((feature) => pathForCountryFeature(path, feature));
+}
+
+export function wrappedRootTransform(
+	transform: { x: number; y: number; k: number },
+	worldWidth: number
+): string {
+	const period = worldWidth * transform.k || 1;
+	let x = transform.x % period;
+	if (x > 0) x -= period;
+	return `translate(${x} ${transform.y}) scale(${transform.k})`;
+}
+
+export function constrainedMapPanY(
+	y: number,
+	scale: number,
+	height: number,
+	mapTop: number,
+	mapBottom: number
+): number {
+	const minY = height - mapBottom * scale;
+	const maxY = -mapTop * scale;
+	const clamped = Math.max(minY, Math.min(maxY, y));
+	return Object.is(clamped, -0) ? 0 : clamped;
 }

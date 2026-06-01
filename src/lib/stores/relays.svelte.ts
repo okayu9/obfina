@@ -1,4 +1,5 @@
 import type { Relay, RelaysResponse } from '$lib/types';
+import { createLoadOnce } from './load-once';
 
 /**
  * Shared relay dataset. Fetched once and consumed by every view that works off
@@ -20,28 +21,15 @@ export const relayStore = $state<{
 	loaded: false
 });
 
-let inflight: Promise<void> | null = null;
-
-export function loadRelays(): Promise<void> {
-	if (relayStore.loaded) return Promise.resolve();
-	if (inflight) return inflight;
-	inflight = (async () => {
-		try {
-			const res = await fetch('/api/relays');
-			const data = (await res.json()) as RelaysResponse;
-			if (data.unavailable) {
-				relayStore.failed = true;
-			} else {
-				relayStore.relays = data.relays;
-				relayStore.count = data.count;
-				relayStore.publishedAt = data.publishedAt;
-				relayStore.loaded = true;
-			}
-		} catch {
-			relayStore.failed = true;
-		} finally {
-			relayStore.loading = false;
-		}
-	})();
-	return inflight;
-}
+export const loadRelays = createLoadOnce(relayStore, {
+	fetchData: async () => {
+		const res = await fetch('/api/relays');
+		return (await res.json()) as RelaysResponse;
+	},
+	isUnavailable: (data) => !!data.unavailable,
+	applyData: (data) => {
+		relayStore.relays = data.relays;
+		relayStore.count = data.count;
+		relayStore.publishedAt = data.publishedAt;
+	}
+});

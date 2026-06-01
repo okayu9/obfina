@@ -54,10 +54,13 @@ export function initViewFromUrl(): void {
 /** Reflect the current view into the URL without adding history entries. */
 export function syncViewToUrl(id: ViewId = viewState.id): void {
 	if (!browser) return;
-	const url = new URL(location.href);
-	if (id === 'map') url.searchParams.delete('view');
-	else url.searchParams.set('view', id);
-	const next = `${url.pathname}${url.search}${url.hash}`;
+	const params = location.search
+		.slice(1)
+		.split('&')
+		.filter((param) => param && decodeURIComponent(param.split('=')[0]) !== 'view');
+	if (id !== 'map') params.push(`view=${encodeURIComponent(id)}`);
+	const search = params.join('&');
+	const next = `${location.pathname}${search ? `?${search}` : ''}${location.hash}`;
 	if (next !== `${location.pathname}${location.search}${location.hash}`) {
 		history.replaceState(history.state, '', next);
 	}
