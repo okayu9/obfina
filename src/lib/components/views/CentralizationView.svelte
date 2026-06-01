@@ -65,21 +65,23 @@
 <ViewShell
 	title={t.hosting.title}
 	description={t.hosting.description}
-	maxWidth="960px"
+	maxWidth="1180px"
 	descriptionWidth="52ch"
 >
 	<div class="body">
-		<CentralizationLorenzChart
-			{scope}
-			all={model.lorenzAll}
-			exit={model.lorenzExit}
-			providerCount={model.providerCount}
-			selectedCount={model.selectedCount}
-			selectedShare={model.selectedShare}
-			startLabel={t.hosting.fewerAses}
-			endLabel={t.hosting.cumulativeShare}
-			onpick={pickProviderCount}
-		/>
+		<div class="chart-slot">
+			<CentralizationLorenzChart
+				{scope}
+				all={model.lorenzAll}
+				exit={model.lorenzExit}
+				providerCount={model.providerCount}
+				selectedCount={model.selectedCount}
+				selectedShare={model.selectedShare}
+				startLabel={t.hosting.fewerAses}
+				endLabel={t.hosting.cumulativeShare}
+				onpick={pickProviderCount}
+			/>
+		</div>
 
 		<CentralizationSidePanel
 			{scope}
@@ -122,10 +124,19 @@
 		flex: 1;
 		min-height: 0;
 	}
+	/* The Lorenz plot is a fixed square; the rank list flexes to fill the rest. */
+	.chart-slot {
+		flex: 0 0 auto;
+		display: flex;
+		min-height: 0;
+	}
 	/* Narrow viewports: stack the chart above the list and let the page scroll. */
 	@media (max-width: 880px) {
 		.body {
 			flex-wrap: wrap;
+		}
+		.chart-slot {
+			flex: 1 1 100%;
 		}
 	}
 </style>

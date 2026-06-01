@@ -91,7 +91,6 @@
 	.side {
 		flex: 1;
 		min-width: 240px;
-		max-width: 420px;
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
