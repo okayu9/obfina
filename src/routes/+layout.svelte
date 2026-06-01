@@ -40,6 +40,8 @@
 </script>
 
 <svelte:head>
+	<title>OBFINA — Tor Network Observatory</title>
+	<meta name="description" content="Visualize the Tor network: relay distribution, hosting concentration, path-selection bias, and circuit simulation." />
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
