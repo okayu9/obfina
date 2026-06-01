@@ -34,9 +34,11 @@
 <style>
 	.readout {
 		position: absolute;
-		bottom: 4rem;
+		/* Clear the fixed footer plus the HUD title/subtitle below us. */
+		bottom: calc(var(--footer-height, 2rem) + 4.5rem);
 		left: 1.5rem;
 		width: 240px;
+		max-width: calc(100% - 3rem);
 		padding: 1.2rem;
 		background: #08141f;
 		border: 1px solid rgba(58, 93, 120, 0.35);
@@ -44,6 +46,28 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.9rem;
+	}
+
+	@media (max-width: 480px) {
+		.readout {
+			right: 1.5rem;
+			width: auto;
+			padding: 0.9rem 1rem;
+			gap: 0.6rem;
+		}
+		.hop-row {
+			grid-template-columns: 10px 1fr auto;
+			align-items: center;
+		}
+		.meta {
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 0.1rem 0.6rem;
+			align-items: baseline;
+		}
+		.ra {
+			flex-basis: 100%;
+		}
 	}
 	.hop-row {
 		display: grid;
