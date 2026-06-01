@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { VIEWS, viewState, setView } from '$lib/stores/view.svelte';
 	import { getMessages, getLocale, setLocale, type Locale } from '$lib/i18n/index.svelte';
+	import logo from '$lib/assets/favicon.svg';
 
 	const t = $derived(getMessages());
 	const locale = $derived(getLocale());
@@ -22,7 +23,7 @@
 </script>
 
 <nav class="rail" aria-label="visualizations">
-	<span class="brand">OBFINA</span>
+	<span class="brand"><img src={logo} alt="" class="brand-logo" />OBFINA</span>
 	{#each VIEWS as v, i (v.id)}
 		{@const nav = navMap[v.id]}
 		<button
@@ -72,11 +73,19 @@
 		z-index: 20;
 	}
 	.brand {
+		display: flex;
+		align-items: center;
 		font-size: 0.6rem;
 		letter-spacing: 0.3em;
 		color: rgba(0, 212, 255, 0.4);
 		margin-right: 0.5rem;
 		user-select: none;
+	}
+	.brand-logo {
+		height: 18px;
+		width: 18px;
+		margin-right: 0.35rem;
+		flex-shrink: 0;
 	}
 	.item {
 		display: flex;
