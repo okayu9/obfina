@@ -8,6 +8,11 @@
 	--border: rgba(58, 93, 120, 0.35);
 	--border-cyan: rgba(0, 212, 255, 0.18);
 	--glow-cyan: 0 0 12px rgba(0, 212, 255, 0.35);
+	/* Faint caption text. Raised from #3a5266 (~2:1) to clear WCAG AA for small text
+	   while keeping the dim terminal feel. */
+	--text-faint: #5f7d98;
+	/* Height of the fixed footer; views reserve this space so content never sits under it. */
+	--footer-height: 1.95rem;
 }
 
 html,
@@ -33,6 +38,21 @@ body::after {
 		transparent 1px,
 		transparent 2px
 	);
+}
+
+/* Keyboard focus ring — visible on the dark theme, suppressed for mouse clicks. */
+:focus-visible {
+	outline: 2px solid var(--accent-cyan);
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+/* Map countries are <path> elements; an offset outline renders oddly on SVG, so
+   use a glow filter instead. */
+:where(svg) :focus-visible {
+	outline: none;
+	stroke: var(--accent-cyan);
+	stroke-width: 1.5px;
+	filter: drop-shadow(0 0 6px rgba(0, 212, 255, 0.7));
 }
 
 .scroll-area {

@@ -15,7 +15,10 @@ export const ja: Messages = {
 		circuitsDesc: 'Tor回路構築の統計的シミュレーション',
 		about: 'このアプリについて',
 		aboutDesc: 'データソースと参考文献',
-		hint: '1–6 · ← →'
+		hint: '1–6 · ← → / [ ] · esc で選択解除',
+		menu: 'メニュー',
+		closeMenu: 'メニューを閉じる',
+		shortcuts: 'ショートカット'
 	},
 
 	// Language switcher

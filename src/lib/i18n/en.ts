@@ -13,7 +13,10 @@ export const en = {
 		circuitsDesc: 'Statistical simulation of Tor circuit building',
 		about: 'ABOUT',
 		aboutDesc: 'Data sources & references',
-		hint: '1–6 · ← →'
+		hint: '1–6 · ← → / [ ] · esc clears',
+		menu: 'Menu',
+		closeMenu: 'Close menu',
+		shortcuts: 'Shortcuts'
 	},
 
 	// Language switcher
