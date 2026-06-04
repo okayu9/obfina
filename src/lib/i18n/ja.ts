@@ -11,11 +11,9 @@ export const ja: Messages = {
 		pathsDesc: 'パス選択の偏り',
 		growth: '成長',
 		growthDesc: 'キャパシティと使用量の推移',
-		circuits: 'シミュレーション',
-		circuitsDesc: 'Tor回路構築の統計的シミュレーション',
 		about: 'このアプリについて',
 		aboutDesc: 'データソースと参考文献',
-		hint: '1–6 · ← → / [ ] · esc で選択解除',
+		hint: '1–5 · ← → / [ ] · esc で選択解除',
 		menu: 'メニュー',
 		closeMenu: 'メニューを閉じる',
 		shortcuts: 'ショートカット'
@@ -118,17 +116,6 @@ export const ja: Messages = {
 		dailyUsers: '1日あたりのユーザー',
 		partial: '一部の系列は上流から取得できなかったため省略されています。',
 		noData: 'データがありません'
-	},
-
-	// Circuits view
-	circuits: {
-		title: '回路シミュレーション',
-		subtitle:
-			'実際のリレーデータに基づく統計的シミュレーションです。実際の通信を示すものではありません。',
-		unknownAs: '不明なAS',
-		guardLabel: 'ガード',
-		middleLabel: 'ミドル',
-		exitLabel: '出口'
 	},
 
 	// About view

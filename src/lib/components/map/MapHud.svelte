@@ -33,7 +33,7 @@
 <style>
 	.hud {
 		position: fixed;
-		/* clear the fixed footer (matches CircuitReadout) */
+		/* clear the fixed footer */
 		bottom: 4rem;
 		left: 1.5rem;
 		pointer-events: none;

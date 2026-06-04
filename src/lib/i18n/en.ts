@@ -9,11 +9,9 @@ export const en = {
 		pathsDesc: 'Path-selection bias',
 		growth: 'GROWTH',
 		growthDesc: 'Capacity & usage over time',
-		circuits: 'SIMULATION',
-		circuitsDesc: 'Statistical simulation of Tor circuit building',
 		about: 'ABOUT',
 		aboutDesc: 'Data sources & references',
-		hint: '1–6 · ← → / [ ] · esc clears',
+		hint: '1–5 · ← → / [ ] · esc clears',
 		menu: 'Menu',
 		closeMenu: 'Close menu',
 		shortcuts: 'Shortcuts'
@@ -116,17 +114,6 @@ export const en = {
 		dailyUsers: 'daily users',
 		partial: 'Some series were unavailable upstream and are omitted.',
 		noData: 'no data available'
-	},
-
-	// Circuits view
-	circuits: {
-		title: 'Circuit Simulation',
-		subtitle:
-			'A statistical simulation based on real relay data. These are not actual live circuits.',
-		unknownAs: 'unknown AS',
-		guardLabel: 'Guard',
-		middleLabel: 'Middle',
-		exitLabel: 'Exit'
 	},
 
 	// About view

@@ -3,7 +3,7 @@ import { createLoadOnce } from './load-once';
 
 /**
  * Shared relay dataset. Fetched once and consumed by every view that works off
- * live relay data (map, hosting, paths, circuits).
+ * live relay data (map, hosting, paths).
  */
 export const relayStore = $state<{
 	relays: Relay[];

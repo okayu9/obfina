@@ -20,8 +20,7 @@ const views: View[] = [
 	{ id: 'map', sel: '.hud .count' },
 	{ id: 'hosting', sel: '.gbox .g' },
 	{ id: 'paths', sel: '.readout .big' },
-	{ id: 'growth', sel: '.panels, .status' },
-	{ id: 'circuits', sel: '.map svg .land' }
+	{ id: 'growth', sel: '.panels, .status' }
 ];
 
 const browser: Browser = await chromium.launch({ args: ['--ignore-gpu-blocklist'] });

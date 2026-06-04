@@ -19,7 +19,6 @@ describe('viewNeedsRelays', () => {
 		expect(viewNeedsRelays('map')).toBe(true);
 		expect(viewNeedsRelays('hosting')).toBe(true);
 		expect(viewNeedsRelays('paths')).toBe(true);
-		expect(viewNeedsRelays('circuits')).toBe(true);
 		expect(viewNeedsRelays('growth')).toBe(false);
 		expect(viewNeedsRelays('about')).toBe(false);
 	});
@@ -37,7 +36,7 @@ describe('viewKeyAction', () => {
 	it('maps navigation shortcuts to actions', () => {
 		expect(viewKeyAction(event('Escape'))).toEqual({ type: 'clear-selection' });
 		expect(viewKeyAction(event('1'))).toEqual({ type: 'set-view', view: 'map' });
-		expect(viewKeyAction(event('6'))).toEqual({ type: 'set-view', view: 'about' });
+		expect(viewKeyAction(event('5'))).toEqual({ type: 'set-view', view: 'about' });
 		expect(viewKeyAction(event('ArrowRight'))).toEqual({ type: 'cycle-view', direction: 1 });
 		expect(viewKeyAction(event(']'))).toEqual({ type: 'cycle-view', direction: 1 });
 		expect(viewKeyAction(event('ArrowLeft'))).toEqual({ type: 'cycle-view', direction: -1 });
@@ -46,7 +45,7 @@ describe('viewKeyAction', () => {
 
 	it('ignores modified or unmapped keys', () => {
 		expect(viewKeyAction(event('1', { metaKey: true }))).toBeNull();
-		expect(viewKeyAction(event('7'))).toBeNull();
+		expect(viewKeyAction(event('6'))).toBeNull();
 		expect(viewKeyAction(event('x'))).toBeNull();
 	});
 });

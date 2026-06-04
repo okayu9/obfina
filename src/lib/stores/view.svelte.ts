@@ -12,14 +12,13 @@ export interface ViewDef {
 	desc: string;
 }
 
-export type ViewId = 'map' | 'hosting' | 'paths' | 'growth' | 'circuits' | 'about';
+export type ViewId = 'map' | 'hosting' | 'paths' | 'growth' | 'about';
 
 export const VIEWS: ViewDef[] = [
 	{ id: 'map', label: 'MAP', desc: 'Relays by country' },
 	{ id: 'hosting', label: 'HOSTING', desc: 'AS concentration risk' },
 	{ id: 'paths', label: 'PATHS', desc: 'Path-selection bias' },
 	{ id: 'growth', label: 'GROWTH', desc: 'Capacity & usage over time' },
-	{ id: 'circuits', label: 'CIRCUITS', desc: 'Live circuit simulation' },
 	{ id: 'about', label: 'ABOUT', desc: 'Data sources & references' }
 ];
 

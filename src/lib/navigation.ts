@@ -8,7 +8,6 @@ export const VIEW_NAV_KEYS: Record<ViewId, { label: NavKey; desc: NavKey }> = {
 	hosting: { label: 'hosting', desc: 'hostingDesc' },
 	paths: { label: 'paths', desc: 'pathsDesc' },
 	growth: { label: 'growth', desc: 'growthDesc' },
-	circuits: { label: 'circuits', desc: 'circuitsDesc' },
 	about: { label: 'about', desc: 'aboutDesc' }
 };
 

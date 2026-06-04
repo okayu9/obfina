@@ -75,7 +75,6 @@ obfina/
 │   │   │       ├── CentralizationView.svelte   # hosting/AS centralization
 │   │   │       ├── PathBiasView.svelte
 │   │   │       ├── TrendsView.svelte           # growth over time
-│   │   │       ├── CircuitView.svelte
 │   │   │       └── AboutView.svelte
 │   │   ├── geo/              # shared map projection and world GeoJSON ($lib/geo/world)
 │   │   ├── stores/           # Svelte stores — selection state

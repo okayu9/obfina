@@ -65,16 +65,15 @@ This section is for the main Claude Code session that coordinates subagents — 
 **obfina** is a SvelteKit + TypeScript + Cloudflare Workers app that visualizes the Tor network.
 Stack: SvelteKit, D3.js, Svelte 5 runes (`$state`, `$derived`, `$effect`), pnpm, Cloudflare KV.
 
-### Views (keyboard `1`–`6`, or `←`/`→`)
+### Views (keyboard `1`–`5`, or `←`/`→`)
 
-| Key | `?view=`   | Component                   | Description                                              |
-| --- | ---------- | --------------------------- | -------------------------------------------------------- |
-| 1   | `map`      | `MapView.svelte`            | Value-by-alpha world map; click country for detail panel |
-| 2   | `hosting`  | `CentralizationView.svelte` | Lorenz curve + Gini; click AS for relay detail panel     |
-| 3   | `growth`   | `TrendsView.svelte`         | Time-series charts; data cached in-session               |
-| 4   | `paths`    | `PathsView.svelte`          | Per-relay path-selection concentration                   |
-| 5   | `circuits` | `CircuitView.svelte`        | Guard → Middle → Exit animation over the map             |
-| 6   | `about`    | `AboutView.svelte`          | Data sources and references                              |
+| Key | `?view=`  | Component                   | Description                                            |
+| --- | --------- | --------------------------- | ------------------------------------------------------ |
+| 1   | `map`     | `MapView.svelte`            | Value-by-alpha world map with circuit simulation layer |
+| 2   | `hosting` | `CentralizationView.svelte` | Lorenz curve + Gini; click AS for relay detail panel   |
+| 3   | `paths`   | `PathBiasView.svelte`       | Per-relay path-selection concentration                 |
+| 4   | `growth`  | `TrendsView.svelte`         | Time-series charts; data cached in-session             |
+| 5   | `about`   | `AboutView.svelte`          | Data sources and references                            |
 
 ### Key source paths
 
@@ -185,12 +184,12 @@ All routes are in `src/routes/api/`. They proxy Tor APIs with Cloudflare KV cach
 
 Commit message format: `type(scope): description`
 Types: `feat`, `fix`, `docs`, `refactor`
-Scopes match view names or areas: `map`, `hosting`, `circuits`, `growth`, `paths`, `about`, `nav`, `ui`, `layout`
+Scopes match view names or areas: `map`, `hosting`, `growth`, `paths`, `about`, `nav`, `ui`, `layout`
 
 Examples from this repo:
 
 ```
 feat(hosting): provider detail panel with relay list on AS click
 fix(circuits): place relay dots inside country polygon via rejection sampling
-docs: update documentation to reflect current 6-view implementation
+docs: update documentation to reflect current view implementation
 ```

@@ -5,7 +5,6 @@
 	import CentralizationView from '$lib/components/views/CentralizationView.svelte';
 	import PathBiasView from '$lib/components/views/PathBiasView.svelte';
 	import TrendsView from '$lib/components/views/TrendsView.svelte';
-	import CircuitView from '$lib/components/views/CircuitView.svelte';
 	import AboutView from '$lib/components/views/AboutView.svelte';
 	import LoadingScreen from '$lib/components/LoadingScreen.svelte';
 	import ErrorScreen from '$lib/components/ErrorScreen.svelte';
@@ -79,8 +78,6 @@
 		<PathBiasView />
 	{:else if viewState.id === 'growth'}
 		<TrendsView />
-	{:else if viewState.id === 'circuits'}
-		<CircuitView />
 	{/if}
 
 	{#if !showLoading}

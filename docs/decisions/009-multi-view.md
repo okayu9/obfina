@@ -25,28 +25,28 @@ explicitly rejected.
 
 ## Decision
 
-Keep the map as one view among several, and add a **view switcher**. Each view
+Keep the map as the primary view, add the circuit animation as a map background
+layer, and use a **view switcher** for the analytical views. Each view
 keeps obfina's design language (dark base, cyan→green accents, minimal text,
 quantitative data in visual channels) but picks the encoding that fits its
 question:
 
-| View       | Question                       | Encoding                                                                 |
-| ---------- | ------------------------------ | ------------------------------------------------------------------------ |
-| `map`      | Where are the relays?          | Value-by-alpha choropleth (ADR-008)                                      |
-| `hosting`  | How centralized is hosting?    | Lorenz curves of per-AS weight, all vs. exit-only, with Gini + top ASes  |
-| `paths`    | How biased is path selection?  | Per-relay concentration curve with draggable “top N% → M% of traffic”    |
-| `growth`   | How is the network changing?   | Time-series: relay count, advertised vs. consumed bandwidth, users by CC |
-| `circuits` | What does a circuit look like? | Real Guard→Middle→Exit paths animated over the map                       |
-| `about`    | Where does the data come from? | Data source and reference cards                                          |
+| View      | Question                       | Encoding                                                                 |
+| --------- | ------------------------------ | ------------------------------------------------------------------------ |
+| `map`     | Where are the relays?          | Value-by-alpha choropleth (ADR-008) with ambient Guard→Middle→Exit paths |
+| `hosting` | How centralized is hosting?    | Lorenz curves of per-AS weight, all vs. exit-only, with Gini + top ASes  |
+| `paths`   | How biased is path selection?  | Per-relay concentration curve with draggable “top N% → M% of traffic”    |
+| `growth`  | How is the network changing?   | Time-series: relay count, advertised vs. consumed bandwidth, users by CC |
+| `about`   | Where does the data come from? | Data source and reference cards                                          |
 
 Navigation is intentionally cheap so the views read as one exhibit:
 
-- a fixed nav rail (click), number keys `1`–`6`, and `←`/`→` (or `[`/`]`);
+- a fixed nav rail (click), number keys `1`–`5`, and `←`/`→` (or `[`/`]`);
 - the active view is mirrored to `?view=…` so any view is deep-linkable.
 
-Geography stays meaningful where it appears: the `circuits` view reuses the same
+Geography stays meaningful where it appears: the map simulation reuses the same
 height-fitted equirectangular projection as the map (shared via
-`$lib/geo/world`), placing relays at their country centroids.
+`$lib/geo/world`), placing relays inside their country polygons.
 
 The non-snapshot data the `growth` view needs is fetched through a new cached
 server route, `/api/relays` having been extended with the fields the analytical
@@ -62,8 +62,8 @@ probabilities, `first_seen`).
 - Concentration risk — the network's most underappreciated fragility — becomes a
   first-class, at-a-glance reading (a curve bowing to the corner, a single Gini
   number) rather than something buried in tables.
-- Path bias and circuits make abstract Tor mechanics tangible, supporting the
-  “experience first” principle.
+- Path bias and the map's ambient circuit simulation make abstract Tor mechanics
+  tangible, supporting the “experience first” principle.
 - Views share one relay dataset and one projection, so they stay cheap and
   visually consistent.
 

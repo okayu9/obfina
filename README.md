@@ -12,13 +12,12 @@ obfina makes the Tor network observable. Not through tables and CSV exports, but
 
 ## What it does
 
-obfina is a set of linked views over the same network, switchable from the nav rail, with number keys `1`–`6`, or by cycling with `←`/`→` (or `[`/`]`); `Esc` clears the current selection. The active view is saved to `?view=…` so any view is shareable. On narrow screens the nav rail collapses to a hamburger menu. See [ADR-009](docs/decisions/009-multi-view.md).
+obfina is a set of linked views over the same network, switchable from the nav rail, with number keys `1`–`5`, or by cycling with `←`/`→` (or `[`/`]`); `Esc` clears the current selection. The active view is saved to `?view=…` so any view is shareable. On narrow screens the nav rail collapses to a hamburger menu. See [ADR-009](docs/decisions/009-multi-view.md).
 
-- **Map** — value-by-alpha world map: hue encodes exit share (cyan → green) and brightness encodes relay count, so the busiest countries glow while the rest recede. Click a country for its relay count, bandwidth, Guard/Middle/Exit composition, top autonomous systems, and a relay list with bandwidth bars; pan & zoom into dense regions like Europe.
+- **Map** — value-by-alpha world map: hue encodes exit share (cyan → green) and brightness encodes relay count, so the busiest countries glow while the rest recede. Guard → Middle → Exit paths are sampled from live relays and animated as a background simulation on the same map. Click a country for its relay count, bandwidth, Guard/Middle/Exit composition, top autonomous systems, and a relay list with bandwidth bars; pan & zoom into dense regions like Europe.
 - **Hosting** — centralization risk by autonomous system (hosting provider), as Lorenz curves with a Gini score and the top ASes — shown both for the whole network and for exit capacity alone, where concentration bites hardest. Click an AS for a detail panel with its relay list and bandwidth share.
 - **Paths** — how much of all traffic rides on a few high-bandwidth relays: a concentration curve you can drag to read "the top N% of relays carry M% of traffic."
 - **Growth** — the network over time: relay count, advertised capacity vs. bandwidth actually consumed, and estimated users by country (from Tor Metrics). Trend data is cached for the session so switching views does not re-fetch.
-- **Circuits** — real Guard → Middle → Exit paths, sampled from live relays by their actual selection weight and animated across the map. Relay dots are placed inside each country's polygon via rejection sampling.
 - **About** — data sources and references displayed as cards.
 - **Ambient mode** — leave any view on a screen and it conveys the network's shape without interaction.
 
