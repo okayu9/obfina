@@ -28,10 +28,11 @@ const writableKv = () => {
 
 describe('getCachedJson', () => {
 	it('parses cached JSON values', async () => {
-		await expect(getCachedJson<{ ok: boolean }>(kvWithValue('{"ok":true}'), 'cache:key')).resolves
-			.toEqual({
-				ok: true
-			});
+		await expect(
+			getCachedJson<{ ok: boolean }>(kvWithValue('{"ok":true}'), 'cache:key')
+		).resolves.toEqual({
+			ok: true
+		});
 	});
 
 	it('treats corrupt cached JSON as a cache miss', async () => {
