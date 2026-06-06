@@ -1,4 +1,5 @@
 import type { TrendsResponse } from '$lib/types';
+import { fetchJson } from '$lib/api-client';
 import { createLoadOnce } from './load-once';
 
 /**
@@ -9,18 +10,19 @@ export const trendsStore = $state<{
 	data: TrendsResponse | null;
 	loading: boolean;
 	failed: boolean;
+	error: string | null;
 	loaded: boolean;
 }>({
 	data: null,
 	loading: true,
 	failed: false,
+	error: null,
 	loaded: false
 });
 
 export const loadTrends = createLoadOnce(trendsStore, {
 	fetchData: async () => {
-		const res = await fetch('/api/trends');
-		return (await res.json()) as TrendsResponse;
+		return fetchJson<TrendsResponse>('/api/trends');
 	},
 	isUnavailable: (data) => !!data.unavailable,
 	applyData: (data) => {

@@ -1,4 +1,5 @@
 import type { Relay, RelayCountrySummary, RelaysResponse, RelaySummaryResponse } from '$lib/types';
+import { fetchJson } from '$lib/api-client';
 
 /**
  * Shared relay dataset. Fetched once and consumed by every view that works off
@@ -12,9 +13,11 @@ export const relayStore = $state<{
 	publishedAt: string | null;
 	loading: boolean;
 	failed: boolean;
+	error: string | null;
 	loaded: boolean;
 	detailsLoading: boolean;
 	detailsFailed: boolean;
+	detailsError: string | null;
 	detailsLoaded: boolean;
 }>({
 	relays: [],
@@ -24,9 +27,11 @@ export const relayStore = $state<{
 	publishedAt: null,
 	loading: true,
 	failed: false,
+	error: null,
 	loaded: false,
 	detailsLoading: false,
 	detailsFailed: false,
+	detailsError: null,
 	detailsLoaded: false
 });
 
@@ -59,18 +64,20 @@ export function loadRelaySummary(): Promise<void> {
 
 	relayStore.loading = true;
 	relayStore.failed = false;
+	relayStore.error = null;
 
 	summaryInflight = (async () => {
 		try {
-			const res = await fetch('/api/relays?summary=1');
-			const data = (await res.json()) as RelaySummaryResponse;
+			const data = await fetchJson<RelaySummaryResponse>('/api/relays?summary=1');
 			if (data.unavailable) {
 				relayStore.failed = true;
+				relayStore.error = 'unavailable';
 			} else {
 				applyRelaySummary(data);
 			}
-		} catch {
+		} catch (error: unknown) {
 			relayStore.failed = true;
+			relayStore.error = error instanceof Error ? error.message : 'Unknown relay summary error';
 		} finally {
 			relayStore.loading = false;
 			summaryInflight = null;
@@ -86,19 +93,21 @@ export function loadRelays(): Promise<void> {
 
 	relayStore.detailsLoading = true;
 	relayStore.detailsFailed = false;
+	relayStore.detailsError = null;
 
 	detailsInflight = (async () => {
 		try {
-			const res = await fetch('/api/relays');
-			const data = (await res.json()) as RelaysResponse;
+			const data = await fetchJson<RelaysResponse>('/api/relays');
 			if (data.unavailable) {
 				relayStore.detailsFailed = true;
+				relayStore.detailsError = 'unavailable';
 				if (!relayStore.loaded) relayStore.failed = true;
 			} else {
 				applyRelayDetails(data);
 			}
-		} catch {
+		} catch (error: unknown) {
 			relayStore.detailsFailed = true;
+			relayStore.detailsError = error instanceof Error ? error.message : 'Unknown relay details error';
 			if (!relayStore.loaded) relayStore.failed = true;
 		} finally {
 			relayStore.detailsLoading = false;

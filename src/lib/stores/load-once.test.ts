@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { createLoadOnce, type LoadOnceState } from './load-once';
 
-const state = (): LoadOnceState => ({ loading: true, failed: false, loaded: false });
+const state = (): LoadOnceState => ({
+	loading: true,
+	failed: false,
+	loaded: false,
+	error: null
+});
 
 describe('createLoadOnce', () => {
 	it('applies successful data and marks the store loaded', async () => {
@@ -48,7 +53,12 @@ describe('createLoadOnce', () => {
 			applyData: (data) => Object.assign(unavailableStore, data)
 		})();
 
-		expect(unavailableStore).toEqual({ loading: false, failed: true, loaded: false });
+		expect(unavailableStore).toEqual({
+			loading: false,
+			failed: true,
+			loaded: false,
+			error: 'unavailable'
+		});
 
 		const throwingStore = state();
 		await createLoadOnce(throwingStore, {
@@ -58,7 +68,12 @@ describe('createLoadOnce', () => {
 			applyData: (data) => Object.assign(throwingStore, data)
 		})();
 
-		expect(throwingStore).toEqual({ loading: false, failed: true, loaded: false });
+		expect(throwingStore).toEqual({
+			loading: false,
+			failed: true,
+			loaded: false,
+			error: 'offline'
+		});
 	});
 
 	it('allows retry after a failed load', async () => {
