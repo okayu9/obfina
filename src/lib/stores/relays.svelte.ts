@@ -11,6 +11,7 @@ export const relayStore = $state<{
 	count: number;
 	totalBandwidth: number;
 	publishedAt: string | null;
+	stale: boolean;
 	loading: boolean;
 	failed: boolean;
 	error: string | null;
@@ -18,6 +19,7 @@ export const relayStore = $state<{
 	detailsLoading: boolean;
 	detailsFailed: boolean;
 	detailsError: string | null;
+	detailsStale: boolean;
 	detailsLoaded: boolean;
 }>({
 	relays: [],
@@ -25,6 +27,7 @@ export const relayStore = $state<{
 	count: 0,
 	totalBandwidth: 0,
 	publishedAt: null,
+	stale: false,
 	loading: true,
 	failed: false,
 	error: null,
@@ -32,6 +35,7 @@ export const relayStore = $state<{
 	detailsLoading: false,
 	detailsFailed: false,
 	detailsError: null,
+	detailsStale: false,
 	detailsLoaded: false
 });
 
@@ -43,6 +47,7 @@ export function applyRelaySummary(data: RelaySummaryResponse): void {
 	relayStore.count = data.count;
 	relayStore.totalBandwidth = data.totalBandwidth;
 	relayStore.publishedAt = data.publishedAt;
+	relayStore.stale = !!data.stale;
 	relayStore.loaded = true;
 }
 
@@ -51,6 +56,8 @@ export function applyRelayDetails(data: RelaysResponse): void {
 	relayStore.count = data.count;
 	relayStore.publishedAt = data.publishedAt;
 	relayStore.totalBandwidth = data.relays.reduce((sum, relay) => sum + relay.bandwidth, 0);
+	relayStore.detailsStale = !!data.stale;
+	relayStore.stale = !!data.stale;
 	relayStore.detailsLoaded = true;
 	if (!relayStore.loaded) {
 		relayStore.countries = [];
@@ -107,7 +114,8 @@ export function loadRelays(): Promise<void> {
 			}
 		} catch (error: unknown) {
 			relayStore.detailsFailed = true;
-			relayStore.detailsError = error instanceof Error ? error.message : 'Unknown relay details error';
+			relayStore.detailsError =
+				error instanceof Error ? error.message : 'Unknown relay details error';
 			if (!relayStore.loaded) relayStore.failed = true;
 		} finally {
 			relayStore.detailsLoading = false;

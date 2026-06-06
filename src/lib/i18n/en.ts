@@ -120,6 +120,7 @@ export const en = {
 		consumed: 'consumed',
 		relays: 'relays',
 		dailyUsers: 'daily users',
+		stale: 'Showing cached data while upstream metrics are unavailable.',
 		partial: 'Some series were unavailable upstream and are omitted.',
 		noData: 'no data available'
 	},
@@ -135,7 +136,8 @@ export const en = {
 
 	// Footer
 	footer: {
-		dataAsOf: 'Data as of'
+		dataAsOf: 'Data as of',
+		stale: 'cached fallback'
 	},
 
 	// Error / status states

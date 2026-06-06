@@ -35,7 +35,9 @@
 <footer>
 	© 2026 <a href="https://okayu.jp" target="_blank" rel="noopener noreferrer">Yumeto Inaoka</a
 	>.{#if relayStore.publishedAt}
-		· {t.footer.dataAsOf} {formatOnionooPublishedAt(relayStore.publishedAt)}{/if}
+		· {t.footer.dataAsOf} {formatOnionooPublishedAt(relayStore.publishedAt)}{/if}{#if relayStore.stale ||
+		relayStore.detailsStale}
+		· <span class="stale">{t.footer.stale}</span>{/if}
 </footer>
 
 <style>
@@ -60,5 +62,9 @@
 
 	footer a:hover {
 		color: #6f8aa3;
+	}
+
+	.stale {
+		color: #c7a75d;
 	}
 </style>

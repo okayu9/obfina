@@ -38,8 +38,15 @@
 			/>
 			<UserTrendChart users={data.users} valueLabel={t.growth.dailyUsers} />
 		</div>
-		{#if data.partial}
-			<p class="note">{t.growth.partial}</p>
+		{#if data.stale || data.partial}
+			<div class="notes">
+				{#if data.stale}
+					<p class="note">{t.growth.stale}</p>
+				{/if}
+				{#if data.partial}
+					<p class="note">{t.growth.partial}</p>
+				{/if}
+			</div>
 		{/if}
 	{/if}
 </ViewShell>
@@ -52,7 +59,13 @@
 		flex: 1;
 		min-height: 0;
 	}
+	.notes {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+	}
 	.note {
+		margin: 0;
 		font-size: 0.66rem;
 		color: #6f8aa3;
 	}

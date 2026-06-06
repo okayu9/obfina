@@ -122,6 +122,7 @@ export const ja: Messages = {
 		consumed: '消費済み',
 		relays: 'リレー',
 		dailyUsers: '1日あたりのユーザー',
+		stale: '上流メトリクスが利用できないため、キャッシュ済みデータを表示しています。',
 		partial: '一部の系列は上流から取得できなかったため省略されています。',
 		noData: 'データがありません'
 	},
@@ -137,7 +138,8 @@ export const ja: Messages = {
 
 	// Footer
 	footer: {
-		dataAsOf: 'データ取得時刻'
+		dataAsOf: 'データ取得時刻',
+		stale: 'キャッシュ表示'
 	},
 
 	// Error / status states
