@@ -44,7 +44,8 @@ export const ja: Messages = {
 	map: {
 		relays: 'リレー',
 		legendExit: 'シアン→緑 = 出口シェア',
-		legendBrightness: '明るいほど = リレーが多い'
+		legendBrightness: '明るいほど = リレーが多い',
+		simulationNote: '回線アニメーションは統計にもとづく表現で、リアルタイム通信ではありません。'
 	},
 
 	// Country panel

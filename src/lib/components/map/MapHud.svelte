@@ -7,7 +7,8 @@
 		loaded = true,
 		relaysLabel,
 		legendExitLabel,
-		legendBrightnessLabel
+		legendBrightnessLabel,
+		simulationNoteLabel
 	}: {
 		relayCount: number;
 		totalBandwidth: number;
@@ -15,6 +16,7 @@
 		relaysLabel: string;
 		legendExitLabel: string;
 		legendBrightnessLabel: string;
+		simulationNoteLabel: string;
 	} = $props();
 </script>
 
@@ -32,6 +34,7 @@
 		<span class="enc"><i class="ramp"></i>{legendExitLabel}</span>
 		<span class="enc"><i class="bright"></i>{legendBrightnessLabel}</span>
 	</div>
+	<div class="note">{simulationNoteLabel}</div>
 </div>
 
 <style>
@@ -88,6 +91,16 @@
 		display: flex;
 		align-items: center;
 		gap: 0.4rem;
+	}
+	.note {
+		max-width: 19rem;
+		margin-top: 0.75rem;
+		padding-top: 0.55rem;
+		border-top: 1px solid rgba(58, 93, 120, 0.22);
+		font-size: 0.62rem;
+		line-height: 1.5;
+		letter-spacing: 0.06em;
+		color: rgba(111, 138, 163, 0.78);
 	}
 	.bright,
 	.ramp {

@@ -42,7 +42,8 @@ export const en = {
 	map: {
 		relays: 'relays',
 		legendExit: 'cyan→green = exit share',
-		legendBrightness: 'brighter = more relays'
+		legendBrightness: 'brighter = more relays',
+		simulationNote: 'Circuit animation is statistical, not live traffic.'
 	},
 
 	// Country panel

@@ -43,6 +43,7 @@
 	relaysLabel={t.map.relays}
 	legendExitLabel={t.map.legendExit}
 	legendBrightnessLabel={t.map.legendBrightness}
+	simulationNoteLabel={t.map.simulationNote}
 />
 
 <CountryPanel stats={selectedStats} relays={relayStore.relays} {totalBandwidth} />
