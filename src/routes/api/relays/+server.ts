@@ -1,8 +1,10 @@
 import { json } from '@sveltejs/kit';
 import { dev } from '$app/environment';
+import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 import type { RelaysResponse, RelaySummaryResponse } from '$lib/types';
 import { getCachedJson, jsonCache, putCachedJson } from '$lib/server/kv-cache';
+import { fixtureRelaysResponse, fixtureRelaySummaryResponse } from '$lib/server/fixture-data';
 import {
 	fetchRelays,
 	fetchRelaySummary,
@@ -20,6 +22,11 @@ export const GET: RequestHandler = async ({ platform, url }) => {
 	const cache = jsonCache(platform);
 	const noCache = dev && url.searchParams.get('nocache') === '1';
 	const summary = url.searchParams.get('summary') === '1';
+	const fixtureData = env.OBFINA_FIXTURE_DATA === '1' || env.OBFINA_FIXTURE_DATA === 'true';
+
+	if (fixtureData) {
+		return json(summary ? fixtureRelaySummaryResponse() : fixtureRelaysResponse());
+	}
 
 	if (summary) {
 		if (cache.kv && !noCache) {

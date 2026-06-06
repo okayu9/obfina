@@ -1,8 +1,10 @@
 import { json } from '@sveltejs/kit';
 import { dev } from '$app/environment';
+import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 import type { TrendsResponse } from '$lib/types';
 import { getCachedJson, jsonCache, putCachedJson } from '$lib/server/kv-cache';
+import { fixtureTrendsResponse } from '$lib/server/fixture-data';
 import { fetchTrendsSections, trendsAvailability } from '$lib/server/trends-service';
 
 /**
@@ -19,6 +21,11 @@ const STALE_TTL_SECONDS = 60 * 60 * 24 * 3;
 export const GET: RequestHandler = async ({ platform, url }) => {
 	const cache = jsonCache(platform);
 	const noCache = dev && url.searchParams.get('nocache') === '1';
+	const fixtureData = env.OBFINA_FIXTURE_DATA === '1' || env.OBFINA_FIXTURE_DATA === 'true';
+
+	if (fixtureData) {
+		return json(fixtureTrendsResponse());
+	}
 
 	if (cache.kv && !noCache) {
 		const cached = await getCachedJson<TrendsResponse>(cache, CACHE_KEY);

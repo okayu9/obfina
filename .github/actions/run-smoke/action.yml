@@ -1,0 +1,57 @@
+name: Run smoke test
+description: Start the production preview server and run the Playwright smoke test.
+
+inputs:
+  fixture-data:
+    description: Use deterministic fixture API data instead of live upstream data.
+    default: 'false'
+  wait-ms:
+    description: Per-view wait time passed to scripts/smoke.ts.
+    default: '1000'
+
+runs:
+  using: composite
+  steps:
+    - name: Run smoke test
+      shell: bash
+      env:
+        OBFINA_FIXTURE_DATA: ${{ inputs.fixture-data }}
+      run: |
+        set -euo pipefail
+
+        preview_log="$(mktemp)"
+        pnpm preview --host 127.0.0.1 --port 4173 >"${preview_log}" 2>&1 &
+        preview_pid="$!"
+
+        cleanup() {
+          status="$?"
+          if [ "${status}" -ne 0 ]; then
+            echo "::group::Preview server log"
+            cat "${preview_log}"
+            echo "::endgroup::"
+          fi
+          if kill -0 "${preview_pid}" >/dev/null 2>&1; then
+            kill "${preview_pid}" >/dev/null 2>&1 || true
+            wait "${preview_pid}" >/dev/null 2>&1 || true
+          fi
+          rm -f "${preview_log}"
+          exit "${status}"
+        }
+        trap cleanup EXIT
+
+        for i in {1..30}; do
+          if curl --silent --fail http://127.0.0.1:4173/ >/dev/null; then
+            break
+          fi
+          if ! kill -0 "${preview_pid}" >/dev/null 2>&1; then
+            echo "Preview server exited before it became ready" >&2
+            exit 1
+          fi
+          if [ "${i}" -eq 30 ]; then
+            echo "Preview server did not become ready" >&2
+            exit 1
+          fi
+          sleep 1
+        done
+
+        pnpm test:smoke http://127.0.0.1:4173/ "${{ inputs.wait-ms }}"
