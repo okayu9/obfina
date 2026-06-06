@@ -48,8 +48,8 @@ The bootstrap script:
 4. lets Wrangler create the Pages project on the first deploy if it does not
    already exist
 
-Production deploys run on pushes to `main`. Preview deploys run on pull
-requests.
+Production deploys run on pushes to `main`. Staging deploys run on pushes to
+`staging`. Preview deploys run on pull requests.
 
 ### 3. Local bootstrap and deploy
 
@@ -75,7 +75,8 @@ account-specific resource IDs. `wrangler.toml.example` documents the shape.
 
 ## CI/CD
 
-Two GitHub Actions workflows handle the deployment lifecycle.
+Three GitHub Actions workflows handle the deployment lifecycle. Branch and
+release workflow is documented in [Branching](branching.md).
 
 ### Preview (`.github/workflows/preview.yml`)
 
@@ -89,6 +90,18 @@ lint → check → test → build
 - Fork pull requests run quality checks only, because Cloudflare secrets are not exposed.
 - Cloudflare Pages automatically assigns a unique preview URL per same-repository PR branch.
 - Preview deployments use the `obfina-cache-preview` KV namespace, isolated from production.
+
+### Staging (`.github/workflows/staging.yml`)
+
+Triggered on push to `staging` or by manual dispatch.
+
+```
+lint → check → test → build → bootstrap Cloudflare resources → deploy staging
+```
+
+Staging is the required release-candidate gate before production. It deploys as
+a Cloudflare Pages preview branch deployment at
+`https://staging.obfina.pages.dev` and uses the preview KV namespace.
 
 ### Production (`.github/workflows/deploy.yml`)
 
@@ -106,6 +119,7 @@ parallel production deploys on rapid pushes.
 | Environment | Trigger             | URL                                   | KV namespace           |
 | ----------- | ------------------- | ------------------------------------- | ---------------------- |
 | Preview     | PR opened / updated | `<branch>.obfina.pages.dev`           | `obfina-cache-preview` |
+| Staging     | Push to `staging`   | `staging.obfina.pages.dev`            | `obfina-cache-preview` |
 | Production  | Push to `main`      | `obfina.pages.dev` (or custom domain) | `obfina-cache-prod`    |
 
 ## Secrets management
