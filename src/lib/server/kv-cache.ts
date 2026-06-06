@@ -14,7 +14,13 @@ export function jsonCache(platform: App.Platform | undefined): JsonCache {
 
 export async function getCachedJson<T>(cache: JsonCache, key: string): Promise<T | null> {
 	const cached = await cache.kv?.get(key);
-	return cached ? (JSON.parse(cached) as T) : null;
+	if (!cached) return null;
+	try {
+		return JSON.parse(cached) as T;
+	} catch (error: unknown) {
+		console.warn(`Failed to parse cache key "${key}"`, error);
+		return null;
+	}
 }
 
 export function putCachedJson<T>(
