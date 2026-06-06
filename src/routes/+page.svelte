@@ -35,6 +35,7 @@
 			? relayStore.failed && !relayStore.loaded
 			: needsRelayDetails && relayStore.detailsFailed && !relayStore.detailsLoaded
 	);
+	const INTRO_STORAGE_KEY = 'obfina:intro-dismissed:v1';
 
 	let showIntro = $state(false);
 
@@ -53,8 +54,13 @@
 	onMount(() => {
 		initViewFromUrl();
 		loadRelaySummary().then(loadRelayDetailsSoon);
-		showIntro = true;
+		showIntro = localStorage.getItem(INTRO_STORAGE_KEY) !== '1';
 	});
+
+	function dismissIntro() {
+		localStorage.setItem(INTRO_STORAGE_KEY, '1');
+		showIntro = false;
+	}
 
 	// On failure the relevant loaded flag stays false, so retry re-runs the fetch.
 	function retryRelays() {
@@ -109,7 +115,7 @@
 			title={t.intro.title}
 			body={t.intro.body}
 			dismissLabel={t.intro.dismiss}
-			ondismiss={() => (showIntro = false)}
+			ondismiss={dismissIntro}
 		/>
 	{/if}
 </div>
