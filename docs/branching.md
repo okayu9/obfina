@@ -14,7 +14,6 @@ change easy to inspect before it ships.
 | `fix/*`      | Bug fixes, including urgent fixes                      | Pull request preview                   |
 | `chore/*`    | Tooling, CI, dependency, or config work                | Pull request preview                   |
 | `docs/*`     | Documentation work                                     | Pull request preview                   |
-| `codex/*`    | Codex-authored work                                    | Pull request preview                   |
 
 ## Deployment Roles
 
