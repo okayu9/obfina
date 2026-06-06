@@ -108,6 +108,7 @@ async function ensurePagesProject(name: string): Promise<PagesProject> {
 async function writeWranglerToml(prodId: string, previewId: string): Promise<void> {
 	const toml = `name = "${projectName}"
 compatibility_date = "${compatibilityDate}"
+compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
 [[kv_namespaces]]

@@ -1,5 +1,6 @@
 name = "obfina"
 compatibility_date = "2026-05-31"
+compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
 [[kv_namespaces]]

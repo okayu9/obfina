@@ -1,0 +1,62 @@
+name: Run quality checks
+description: Install dependencies, run the CI quality gate, build, and smoke test.
+
+inputs:
+  fixture-data:
+    description: Use deterministic fixture API data for the smoke test.
+    default: 'false'
+  wait-ms:
+    description: Per-view wait time passed to scripts/smoke.ts.
+    default: '1000'
+  playwright-cache-key:
+    description: Cache key for Playwright browser binaries.
+    required: true
+  playwright-cache-restore-key:
+    description: Restore key prefix for Playwright browser binaries.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/setup-node-pnpm
+
+    - run: pnpm lint
+      shell: bash
+
+    - run: pnpm check
+      shell: bash
+
+    - run: pnpm test
+      shell: bash
+
+    - run: pnpm build
+      shell: bash
+
+    - uses: actions/upload-artifact@v6
+      with:
+        name: cloudflare-build
+        path: .svelte-kit
+        if-no-files-found: error
+        include-hidden-files: true
+
+    - uses: actions/cache@v5
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ inputs.playwright-cache-key }}
+        restore-keys: |
+          ${{ inputs.playwright-cache-restore-key }}
+
+    - run: pnpm exec playwright install --with-deps chromium
+      shell: bash
+
+    - uses: ./.github/actions/run-smoke
+      with:
+        fixture-data: ${{ inputs.fixture-data }}
+        wait-ms: ${{ inputs.wait-ms }}
+
+    - uses: actions/upload-artifact@v6
+      if: failure()
+      with:
+        name: smoke-screenshots
+        path: /tmp/obfina-*.png
+        if-no-files-found: ignore

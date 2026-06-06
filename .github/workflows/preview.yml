@@ -35,36 +35,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: ./.github/actions/setup-node-pnpm
-
-      - run: pnpm lint
-
-      - run: pnpm check
-
-      - run: pnpm test
-
-      - run: pnpm build
-
-      - uses: actions/upload-artifact@v6
-        with:
-          name: cloudflare-build
-          path: .svelte-kit
-          if-no-files-found: error
-          include-hidden-files: true
-
-      - uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
-      - run: pnpm exec playwright install --with-deps chromium
-
-      - uses: ./.github/actions/run-smoke
+      - uses: ./.github/actions/run-quality
         with:
           fixture-data: 'true'
           wait-ms: '1000'
+          playwright-cache-key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          playwright-cache-restore-key: playwright-${{ runner.os }}-
 
   preview:
     runs-on: ubuntu-latest
