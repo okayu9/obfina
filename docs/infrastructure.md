@@ -99,9 +99,10 @@ Triggered on push to `staging` or by manual dispatch.
 lint → check → test → build → bootstrap Cloudflare resources → deploy staging
 ```
 
-Staging is the required release-candidate gate before production. It deploys as
-a Cloudflare Pages preview branch deployment at
-`https://staging.obfina.pages.dev` and uses the preview KV namespace.
+Staging is an optional shared verification environment for changes that need
+more than a per-PR preview. It deploys as a Cloudflare Pages preview branch
+deployment at `https://staging.obfina.pages.dev` and uses the preview KV
+namespace.
 
 ### Production (`.github/workflows/deploy.yml`)
 

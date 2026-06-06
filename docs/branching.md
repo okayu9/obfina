@@ -1,68 +1,66 @@
 # Branching
 
-This project uses pull requests, preview deployments, and a required staging
-gate before production. The goal is to keep `main` deployable while still
-allowing multiple changes to be verified together before release.
+This project uses pull requests and preview deployments as the normal gate
+before production. The goal is to keep `main` deployable while making every
+change easy to inspect before it ships.
 
 ## Branches
 
-| Branch / ref | Purpose                                      | Deployment                             |
-| ------------ | -------------------------------------------- | -------------------------------------- |
-| `main`       | Production source of truth                   | Production Cloudflare Pages deployment |
-| `staging`    | Required release-candidate verification gate | `https://staging.obfina.pages.dev`     |
-| `feature/*`  | Feature work                                 | Pull request preview                   |
-| `fix/*`      | Bug fixes, including urgent fixes            | Pull request preview                   |
-| `chore/*`    | Tooling, CI, dependency, or config work      | Pull request preview                   |
-| `docs/*`     | Documentation work                           | Pull request preview                   |
-| `codex/*`    | Codex-authored work                          | Pull request preview                   |
+| Branch / ref | Purpose                                                | Deployment                             |
+| ------------ | ------------------------------------------------------ | -------------------------------------- |
+| `main`       | Production source of truth                             | Production Cloudflare Pages deployment |
+| `staging`    | Optional shared verification branch for larger changes | `https://staging.obfina.pages.dev`     |
+| `feature/*`  | Feature work                                           | Pull request preview                   |
+| `fix/*`      | Bug fixes, including urgent fixes                      | Pull request preview                   |
+| `chore/*`    | Tooling, CI, dependency, or config work                | Pull request preview                   |
+| `docs/*`     | Documentation work                                     | Pull request preview                   |
+| `codex/*`    | Codex-authored work                                    | Pull request preview                   |
 
 ## Deployment Roles
 
 Pull request previews verify one change in isolation. They are created for PRs
-from repository branches and are useful for checking the behavior, UI, and CI
-impact of a single branch before it joins a release candidate.
+from repository branches and are the default environment for reviewing behavior,
+UI, and CI impact before merging to production.
 
-`staging` verifies the release candidate. Candidate PRs are merged into
-`staging` first, and staging is checked as the combined state that may later go
-to production. This includes hotfixes: even urgent fixes go through staging
-before production.
+`staging` is optional. Use it when a change needs a shared environment beyond
+the per-PR preview, such as larger UI changes, CI/CD changes, or a batch of PRs
+that should be checked together. Staging should not be required for every PR.
 
 `main` is production. Merging into `main` triggers the production deploy. `main`
-should receive only changes that have already passed staging verification.
+should receive only changes that have passed the required PR checks and have
+been reviewed in their PR preview.
 
 ## Normal Flow
 
 1. Create a topic branch from the current release base.
 2. Open a pull request.
 3. Let the required `quality` check and PR preview deployment complete.
-4. Merge the PR into `staging`.
-5. Verify `https://staging.obfina.pages.dev`.
-6. After all release-candidate changes are verified together, merge the same
-   accepted changes into `main`.
-7. Production deploys automatically from `main`.
+4. Verify the PR preview URL posted on the PR.
+5. Merge the PR into `main`.
+6. Production deploys automatically from `main`.
 
-## Release Batching
+## Optional Staging
 
-Multiple PRs may be merged into `staging` before production. Use staging as the
-single release-candidate branch for the batch. Once the batch is accepted, move
-the accepted changes to `main` together.
+Multiple PRs may be merged into `staging` when they need to be verified
+together before production. In that case, use staging as the shared candidate
+branch for the batch. Once the batch is accepted, move the accepted changes to
+`main`.
 
 Do not use `staging` as a long-lived development branch. It should represent a
-production candidate, not an accumulating backlog. If staging diverges from the
-intended production candidate, reset or rebuild it from the accepted PRs before
-releasing.
+temporary verification target, not an accumulating backlog. If staging diverges
+from the intended candidate, reset or rebuild it from the accepted PRs before
+using it for release decisions.
 
 ## Hotfixes
 
-Hotfixes follow the same policy as regular changes:
+Hotfixes follow the same policy as regular changes. Staging may be used if the
+fix needs extra shared-environment verification, but it is not required by
+default.
 
 1. Create a `fix/*` branch.
 2. Open a PR and let `quality` and the PR preview complete.
-3. Merge the hotfix into `staging`.
-4. Verify staging.
-5. Merge the hotfix into `main`.
-
-Skipping staging is not part of the normal process.
+3. Verify the PR preview.
+4. Merge the hotfix into `main`.
 
 ## Merge Policy
 
