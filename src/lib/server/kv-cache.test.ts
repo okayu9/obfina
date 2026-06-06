@@ -40,8 +40,7 @@ describe('getCachedJson', () => {
 
 		await expect(getCachedJson(kvWithValue('{broken'), 'cache:key')).resolves.toBeNull();
 		expect(warn).toHaveBeenCalledWith(
-			'Failed to parse cache key "cache:key"',
-			expect.any(SyntaxError)
+			expect.stringContaining('"event":"cache_parse_failed"')
 		);
 
 		warn.mockRestore();

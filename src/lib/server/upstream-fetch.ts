@@ -1,3 +1,5 @@
+import { logInfo, logWarn } from '$lib/server/log';
+
 const USER_AGENT = 'obfina (https://github.com/obfina)';
 
 export const UPSTREAM_TIMEOUT_MS = 10_000;
@@ -18,6 +20,7 @@ export async function fetchUpstream(
 	const controller = new AbortController();
 	const timeout = setTimeout(() => controller.abort(), timeoutMs);
 	const label = options.label ?? url;
+	const startedAt = Date.now();
 
 	try {
 		const res = await fetcher(url, {
@@ -28,13 +31,27 @@ export async function fetchUpstream(
 			},
 			signal: controller.signal
 		});
+		const durationMs = Date.now() - startedAt;
 		if (!res.ok) {
-			console.warn(`Upstream fetch failed for ${label}: HTTP ${res.status}`);
+			logWarn('upstream_fetch_failed', {
+				label,
+				status: res.status,
+				durationMs
+			});
 			return null;
 		}
+		logInfo('upstream_fetch_ok', {
+			label,
+			status: res.status,
+			durationMs
+		});
 		return res;
 	} catch (error: unknown) {
-		console.warn(`Upstream fetch failed for ${label}`, error);
+		logWarn('upstream_fetch_failed', {
+			label,
+			durationMs: Date.now() - startedAt,
+			error: error instanceof Error ? error.message : String(error)
+		});
 		return null;
 	} finally {
 		clearTimeout(timeout);
