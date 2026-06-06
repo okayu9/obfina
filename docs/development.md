@@ -121,8 +121,7 @@ pnpm lint    # prettier --check + eslint
 pnpm format  # prettier --write
 ```
 
-CI runs `pnpm check`, `pnpm test`, and `pnpm build`. Run `pnpm lint` locally
-before committing formatting or lint-sensitive changes.
+CI runs `pnpm lint`, `pnpm check`, `pnpm test`, and `pnpm build`.
 
 ## Tests
 
