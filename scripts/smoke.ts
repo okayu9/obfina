@@ -2,13 +2,13 @@
  * Dev helper: load every view and report runtime/console errors plus a
  * per-view sanity selector. Verifies the multi-view app renders end to end.
  *
- * Usage: pnpm tsx scripts/smoke.ts [baseUrl] [waitMs]
+ * Usage: pnpm test:smoke [baseUrl] [waitMs]
  *   (the dev server must already be running)
  */
 import { chromium } from 'playwright';
 import type { Browser, Page } from 'playwright';
 
-const base: string = process.argv[2] ?? 'http://localhost:5179/';
+const base: string = process.argv[2] ?? 'http://localhost:5173/';
 const waitMs: number = Number(process.argv[3] ?? 7000);
 
 interface View {

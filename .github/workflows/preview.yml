@@ -31,6 +31,17 @@ jobs:
 
       - run: pnpm build
 
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run smoke test
+        run: |
+          pnpm preview -- --host 127.0.0.1 --port 4173 &
+          for i in {1..30}; do
+            curl --silent --fail http://127.0.0.1:4173/ >/dev/null && break
+            sleep 1
+          done
+          pnpm test:smoke http://127.0.0.1:4173/ 1000
+
   preview:
     runs-on: ubuntu-latest
     needs: quality

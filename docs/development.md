@@ -144,7 +144,7 @@ console errors. With the dev server running:
 
 ```bash
 pnpm tsx scripts/screenshot.ts [url] [outPath] [waitMs]
-pnpm tsx scripts/smoke.ts [baseUrl] [waitMs]
+pnpm test:smoke [baseUrl] [waitMs]
 pnpm tsx scripts/click-test.ts
 ```
 

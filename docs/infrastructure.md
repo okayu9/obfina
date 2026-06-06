@@ -7,11 +7,11 @@ resources in the dashboard.
 
 ## Architecture
 
-| Resource           | Purpose                                                   |
-| ------------------ | --------------------------------------------------------- |
-| Cloudflare Pages   | Hosts the built SvelteKit app                             |
-| Cloudflare Workers | Runs SvelteKit server routes (via `adapter-cloudflare`)   |
-| Cloudflare KV      | API response cache (separate namespaces per environment)  |
+| Resource           | Purpose                                                  |
+| ------------------ | -------------------------------------------------------- |
+| Cloudflare Pages   | Hosts the built SvelteKit app                            |
+| Cloudflare Workers | Runs SvelteKit server routes (via `adapter-cloudflare`)  |
+| Cloudflare KV      | API response cache (separate namespaces per environment) |
 
 ## Prerequisites
 
