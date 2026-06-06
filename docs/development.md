@@ -2,8 +2,8 @@
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) 20 or later
-- [pnpm](https://pnpm.io/) 9 or later
+- [Node.js](https://nodejs.org/) 24.x (see `.node-version`)
+- [pnpm](https://pnpm.io/) 11.5.x
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) (for local Cloudflare Workers emulation)
 - A Cloudflare account (free tier is sufficient; optional for local development — see below)
 
@@ -100,7 +100,7 @@ obfina/
 ├── docs/                     # project documentation
 ├── svelte.config.js          # SvelteKit config
 ├── vite.config.ts            # Vite + Tailwind v4 plugin (no tailwind.config)
-└── eslint.config.ts
+└── eslint.config.js
 
 # generated locally by pnpm cloudflare:bootstrap:
 #   wrangler.toml       Cloudflare Pages config with account-specific KV IDs
