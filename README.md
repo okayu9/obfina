@@ -54,3 +54,9 @@ Data is refreshed via a server-side cache layer (relay summary/details: 10 min, 
 ## Acknowledgements
 
 obfina would not exist without the work of the [Tor Project](https://www.torproject.org/) and the volunteers who run Tor relays worldwide. Network data is provided by [Onionoo](https://onionoo.torproject.org/) and [Tor Metrics](https://metrics.torproject.org/) — both maintained by the Tor Project.
+
+## License
+
+Copyright 2026 Yumeto Inaoka.
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
