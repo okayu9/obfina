@@ -24,6 +24,11 @@ export function putCachedJson<T>(
 	ttlSeconds: number
 ): void {
 	if (!cache.kv) return;
-	const write = cache.kv.put(key, JSON.stringify(payload), { expirationTtl: ttlSeconds });
-	cache.waitUntil?.(write);
+	const write = cache.kv
+		.put(key, JSON.stringify(payload), { expirationTtl: ttlSeconds })
+		.catch((error: unknown) => {
+			console.warn(`Failed to write cache key "${key}"`, error);
+		});
+	if (cache.waitUntil) cache.waitUntil(write);
+	else void write;
 }
