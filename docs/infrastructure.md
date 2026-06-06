@@ -82,10 +82,12 @@ Two GitHub Actions workflows handle the deployment lifecycle.
 Triggered on every pull request.
 
 ```
-check → test → build → bootstrap Cloudflare resources → deploy preview
+lint → check → test → build
 ```
 
-- Cloudflare Pages automatically assigns a unique preview URL per PR branch.
+- Same-repository pull requests then run Cloudflare bootstrap and deploy a preview.
+- Fork pull requests run quality checks only, because Cloudflare secrets are not exposed.
+- Cloudflare Pages automatically assigns a unique preview URL per same-repository PR branch.
 - Preview deployments use the `obfina-cache-preview` KV namespace, isolated from production.
 
 ### Production (`.github/workflows/deploy.yml`)
@@ -93,7 +95,7 @@ check → test → build → bootstrap Cloudflare resources → deploy preview
 Triggered on push to `main`.
 
 ```
-check → test → build → bootstrap Cloudflare resources → deploy production
+lint → check → test → build → bootstrap Cloudflare resources → deploy production
 ```
 
 The production workflow uses a GitHub Actions concurrency group to prevent
