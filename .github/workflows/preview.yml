@@ -39,9 +39,15 @@ jobs:
 
       - name: Run smoke test
         run: |
-          pnpm preview -- --host 127.0.0.1 --port 4173 &
+          pnpm preview --host 127.0.0.1 --port 4173 &
           for i in {1..30}; do
-            curl --silent --fail http://127.0.0.1:4173/ >/dev/null && break
+            if curl --silent --fail http://127.0.0.1:4173/ >/dev/null; then
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "Preview server did not become ready" >&2
+              exit 1
+            fi
             sleep 1
           done
           pnpm test:smoke http://127.0.0.1:4173/ 1000
