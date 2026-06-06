@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 import type { RequestHandler } from './$types';
 import type { TrendsResponse } from '$lib/types';
 import { getCachedJson, jsonCache, putCachedJson } from '$lib/server/kv-cache';
@@ -16,7 +17,7 @@ const TTL_SECONDS = 60 * 30;
 
 export const GET: RequestHandler = async ({ platform, url }) => {
 	const cache = jsonCache(platform);
-	const noCache = url.searchParams.get('nocache') === '1';
+	const noCache = dev && url.searchParams.get('nocache') === '1';
 
 	if (cache.kv && !noCache) {
 		const cached = await getCachedJson<TrendsResponse>(cache, CACHE_KEY);

@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 import type { RequestHandler } from './$types';
 import type { RelaysResponse, RelaySummaryResponse } from '$lib/types';
 import { getCachedJson, jsonCache, putCachedJson } from '$lib/server/kv-cache';
@@ -16,7 +17,7 @@ const TTL_SECONDS = 60 * 10; // 10 min, per docs/architecture.md caching strateg
 export const GET: RequestHandler = async ({ platform, url }) => {
 	// KV is optional: present under `wrangler dev` / production, absent under plain `vite dev`.
 	const cache = jsonCache(platform);
-	const noCache = url.searchParams.get('nocache') === '1';
+	const noCache = dev && url.searchParams.get('nocache') === '1';
 	const summary = url.searchParams.get('summary') === '1';
 
 	if (summary) {
