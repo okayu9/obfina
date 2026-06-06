@@ -29,7 +29,10 @@ const page: Page = await browser.newPage({ viewport: { width: 1280, height: 800 
 let failures = 0;
 
 async function dismissIntro(page: Page): Promise<void> {
-	const dialogButton = page.locator('button').filter({ hasText: /Start exploring|見てみる/ }).first();
+	const dialogButton = page
+		.locator('button')
+		.filter({ hasText: /Start exploring|見てみる/ })
+		.first();
 	if (await dialogButton.isVisible().catch(() => false)) {
 		await dialogButton.click();
 	}
@@ -41,8 +44,12 @@ async function runInteractionChecks(page: Page): Promise<string[]> {
 	await page.goto(`${base}?view=map`, { waitUntil: 'networkidle' });
 	await page.waitForTimeout(waitMs);
 	await dismissIntro(page);
-	const marker = page.locator('.data').first();
-	await marker.click({ force: true });
+	const marker = await firstInViewport(page, '.data');
+	if (!marker) {
+		failures.push('no map country marker in viewport');
+	} else {
+		await page.mouse.click(marker.x + marker.width / 2, marker.y + marker.height / 2);
+	}
 	await page.waitForSelector('.panel .code', { timeout: 4000 }).catch(() => {
 		failures.push('map panel did not open');
 	});
@@ -88,6 +95,31 @@ async function runInteractionChecks(page: Page): Promise<string[]> {
 	await page.setViewportSize({ width: 1280, height: 800 });
 
 	return failures;
+}
+
+async function firstInViewport(
+	page: Page,
+	selector: string
+): Promise<{ x: number; y: number; width: number; height: number } | null> {
+	const viewport = page.viewportSize();
+	if (!viewport) return null;
+	const items = page.locator(selector);
+	const count = await items.count();
+	for (let i = 0; i < count; i++) {
+		const box = await items.nth(i).boundingBox();
+		if (
+			box &&
+			box.width > 0 &&
+			box.height > 0 &&
+			box.x >= 0 &&
+			box.y >= 0 &&
+			box.x + box.width <= viewport.width &&
+			box.y + box.height <= viewport.height
+		) {
+			return box;
+		}
+	}
+	return null;
 }
 
 for (const v of views) {
