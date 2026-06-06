@@ -9,6 +9,7 @@
 	import LoadingScreen from '$lib/components/LoadingScreen.svelte';
 	import ErrorScreen from '$lib/components/ErrorScreen.svelte';
 	import KonamiEgg from '$lib/components/KonamiEgg.svelte';
+	import IntroDialog from '$lib/components/IntroDialog.svelte';
 	import { relayStore, loadRelays } from '$lib/stores/relays.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
 	import { getMessages } from '$lib/i18n/index.svelte';
@@ -27,7 +28,10 @@
 	const showLoading = $derived(needsRelays && relayStore.loading);
 	const showFailed = $derived(needsRelays && relayStore.failed);
 
+	let showIntro = $state(false);
+
 	function onKeydown(e: KeyboardEvent) {
+		if (showIntro) return;
 		const action = viewKeyAction(e);
 		if (!action) return;
 		if (action.type === 'clear-selection') {
@@ -41,6 +45,7 @@
 	onMount(() => {
 		initViewFromUrl();
 		loadRelays();
+		showIntro = true;
 	});
 
 	// On failure `loaded` stays false, so loadRelays re-runs the fetch.
@@ -82,6 +87,15 @@
 
 	{#if !showLoading}
 		<ViewNav />
+	{/if}
+
+	{#if showIntro}
+		<IntroDialog
+			title={t.intro.title}
+			body={t.intro.body}
+			dismissLabel={t.intro.dismiss}
+			ondismiss={() => (showIntro = false)}
+		/>
 	{/if}
 </div>
 

@@ -23,6 +23,13 @@ export const en = {
 		ja: '日本語'
 	},
 
+	// Intro dialog
+	intro: {
+		title: 'A live observatory for the Tor network',
+		body: 'OBFINA visualizes where Tor relays run, how hosting is concentrated, how route selection favors high-capacity relays, and how the network changes over time. It uses public data from Onionoo and Tor Metrics.',
+		dismiss: 'Start exploring'
+	},
+
 	// Loading screen
 	loading: {
 		default: 'Fetching relay data…',

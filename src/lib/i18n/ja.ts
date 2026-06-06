@@ -25,6 +25,13 @@ export const ja: Messages = {
 		ja: '日本語'
 	},
 
+	// Intro dialog
+	intro: {
+		title: 'Torネットワークを観測するライブダッシュボード',
+		body: 'OBFINAは、Torリレーがどこで動いているか、ホスティングがどれだけ集中しているか、パス選択が高帯域リレーへどう偏るか、ネットワークが時間とともにどう変化しているかを可視化します。公開データのOnionooとTor Metricsを使用しています。',
+		dismiss: '見てみる'
+	},
+
 	// Loading screen
 	loading: {
 		default: '読み込み中…',
