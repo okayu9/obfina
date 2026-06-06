@@ -20,7 +20,10 @@
 		circuits,
 		now,
 		lifeMs,
-		project
+		project,
+		rootTransform = '',
+		worldWidth = 0,
+		copies = [0]
 	}: {
 		width: number;
 		height: number;
@@ -29,6 +32,9 @@
 		now: number;
 		lifeMs: number;
 		project: (point: Point) => Point | null;
+		rootTransform?: string;
+		worldWidth?: number;
+		copies?: number[];
 	} = $props();
 
 	const progress = (born: number) => circuitProgress(now, born, lifeMs);
@@ -37,27 +43,33 @@
 </script>
 
 <svg {width} {height} role="presentation">
-	{#each landPaths as d, i (i)}
-		<path class="land" {d} />
-	{/each}
+	<g transform={rootTransform}>
+		{#each copies as offset (offset)}
+			<g transform="translate({offset * worldWidth} 0)">
+				{#each landPaths as d, i (i)}
+					<path class="land" {d} />
+				{/each}
 
-	{#each circuits as live (live.id)}
-		{@const pts = live.coords.map(project)}
-		{@const op = fade(live.born)}
-		{@const pk = packetPosition(pts, progress(live.born))}
-		<g style:opacity={op}>
-			{#if pts[0] && pts[1]}
-				<line x1={pts[0][0]} y1={pts[0][1]} x2={pts[1][0]} y2={pts[1][1]} class="hop a" />
-			{/if}
-			{#if pts[1] && pts[2]}
-				<line x1={pts[1][0]} y1={pts[1][1]} x2={pts[2][0]} y2={pts[2][1]} class="hop b" />
-			{/if}
-			{#if pts[0]}<circle cx={pts[0][0]} cy={pts[0][1]} r={pulse} class="node guard" />{/if}
-			{#if pts[1]}<circle cx={pts[1][0]} cy={pts[1][1]} r={pulse} class="node middle" />{/if}
-			{#if pts[2]}<circle cx={pts[2][0]} cy={pts[2][1]} r={pulse} class="node exit" />{/if}
-			{#if pk}<circle cx={pk[0]} cy={pk[1]} r="3" class="packet" />{/if}
-		</g>
-	{/each}
+				{#each circuits as live (`${offset}-${live.id}`)}
+					{@const pts = live.coords.map(project)}
+					{@const op = fade(live.born)}
+					{@const pk = packetPosition(pts, progress(live.born))}
+					<g style:opacity={op}>
+						{#if pts[0] && pts[1]}
+							<line x1={pts[0][0]} y1={pts[0][1]} x2={pts[1][0]} y2={pts[1][1]} class="hop a" />
+						{/if}
+						{#if pts[1] && pts[2]}
+							<line x1={pts[1][0]} y1={pts[1][1]} x2={pts[2][0]} y2={pts[2][1]} class="hop b" />
+						{/if}
+						{#if pts[0]}<circle cx={pts[0][0]} cy={pts[0][1]} r={pulse} class="node guard" />{/if}
+						{#if pts[1]}<circle cx={pts[1][0]} cy={pts[1][1]} r={pulse} class="node middle" />{/if}
+						{#if pts[2]}<circle cx={pts[2][0]} cy={pts[2][1]} r={pulse} class="node exit" />{/if}
+						{#if pk}<circle cx={pk[0]} cy={pk[1]} r="3" class="packet" />{/if}
+					</g>
+				{/each}
+			</g>
+		{/each}
+	</g>
 </svg>
 
 <style>

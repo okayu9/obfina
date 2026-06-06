@@ -1,6 +1,5 @@
 <script lang="ts">
 	import ValueByAlphaMap from '$lib/components/map/ValueByAlphaMap.svelte';
-	import MapSimulationLayer from '$lib/components/map/MapSimulationLayer.svelte';
 	import MapHud from '$lib/components/map/MapHud.svelte';
 	import CountryPanel from '$lib/components/panels/CountryPanel.svelte';
 	import { aggregateByCountry, totalRelayBandwidth } from '$lib/relay-stats';
@@ -17,7 +16,6 @@
 </script>
 
 <ValueByAlphaMap relays={relayStore.relays} />
-<MapSimulationLayer relays={relayStore.relays} />
 
 <MapHud
 	relayCount={relayStore.count}

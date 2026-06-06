@@ -11,14 +11,26 @@
 	import CircuitWorldMap from '$lib/components/circuit/CircuitWorldMap.svelte';
 	import type { Relay } from '$lib/types';
 
-	let { relays }: { relays: Relay[] } = $props();
+	let {
+		relays,
+		width,
+		height,
+		rootTransform,
+		worldWidth,
+		copies
+	}: {
+		relays: Relay[];
+		width: number;
+		height: number;
+		rootTransform: string;
+		worldWidth: number;
+		copies: number[];
+	} = $props();
 
 	const MAX = 7;
 	const LIFE = 5600;
 	const SPAWN = 1100;
 
-	let width = $state(0);
-	let height = $state(0);
 	let now = $state(0);
 	let circuits = $state<LiveCircuit[]>([]);
 	let seq = 0;
@@ -66,8 +78,19 @@
 	}
 </script>
 
-<div class="simulation" bind:clientWidth={width} bind:clientHeight={height}>
-	<CircuitWorldMap {width} {height} landPaths={[]} {circuits} {now} lifeMs={LIFE} {project} />
+<div class="simulation">
+	<CircuitWorldMap
+		{width}
+		{height}
+		landPaths={[]}
+		{circuits}
+		{now}
+		lifeMs={LIFE}
+		{project}
+		{rootTransform}
+		{worldWidth}
+		{copies}
+	/>
 </div>
 
 <style>

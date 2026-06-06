@@ -11,6 +11,7 @@
 	} from '$lib/map-interaction';
 	import { buildCountryMapShapes } from '$lib/map-shapes';
 	import MapWorldCopy from '$lib/components/map/MapWorldCopy.svelte';
+	import MapSimulationLayer from '$lib/components/map/MapSimulationLayer.svelte';
 	import MapTooltip from '$lib/components/map/MapTooltip.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
 	import type { Relay } from '$lib/types';
@@ -147,6 +148,15 @@
 			{/each}
 		</g>
 	</svg>
+
+	<MapSimulationLayer
+		{relays}
+		{width}
+		{height}
+		{rootTransform}
+		worldWidth={worldW}
+		copies={COPIES}
+	/>
 
 	{#if hover}
 		<MapTooltip {hover} />
