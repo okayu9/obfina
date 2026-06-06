@@ -6,6 +6,7 @@ import {
 	parseUsersCsv,
 	userStatsUrl
 } from '$lib/server/trends-data';
+import { fetchUpstream } from '$lib/server/upstream-fetch';
 
 export interface TrendsSections {
 	networkSize: TrendsResponse['networkSize'];
@@ -22,13 +23,12 @@ export async function fetchText(
 	url: string,
 	fetcher: typeof fetch = fetch
 ): Promise<string | null> {
+	const res = await fetchUpstream(url, { fetcher, label: url });
+	if (!res) return null;
 	try {
-		const res = await fetcher(url, {
-			headers: { 'user-agent': 'obfina (https://github.com/obfina)' }
-		});
-		if (!res.ok) return null;
 		return await res.text();
-	} catch {
+	} catch (error: unknown) {
+		console.warn(`Failed to read upstream response for ${url}`, error);
 		return null;
 	}
 }
