@@ -63,13 +63,16 @@ For a local one-off deploy, copy the env file and fill in the credentials:
 cp .env.example .env.local
 ```
 
-Then export the values in your shell and deploy:
+Then export the required values in your shell and deploy:
 
 ```bash
 export CLOUDFLARE_API_TOKEN=your_api_token
 export CLOUDFLARE_ACCOUNT_ID=your_account_id
 pnpm cloudflare:deploy
 ```
+
+The optional variables in `.env.example` can override the Pages project name,
+KV namespace titles, and generated `wrangler.toml` compatibility date.
 
 `wrangler.toml` is generated and ignored by git because it contains
 account-specific resource IDs. `wrangler.toml.example` documents the shape.

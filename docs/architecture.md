@@ -4,7 +4,7 @@
 
 obfina is a single-page web application that visualizes the Tor network in real time. It presents several linked **views** over one dataset, switchable from a nav rail, the number keys `1`–`5`, or `←`/`→`; the active view is mirrored to `?view=…` for deep-linking (see [ADR-009](decisions/009-multi-view.md)).
 
-The default view is a 2D **value-by-alpha** world map (D3 + SVG): every country is drawn as a visible land base, and countries with relays glow on top — hue encodes exit share (cyan → green) and opacity encodes relay count. Guard → Middle → Exit paths are sampled from live relays by selection weight and animated as a non-interactive background simulation on the same map. The map uses an equirectangular projection fitted to viewport height so the poles sit at the top/bottom edges; it pans and zooms, wraps seamlessly east–west (no left/right edge), and clamps vertical panning at the poles. The other views reframe the same network:
+The default view is a 2D **value-by-alpha** world map (D3 + SVG): every country is drawn as a visible land base, and countries with relays glow on top — hue encodes exit share (cyan → green) and opacity encodes relay count. The map first loads a compact per-country relay summary, then fetches full relay details for the Guard → Middle → Exit path simulation and drill-down panels. Paths are sampled from live relays by selection weight and animated as a non-interactive background simulation on the same map. The map uses an equirectangular projection fitted to viewport height so the poles sit at the top/bottom edges; it pans and zooms, wraps seamlessly east–west (no left/right edge), and clamps vertical panning at the poles. The other views reframe the same network:
 
 - **Hosting** — per-AS centralization risk (Lorenz curves + Gini), all relays vs. exit-only; click an AS for a detail panel with its relay list and bandwidth share.
 - **Paths** — per-relay path-selection concentration, read interactively.
@@ -52,18 +52,17 @@ Major technology choices are recorded individually as Architecture Decision Reco
 
 ## Caching strategy
 
-| Endpoint          | TTL    | Rationale                                                      |
-| ----------------- | ------ | -------------------------------------------------------------- |
-| `/api/relays`     | 10 min | Onionoo updates every ~3 hours; polling more often is wasteful |
-| `/api/trends`     | 30 min | Tor Metrics CSV exports update about once a day                |
-| `/api/stats`      | 30 min | Aggregate metrics change slowly                                |
-| `/api/censorship` | 5 min  | Blocking events should surface quickly                         |
+| Endpoint                | TTL    | Rationale                                               |
+| ----------------------- | ------ | ------------------------------------------------------- |
+| `/api/relays?summary=1` | 10 min | Compact startup payload; Onionoo updates every ~3 hours |
+| `/api/relays`           | 10 min | Full relay details; polling more often is wasteful      |
+| `/api/trends`           | 30 min | Tor Metrics CSV exports update about once a day         |
 
-`/api/relays` returns per-relay fields the views share: `country`, `flags`, `observed_bandwidth`, `consensus_weight`, the per-position selection probabilities (`guard`/`middle`/`exit`), `as`/`as_name`, and `first_seen`. `/api/trends` proxies and downsamples three Tor Metrics CSVs (network size, advertised vs. consumed bandwidth, per-country users) into one compact payload; each section degrades independently if its CSV is unavailable.
+`/api/relays?summary=1` returns country-level counts, observed bandwidth, and Guard/Middle/Exit composition for fast map startup. `/api/relays` returns the per-relay fields the analysis views share: `country`, `flags`, `observed_bandwidth`, `consensus_weight`, the per-position selection probabilities (`guard`/`middle`/`exit`), `as`/`as_name`, and `first_seen`. `/api/trends` proxies and downsamples three Tor Metrics CSVs (network size, advertised vs. consumed bandwidth, per-country users) into one compact payload; each section degrades independently if its CSV is unavailable.
 
-Cache entries are stored as JSON strings in Cloudflare KV. On a cache miss the Worker fetches upstream, writes to KV with the appropriate TTL, and returns the response. KV TTL is a hard expiry — background revalidation does not happen automatically. To avoid blocking responses on upstream latency after expiry, the Worker initiates a background fetch via `waitUntil()` and returns the slightly-stale cached value while the new value is written asynchronously.
+Cache entries are stored as JSON strings in Cloudflare KV. On a cache miss the Worker fetches upstream, schedules the KV write with `waitUntil()` when the platform provides it, and returns the fresh response without waiting for the write to finish. KV TTL is a hard expiry — background revalidation does not happen automatically.
 
-During an upstream outage, the Worker serves the last-known cached value regardless of TTL, with a response header indicating the data is stale. If no cached value exists, the API returns an empty dataset with an explicit `unavailable: true` flag so the client can render a degraded state rather than a broken one.
+During an upstream outage, the Worker attempts to serve a cached value if one is still available and marks the payload `stale: true`. If no cached value exists, the API returns an empty dataset with an explicit `unavailable: true` flag so the client can render a degraded state rather than a broken one.
 
 ## Design principles
 

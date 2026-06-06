@@ -22,10 +22,14 @@ Copy the example file and fill in your values:
 cp .env.example .env.local
 ```
 
-| Variable                | Description                                   |
-| ----------------------- | --------------------------------------------- |
-| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID                    |
-| `CLOUDFLARE_API_TOKEN`  | API token used by `pnpm cloudflare:bootstrap` |
+| Variable                        | Description                                                       |
+| ------------------------------- | ----------------------------------------------------------------- |
+| `CLOUDFLARE_ACCOUNT_ID`         | Your Cloudflare account ID                                        |
+| `CLOUDFLARE_API_TOKEN`          | API token used by `pnpm cloudflare:bootstrap`                     |
+| `CLOUDFLARE_PAGES_PROJECT`      | Pages project name; defaults to `obfina`                          |
+| `CLOUDFLARE_KV_PROD_TITLE`      | Production KV namespace title; defaults to `obfina-cache-prod`    |
+| `CLOUDFLARE_KV_PREVIEW_TITLE`   | Preview KV namespace title; defaults to `obfina-cache-preview`    |
+| `CLOUDFLARE_COMPATIBILITY_DATE` | Generated `wrangler.toml` compatibility date; defaults to example |
 
 For local development, Wrangler emulates Cloudflare KV in memory. You do not need a live Cloudflare account or KV namespace to run the app. Leave these variables empty and the dev server will use in-memory emulation.
 
@@ -45,10 +49,11 @@ The app is available at `http://localhost:5173`.
 
 **What to expect on first run:**
 
-1. The server routes fetch live data from Onionoo and Tor Metrics on the first request. This takes 2–5 seconds.
-2. The map appears once relays load; each country glows by relay count and exit share.
-3. Subsequent requests within the cache TTL are served from Wrangler's in-memory KV emulator instantly.
-4. The first run may show fewer relays than production if Onionoo is mid-update cycle.
+1. The server route fetches a compact Onionoo-derived country summary for `/api/relays?summary=1`. This lets the map appear before full relay details load.
+2. Full relay details are fetched from `/api/relays` for the path simulation, hosting/path analysis views, and drill-down panels.
+3. The Growth view fetches Tor Metrics CSV-derived data from `/api/trends` the first time it is visited.
+4. Subsequent requests within the cache TTL are served from Wrangler's in-memory KV emulator instantly.
+5. The first run may show fewer relays than production if Onionoo is mid-update cycle.
 
 ## Forcing a cache miss in development
 
@@ -77,7 +82,7 @@ obfina/
 │   │   │       ├── TrendsView.svelte           # growth over time
 │   │   │       └── AboutView.svelte
 │   │   ├── geo/              # shared map projection and world GeoJSON ($lib/geo/world)
-│   │   ├── stores/           # Svelte stores — selection state
+│   │   ├── stores/           # Svelte stores — relay/trend loading and UI state
 │   │   ├── map-encoding.ts   # exit-share → color
 │   │   ├── relay-stats.ts    # per-country aggregation, formatting, country names
 │   │   └── types.ts          # shared types
@@ -97,7 +102,7 @@ obfina/
 │   └── decisions/            # Architecture Decision Records (ADRs)
 ├── svelte.config.js          # SvelteKit config
 ├── vite.config.ts            # Vite + Tailwind v4 plugin (no tailwind.config)
-├── eslint.config.js
+├── eslint.config.ts
 └── .prettierrc
 
 # generated locally by pnpm cloudflare:bootstrap:
@@ -111,14 +116,16 @@ Useful documentation links while navigating the codebase:
 - [world-atlas](https://github.com/topojson/world-atlas) — TopoJSON base map data
 - [Cloudflare Workers runtime APIs](https://developers.cloudflare.com/workers/runtime-apis/)
 
-## Type checking
+## Type Checking And Linting
 
 ```bash
 pnpm check   # svelte-kit sync + svelte-check
+pnpm lint    # prettier --check + eslint
+pnpm format  # prettier --write
 ```
 
-ESLint and Prettier are not yet configured; adding them is a good first
-contribution.
+CI currently runs `pnpm check`, `pnpm test`, and `pnpm build`. Run `pnpm lint`
+locally before committing formatting or lint-sensitive changes.
 
 ## Tests
 

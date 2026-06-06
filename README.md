@@ -14,7 +14,7 @@ obfina makes the Tor network observable. Not through tables and CSV exports, but
 
 obfina is a set of linked views over the same network, switchable from the nav rail, with number keys `1`–`5`, or by cycling with `←`/`→` (or `[`/`]`); `Esc` clears the current selection. The active view is saved to `?view=…` so any view is shareable. On narrow screens the nav rail collapses to a hamburger menu. See [ADR-009](docs/decisions/009-multi-view.md).
 
-- **Map** — value-by-alpha world map: hue encodes exit share (cyan → green) and brightness encodes relay count, so the busiest countries glow while the rest recede. Guard → Middle → Exit paths are sampled from live relays and animated as a background simulation on the same map. Click a country for its relay count, bandwidth, Guard/Middle/Exit composition, top autonomous systems, and a relay list with bandwidth bars; pan & zoom into dense regions like Europe.
+- **Map** — value-by-alpha world map: hue encodes exit share (cyan → green) and brightness encodes relay count, so the busiest countries glow while the rest recede. A lightweight country summary loads first for fast startup, then full relay details are fetched for the Guard → Middle → Exit background simulation and drill-down panels. Click a country for its relay count, bandwidth, Guard/Middle/Exit composition, top autonomous systems, and a relay list with bandwidth bars; pan & zoom into dense regions like Europe.
 - **Hosting** — centralization risk by autonomous system (hosting provider), as Lorenz curves with a Gini score and the top ASes — shown both for the whole network and for exit capacity alone, where concentration bites hardest. Click an AS for a detail panel with its relay list and bandwidth share.
 - **Paths** — how much of all traffic rides on a few high-bandwidth relays: a concentration curve you can drag to read "the top N% of relays carry M% of traffic."
 - **Growth** — the network over time: relay count, advertised capacity vs. bandwidth actually consumed, and estimated users by country (from Tor Metrics). Trend data is cached for the session so switching views does not re-fetch.
@@ -25,10 +25,10 @@ obfina is a set of linked views over the same network, switchable from the nav r
 
 obfina pulls from two authoritative sources maintained by the Tor Project:
 
-- [Onionoo](https://onionoo.torproject.org/) — per-relay details, bandwidth, uptime, country (no precise coordinates)
-- [Tor Metrics](https://metrics.torproject.org/) — aggregate statistics, historical trends, censorship signals
+- [Onionoo](https://onionoo.torproject.org/) — per-relay details, bandwidth, country, flags, and AS information (no precise coordinates)
+- [Tor Metrics](https://metrics.torproject.org/) — aggregate statistics and historical trends
 
-Data is refreshed every 5–30 minutes via a server-side cache layer (relay data: 10 min, censorship signals: 5 min, aggregate stats: 30 min). Relay data shown in the app may lag up to 3–6 hours behind the live network due to Onionoo's consensus ingestion cycle.
+Data is refreshed via a server-side cache layer (relay summary/details: 10 min, trends: 30 min). Relay data shown in the app may lag up to 3–6 hours behind the live network due to Onionoo's consensus ingestion cycle.
 
 ## Tech stack
 
