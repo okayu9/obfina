@@ -1,4 +1,4 @@
-import type { Relay, RelaysResponse } from '$lib/types';
+import type { Relay, RelayCountrySummary, RelaysResponse, RelaySummaryResponse } from '$lib/types';
 
 export const ONIONOO_FIELDS = [
 	'nickname',
@@ -15,6 +15,17 @@ export const ONIONOO_FIELDS = [
 ] as const;
 
 export const ONIONOO_DETAILS_URL = `https://onionoo.torproject.org/details?running=true&fields=${ONIONOO_FIELDS.join(',')}`;
+
+export const ONIONOO_SUMMARY_FIELDS = [
+	'country',
+	'observed_bandwidth',
+	'guard_probability',
+	'middle_probability',
+	'exit_probability',
+	'flags'
+] as const;
+
+export const ONIONOO_SUMMARY_URL = `https://onionoo.torproject.org/details?running=true&fields=${ONIONOO_SUMMARY_FIELDS.join(',')}`;
 
 export interface OnionooRelay {
 	nickname?: string;
@@ -60,5 +71,44 @@ export function normalizeOnionooDetails(data: OnionooDetails): RelaysResponse {
 		publishedAt: data.relays_published ?? null,
 		count: relays.length,
 		relays
+	};
+}
+
+export function normalizeOnionooSummary(data: OnionooDetails): RelaySummaryResponse {
+	const countries = new Map<string, RelayCountrySummary>();
+	let totalBandwidth = 0;
+	let count = 0;
+
+	for (const relay of data.relays ?? []) {
+		if (typeof relay.country !== 'string') continue;
+		const bandwidth = relay.observed_bandwidth ?? 0;
+		let stats = countries.get(relay.country);
+		if (!stats) {
+			stats = {
+				country: relay.country,
+				count: 0,
+				bandwidth: 0,
+				guard: 0,
+				exit: 0,
+				middle: 0
+			};
+			countries.set(relay.country, stats);
+		}
+		stats.count++;
+		stats.bandwidth += bandwidth;
+		totalBandwidth += bandwidth;
+		count++;
+
+		const flags = relay.flags ?? [];
+		if (flags.includes('Exit')) stats.exit++;
+		else if (flags.includes('Guard')) stats.guard++;
+		else stats.middle++;
+	}
+
+	return {
+		publishedAt: data.relays_published ?? null,
+		count,
+		totalBandwidth,
+		countries: [...countries.values()]
 	};
 }

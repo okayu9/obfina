@@ -9,7 +9,7 @@
 		type Point
 	} from '$lib/analysis/circuit';
 	import CircuitWorldMap from '$lib/components/circuit/CircuitWorldMap.svelte';
-	import type { Relay } from '$lib/types';
+	import type { RelaySimulationEntry } from '$lib/types';
 
 	let {
 		relays,
@@ -19,7 +19,7 @@
 		worldWidth,
 		copies
 	}: {
-		relays: Relay[];
+		relays: RelaySimulationEntry[];
 		width: number;
 		height: number;
 		rootTransform: string;

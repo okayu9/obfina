@@ -9,6 +9,7 @@ import {
 	hasFlag,
 	isExitRelay,
 	isMiddleRelay,
+	simulationRelaysFromCountries,
 	totalRelayBandwidth
 } from './relay-stats';
 import type { Relay } from './types';
@@ -85,6 +86,41 @@ describe('totalRelayBandwidth', () => {
 	it('sums relay bandwidth', () => {
 		expect(totalRelayBandwidth([{ bandwidth: 10 }, { bandwidth: 25 }])).toBe(35);
 		expect(totalRelayBandwidth([])).toBe(0);
+	});
+});
+
+describe('simulationRelaysFromCountries', () => {
+	it('creates compact role-weighted entries from country summaries', () => {
+		expect(
+			simulationRelaysFromCountries([
+				{ country: 'de', count: 4, bandwidth: 100, guard: 1, middle: 2, exit: 1 }
+			])
+		).toEqual([
+			{
+				bandwidth: 25,
+				guardProb: 25,
+				middleProb: 0,
+				exitProb: 0,
+				country: 'de',
+				flags: ['Guard']
+			},
+			{
+				bandwidth: 50,
+				guardProb: 0,
+				middleProb: 50,
+				exitProb: 0,
+				country: 'de',
+				flags: []
+			},
+			{
+				bandwidth: 25,
+				guardProb: 0,
+				middleProb: 0,
+				exitProb: 25,
+				country: 'de',
+				flags: ['Exit']
+			}
+		]);
 	});
 });
 

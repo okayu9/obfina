@@ -1,6 +1,6 @@
 import isoCountries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
-import type { Relay } from './types';
+import type { Relay, RelaySimulationEntry } from './types';
 
 isoCountries.registerLocale(enLocale);
 
@@ -55,6 +55,48 @@ export function countryRoleBreakdown(
 
 export function totalRelayBandwidth(relays: Pick<Relay, 'bandwidth'>[]): number {
 	return relays.reduce((sum, relay) => sum + relay.bandwidth, 0);
+}
+
+export function simulationRelaysFromCountries(countries: CountryStats[]): RelaySimulationEntry[] {
+	const entries: RelaySimulationEntry[] = [];
+	for (const country of countries) {
+		const totalRoles = Math.max(country.count, 1);
+		const roleBandwidth = (roleCount: number) => country.bandwidth * (roleCount / totalRoles);
+		if (country.guard > 0) {
+			const bandwidth = roleBandwidth(country.guard);
+			entries.push({
+				bandwidth,
+				guardProb: bandwidth,
+				middleProb: 0,
+				exitProb: 0,
+				country: country.country,
+				flags: ['Guard']
+			});
+		}
+		if (country.middle > 0) {
+			const bandwidth = roleBandwidth(country.middle);
+			entries.push({
+				bandwidth,
+				guardProb: 0,
+				middleProb: bandwidth,
+				exitProb: 0,
+				country: country.country,
+				flags: []
+			});
+		}
+		if (country.exit > 0) {
+			const bandwidth = roleBandwidth(country.exit);
+			entries.push({
+				bandwidth,
+				guardProb: 0,
+				middleProb: 0,
+				exitProb: bandwidth,
+				country: country.country,
+				flags: ['Exit']
+			});
+		}
+	}
+	return entries;
 }
 
 /** Format bytes/sec into a compact human-readable string. */

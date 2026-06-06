@@ -14,7 +14,7 @@
 	import MapSimulationLayer from '$lib/components/map/MapSimulationLayer.svelte';
 	import MapTooltip from '$lib/components/map/MapTooltip.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
-	import type { Relay } from '$lib/types';
+	import type { Relay, RelaySimulationEntry } from '$lib/types';
 	import {
 		codeForId,
 		constrainedMapPanY,
@@ -27,7 +27,15 @@
 		wrappedRootTransform
 	} from '$lib/geo/world';
 
-	let { relays }: { relays: Relay[] } = $props();
+	let {
+		relays,
+		countryStats = [],
+		simulationRelays = relays
+	}: {
+		relays: Relay[];
+		countryStats?: CountryStats[];
+		simulationRelays?: RelaySimulationEntry[];
+	} = $props();
 
 	let width = $state(0);
 	let height = $state(0);
@@ -35,7 +43,11 @@
 	let hover = $state<CountryHover | null>(null);
 	let zt = $state({ x: 0, y: 0, k: 1 });
 
-	const byCountry = $derived(aggregateByCountry(relays));
+	const byCountry = $derived(
+		countryStats.length
+			? new Map(countryStats.map((stats) => [stats.country, stats]))
+			: aggregateByCountry(relays)
+	);
 
 	const projection = $derived.by(() => {
 		if (!width || !height) return null;
@@ -150,7 +162,7 @@
 	</svg>
 
 	<MapSimulationLayer
-		{relays}
+		relays={simulationRelays}
 		{width}
 		{height}
 		{rootTransform}

@@ -1,4 +1,4 @@
-import type { Relay } from '$lib/types';
+import type { RelaySimulationEntry } from '$lib/types';
 
 /**
  * Weighted sampling of real relays for the three circuit positions, mirroring
@@ -7,9 +7,9 @@ import type { Relay } from '$lib/types';
  */
 
 export interface Circuit {
-	guard: Relay;
-	middle: Relay;
-	exit: Relay;
+	guard: RelaySimulationEntry;
+	middle: RelaySimulationEntry;
+	exit: RelaySimulationEntry;
 }
 
 export type Point = [number, number];
@@ -21,17 +21,20 @@ export interface LiveCircuit {
 	coords: Point[];
 }
 
-export type RelayPoint = (relay: Relay) => Point | null;
+export type RelayPoint = (relay: RelaySimulationEntry) => Point | null;
 
 /** A prefix-sum table over a relay list for O(log n) weighted draws. */
 export interface Sampler {
-	items: Relay[];
+	items: RelaySimulationEntry[];
 	cumulative: number[];
 	total: number;
 }
 
-export function buildSampler(relays: Relay[], weightFn: (r: Relay) => number): Sampler {
-	const items: Relay[] = [];
+export function buildSampler(
+	relays: RelaySimulationEntry[],
+	weightFn: (r: RelaySimulationEntry) => number
+): Sampler {
+	const items: RelaySimulationEntry[] = [];
 	const cumulative: number[] = [];
 	let total = 0;
 	for (const r of relays) {
@@ -48,8 +51,8 @@ export function buildSampler(relays: Relay[], weightFn: (r: Relay) => number): S
 export function sampleFrom(
 	s: Sampler,
 	rng: () => number = Math.random,
-	exclude?: Set<Relay>
-): Relay | null {
+	exclude?: Set<RelaySimulationEntry>
+): RelaySimulationEntry | null {
 	if (s.items.length === 0 || s.total <= 0) return null;
 	for (let attempt = 0; attempt < 8; attempt++) {
 		const target = rng() * s.total;
@@ -77,7 +80,7 @@ export interface Samplers {
  * they are unavailable (all zero) it approximates from flags + bandwidth so the
  * animation still works against degraded data.
  */
-export function buildSamplers(relays: Relay[]): Samplers {
+export function buildSamplers(relays: RelaySimulationEntry[]): Samplers {
 	const hasProbs = relays.some((r) => r.guardProb + r.middleProb + r.exitProb > 0);
 	if (hasProbs) {
 		return {
@@ -97,7 +100,7 @@ export function buildSamplers(relays: Relay[]): Samplers {
 export function sampleCircuit(s: Samplers, rng: () => number = Math.random): Circuit | null {
 	const guard = sampleFrom(s.guard, rng);
 	if (!guard) return null;
-	const used = new Set<Relay>([guard]);
+	const used = new Set<RelaySimulationEntry>([guard]);
 	const middle = sampleFrom(s.middle, rng, used);
 	if (!middle) return null;
 	used.add(middle);

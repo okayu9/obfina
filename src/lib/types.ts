@@ -45,6 +45,33 @@ export interface RelaysResponse {
 	stale?: boolean;
 }
 
+export interface RelayCountrySummary {
+	/** ISO 3166-1 alpha-2 country code, lowercase. */
+	country: string;
+	count: number;
+	/** Total observed bandwidth in bytes/sec. */
+	bandwidth: number;
+	guard: number;
+	exit: number;
+	/** Relays that are neither Guard nor Exit. */
+	middle: number;
+}
+
+export type RelaySimulationEntry = Pick<
+	Relay,
+	'bandwidth' | 'guardProb' | 'middleProb' | 'exitProb' | 'country' | 'flags'
+> &
+	Partial<Pick<Relay, 'nickname'>>;
+
+export interface RelaySummaryResponse {
+	publishedAt: string | null;
+	count: number;
+	totalBandwidth: number;
+	countries: RelayCountrySummary[];
+	unavailable?: boolean;
+	stale?: boolean;
+}
+
 /** Aggregate time-series for the GROWTH view, proxied from Tor Metrics. */
 export interface TrendsResponse {
 	updatedAt: string | null;

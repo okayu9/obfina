@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeOnionooDetails, ONIONOO_DETAILS_URL, ONIONOO_FIELDS } from './onionoo-data';
+import {
+	normalizeOnionooDetails,
+	normalizeOnionooSummary,
+	ONIONOO_DETAILS_URL,
+	ONIONOO_FIELDS,
+	ONIONOO_SUMMARY_URL,
+	ONIONOO_SUMMARY_FIELDS
+} from './onionoo-data';
 
 describe('onionoo data helpers', () => {
 	it('builds a details URL for the normalized fields', () => {
@@ -7,6 +14,15 @@ describe('onionoo data helpers', () => {
 			expect(ONIONOO_DETAILS_URL).toContain(field);
 		}
 		expect(ONIONOO_DETAILS_URL).toContain('running=true');
+	});
+
+	it('builds a summary URL for only the startup fields', () => {
+		for (const field of ONIONOO_SUMMARY_FIELDS) {
+			expect(ONIONOO_SUMMARY_URL).toContain(field);
+		}
+		expect(ONIONOO_SUMMARY_URL).toContain('running=true');
+		expect(ONIONOO_SUMMARY_URL).not.toContain('nickname');
+		expect(ONIONOO_SUMMARY_URL).not.toContain('as_name');
 	});
 
 	it('normalizes relay details and drops relays without country codes', () => {
@@ -66,6 +82,28 @@ describe('onionoo data helpers', () => {
 					flags: [],
 					firstSeen: null
 				}
+			]
+		});
+	});
+
+	it('normalizes country summaries for startup rendering', () => {
+		const response = normalizeOnionooSummary({
+			relays_published: '2026-01-01T00:00:00Z',
+			relays: [
+				{ country: 'de', observed_bandwidth: 10, flags: ['Guard'] },
+				{ country: 'de', observed_bandwidth: 30, flags: ['Exit'] },
+				{ country: 'us', observed_bandwidth: 20, flags: ['Fast'] },
+				{ nickname: 'missing-country', observed_bandwidth: 999 }
+			]
+		});
+
+		expect(response).toEqual({
+			publishedAt: '2026-01-01T00:00:00Z',
+			count: 3,
+			totalBandwidth: 60,
+			countries: [
+				{ country: 'de', count: 2, bandwidth: 40, guard: 1, exit: 1, middle: 0 },
+				{ country: 'us', count: 1, bandwidth: 20, guard: 0, exit: 0, middle: 1 }
 			]
 		});
 	});

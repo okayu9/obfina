@@ -10,10 +10,10 @@
 	import ErrorScreen from '$lib/components/ErrorScreen.svelte';
 	import KonamiEgg from '$lib/components/KonamiEgg.svelte';
 	import IntroDialog from '$lib/components/IntroDialog.svelte';
-	import { relayStore, loadRelays } from '$lib/stores/relays.svelte';
+	import { relayStore, loadRelaySummary, loadRelays } from '$lib/stores/relays.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
 	import { getMessages } from '$lib/i18n/index.svelte';
-	import { viewKeyAction, viewNeedsRelays } from '$lib/navigation';
+	import { viewKeyAction } from '$lib/navigation';
 	import {
 		viewState,
 		setView,
@@ -24,9 +24,17 @@
 
 	const t = $derived(getMessages());
 
-	const needsRelays = $derived(viewNeedsRelays(viewState.id));
-	const showLoading = $derived(needsRelays && relayStore.loading);
-	const showFailed = $derived(needsRelays && relayStore.failed);
+	const needsRelayDetails = $derived(viewState.id === 'hosting' || viewState.id === 'paths');
+	const showLoading = $derived(
+		viewState.id === 'map'
+			? false
+			: needsRelayDetails && !relayStore.detailsLoaded && !relayStore.detailsFailed
+	);
+	const showFailed = $derived(
+		viewState.id === 'map'
+			? relayStore.failed && !relayStore.loaded
+			: needsRelayDetails && relayStore.detailsFailed && !relayStore.detailsLoaded
+	);
 
 	let showIntro = $state(false);
 
@@ -44,13 +52,19 @@
 
 	onMount(() => {
 		initViewFromUrl();
-		loadRelays();
+		loadRelaySummary().then(loadRelayDetailsSoon);
 		showIntro = true;
 	});
 
-	// On failure `loaded` stays false, so loadRelays re-runs the fetch.
+	// On failure the relevant loaded flag stays false, so retry re-runs the fetch.
 	function retryRelays() {
 		loadRelays();
+	}
+
+	function loadRelayDetailsSoon() {
+		window.setTimeout(() => {
+			if (!relayStore.detailsLoaded) loadRelays();
+		}, 750);
 	}
 
 	// Keep the URL in step with the active view, and drop any stale selection
@@ -58,6 +72,7 @@
 	$effect(() => {
 		syncViewToUrl(viewState.id);
 		if (viewState.id !== 'map') selection.country = null;
+		if (needsRelayDetails) loadRelays();
 	});
 </script>
 

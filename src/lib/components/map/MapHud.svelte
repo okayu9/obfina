@@ -4,12 +4,14 @@
 	let {
 		relayCount,
 		totalBandwidth,
+		loaded = true,
 		relaysLabel,
 		legendExitLabel,
 		legendBrightnessLabel
 	}: {
 		relayCount: number;
 		totalBandwidth: number;
+		loaded?: boolean;
 		relaysLabel: string;
 		legendExitLabel: string;
 		legendBrightnessLabel: string;
@@ -18,11 +20,13 @@
 
 <div class="hud">
 	<div class="metric">
-		<span class="count">{relayCount.toLocaleString()}</span>
+		<span class="count" class:loading={!loaded}>{loaded ? relayCount.toLocaleString() : '--'}</span>
 		<span class="unit">{relaysLabel}</span>
 	</div>
 	<div class="metric">
-		<span class="bw">{formatBandwidth(totalBandwidth)}</span>
+		<span class="bw" class:loading={!loaded}
+			>{loaded ? formatBandwidth(totalBandwidth) : 'loading...'}</span
+		>
 	</div>
 	<div class="legend">
 		<span class="enc"><i class="ramp"></i>{legendExitLabel}</span>
@@ -67,6 +71,10 @@
 		font-variant-numeric: tabular-nums;
 		text-shadow: 0 0 8px rgba(159, 198, 224, 0.3);
 	}
+	.loading {
+		opacity: 0.62;
+		animation: pulse 1.1s ease-in-out infinite;
+	}
 	.legend {
 		margin-top: 0.7rem;
 		display: flex;
@@ -93,5 +101,14 @@
 	}
 	.ramp {
 		background: linear-gradient(90deg, #00d4ff, #39ff14);
+	}
+	@keyframes pulse {
+		0%,
+		100% {
+			opacity: 0.45;
+		}
+		50% {
+			opacity: 0.82;
+		}
 	}
 </style>
