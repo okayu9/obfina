@@ -5,7 +5,6 @@
 - [Node.js](https://nodejs.org/) 20 or later
 - [pnpm](https://pnpm.io/) 9 or later
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) (for local Cloudflare Workers emulation)
-- [Terraform](https://developer.hashicorp.com/terraform/install) 1.10 or later (for infrastructure changes only — not required to run the app)
 - A Cloudflare account (free tier is sufficient; optional for local development — see below)
 
 ## Setup
@@ -70,7 +69,7 @@ obfina/
 ├── src/
 │   ├── lib/
 │   │   ├── analysis/         # relay analysis helpers (path bias, concentration)
-│   │   ├── assets/           # static assets (flag sprites, etc.)
+│   │   ├── assets/           # static assets
 │   │   ├── components/
 │   │   │   ├── map/          # value-by-alpha world map (ValueByAlphaMap.svelte)
 │   │   │   ├── nav/          # nav rail (ViewNav.svelte)
@@ -98,12 +97,10 @@ obfina/
 ├── scripts/screenshot.ts     # headless visual-check helper
 ├── scripts/smoke.ts          # end-to-end smoke test across all views
 ├── scripts/click-test.ts     # panel open/close interaction test
-├── docs/
-│   └── decisions/            # Architecture Decision Records (ADRs)
+├── docs/                     # project documentation
 ├── svelte.config.js          # SvelteKit config
 ├── vite.config.ts            # Vite + Tailwind v4 plugin (no tailwind.config)
-├── eslint.config.ts
-└── .prettierrc
+└── eslint.config.ts
 
 # generated locally by pnpm cloudflare:bootstrap:
 #   wrangler.toml       Cloudflare Pages config with account-specific KV IDs
@@ -124,8 +121,8 @@ pnpm lint    # prettier --check + eslint
 pnpm format  # prettier --write
 ```
 
-CI currently runs `pnpm check`, `pnpm test`, and `pnpm build`. Run `pnpm lint`
-locally before committing formatting or lint-sensitive changes.
+CI runs `pnpm check`, `pnpm test`, and `pnpm build`. Run `pnpm lint` locally
+before committing formatting or lint-sensitive changes.
 
 ## Tests
 

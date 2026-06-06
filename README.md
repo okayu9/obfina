@@ -12,7 +12,7 @@ obfina makes the Tor network observable. Not through tables and CSV exports, but
 
 ## What it does
 
-obfina is a set of linked views over the same network, switchable from the nav rail, with number keys `1`–`5`, or by cycling with `←`/`→` (or `[`/`]`); `Esc` clears the current selection. The active view is saved to `?view=…` so any view is shareable. On narrow screens the nav rail collapses to a hamburger menu. See [ADR-009](docs/decisions/009-multi-view.md).
+obfina is a set of linked views over the same network, switchable from the nav rail, with number keys `1`–`5`, or by cycling with `←`/`→` (or `[`/`]`); `Esc` clears the current selection. The active view is saved to `?view=…` so any view is shareable. On narrow screens the nav rail collapses to a hamburger menu.
 
 - **Map** — value-by-alpha world map: hue encodes exit share (cyan → green) and brightness encodes relay count, so the busiest countries glow while the rest recede. A lightweight country summary loads first for fast startup, then full relay details are fetched for the Guard → Middle → Exit background simulation and drill-down panels. Click a country for its relay count, bandwidth, Guard/Middle/Exit composition, top autonomous systems, and a relay list with bandwidth bars; pan & zoom into dense regions like Europe.
 - **Hosting** — centralization risk by autonomous system (hosting provider), as Lorenz curves with a Gini score and the top ASes — shown both for the whole network and for exit capacity alone, where concentration bites hardest. Click an AS for a detail panel with its relay list and bandwidth share.
@@ -41,16 +41,14 @@ Data is refreshed via a server-side cache layer (relay summary/details: 10 min, 
 | Styling      | Tailwind CSS                           |
 | Hosting      | Cloudflare Pages + Workers             |
 | Cache        | Cloudflare KV                          |
-| IaC          | Terraform                              |
 | CI/CD        | GitHub Actions                         |
 
 ## Documentation
 
 - [Architecture](docs/architecture.md) — system overview and design principles
-- [Architecture Decision Records](docs/decisions/) — individual records for each major technology choice
 - [Data Sources](docs/data-sources.md) — API reference, data quality notes, caveats
 - [Development](docs/development.md) — local setup guide
-- [Infrastructure](docs/infrastructure.md) — Terraform and deployment
+- [Infrastructure](docs/infrastructure.md) — Cloudflare deployment
 
 ## Acknowledgements
 

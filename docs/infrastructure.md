@@ -1,10 +1,9 @@
 # Infrastructure
 
-obfina runs entirely on Cloudflare. The first deploy path is automated with
-GitHub Actions, Wrangler, and a small Cloudflare API bootstrap script. Terraform
-is still the intended long-term infrastructure record for larger changes, but
-the project can be published from a fresh Cloudflare account without manually
-creating Pages or KV resources in the dashboard.
+obfina runs entirely on Cloudflare. Deployment is automated with GitHub Actions,
+Wrangler, and a small Cloudflare API bootstrap script. The project can be
+published from a fresh Cloudflare account without manually creating Pages or KV
+resources in the dashboard.
 
 ## Architecture
 
@@ -13,7 +12,6 @@ creating Pages or KV resources in the dashboard.
 | Cloudflare Pages   | Hosts the built SvelteKit app                             |
 | Cloudflare Workers | Runs SvelteKit server routes (via `adapter-cloudflare`)   |
 | Cloudflare KV      | API response cache (separate namespaces per environment)  |
-| Cloudflare R2      | Terraform remote state storage, when Terraform is enabled |
 
 ## Prerequisites
 
@@ -22,8 +20,6 @@ creating Pages or KV resources in the dashboard.
   - `Account > Cloudflare Pages > Edit`
   - `Account > Workers Scripts > Edit`
   - `Account > Workers KV Storage > Edit`
-- Terraform 1.10 or later only if you are working on the future `infra/`
-  backend
 
 ## First-time setup
 
@@ -77,24 +73,6 @@ KV namespace titles, and generated `wrangler.toml` compatibility date.
 `wrangler.toml` is generated and ignored by git because it contains
 account-specific resource IDs. `wrangler.toml.example` documents the shape.
 
-## Terraform
-
-The ADRs describe Terraform as the long-term infrastructure-management choice,
-but the Terraform module has not been added yet. When it is added, it should
-manage the same resources created by bootstrap:
-
-- Cloudflare Pages project `obfina`
-- KV namespace `obfina-cache-prod`
-- KV namespace `obfina-cache-preview`
-- optional R2 bucket for Terraform state
-
-If remote state is stored in R2, create the state bucket once before
-`terraform init`:
-
-```bash
-wrangler r2 bucket create obfina-tfstate
-```
-
 ## CI/CD
 
 Two GitHub Actions workflows handle the deployment lifecycle.
@@ -137,4 +115,4 @@ CI/CD workflows require the following repository secrets (set in GitHub → Sett
 | `CLOUDFLARE_API_TOKEN`  | Cloudflare API token  |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
 
-No secrets are embedded in `wrangler.toml`, workflow files, or Terraform files.
+No secrets are embedded in `wrangler.toml` or workflow files.
