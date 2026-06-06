@@ -15,15 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 11.5.0
-          run_install: false
-
       - uses: actions/setup-node@v6
         with:
           node-version: 22.13
           cache: pnpm
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.5.0
+          run_install: false
 
       - run: pnpm install --frozen-lockfile
 
@@ -57,15 +57,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 11.5.0
-          run_install: false
-
       - uses: actions/setup-node@v6
         with:
           node-version: 22.13
           cache: pnpm
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.5.0
+          run_install: false
 
       - run: pnpm install --frozen-lockfile
 
