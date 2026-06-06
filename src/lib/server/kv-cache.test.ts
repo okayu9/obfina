@@ -39,9 +39,7 @@ describe('getCachedJson', () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 		await expect(getCachedJson(kvWithValue('{broken'), 'cache:key')).resolves.toBeNull();
-		expect(warn).toHaveBeenCalledWith(
-			expect.stringContaining('"event":"cache_parse_failed"')
-		);
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('"event":"cache_parse_failed"'));
 
 		warn.mockRestore();
 	});
