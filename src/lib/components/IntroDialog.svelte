@@ -35,7 +35,9 @@
 		<div class="eyebrow">OBFINA</div>
 		<h1 id="intro-title">{title}</h1>
 		<p>{body}</p>
-		<button type="button" onclick={ondismiss}>{dismissLabel}</button>
+		<div class="actions">
+			<button type="button" onclick={ondismiss}>{dismissLabel}</button>
+		</div>
 	</div>
 </div>
 
@@ -87,23 +89,53 @@
 		color: #b8cde0;
 	}
 
+	.actions {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 0.25rem;
+		padding-top: 0.9rem;
+		border-top: 1px solid rgba(58, 93, 120, 0.28);
+	}
+
 	button {
-		align-self: flex-start;
-		min-height: 36px;
-		padding: 0 0.9rem;
-		border: 1px solid rgba(0, 212, 255, 0.42);
+		position: relative;
+		min-height: 40px;
+		padding: 0 2.1rem 0 1rem;
+		border: 1px solid rgba(0, 212, 255, 0.58);
 		border-radius: 4px;
-		background: rgba(0, 212, 255, 0.1);
+		background: linear-gradient(180deg, rgba(0, 212, 255, 0.18), rgba(0, 212, 255, 0.08));
 		color: #e6f1ff;
 		font: inherit;
 		font-size: 0.72rem;
-		letter-spacing: 0.08em;
+		font-weight: 600;
+		letter-spacing: 0.06em;
 		cursor: pointer;
+		box-shadow:
+			0 0 0 1px rgba(0, 212, 255, 0.08) inset,
+			0 0 18px rgba(0, 212, 255, 0.12);
+		transition:
+			border-color 0.14s ease,
+			background 0.14s ease,
+			box-shadow 0.14s ease,
+			transform 0.14s ease;
+	}
+
+	button::after {
+		content: '>';
+		position: absolute;
+		right: 0.95rem;
+		top: 50%;
+		color: var(--accent-cyan);
+		transform: translateY(-50%);
 	}
 
 	button:hover {
-		border-color: rgba(0, 212, 255, 0.7);
-		background: rgba(0, 212, 255, 0.16);
+		border-color: rgba(57, 255, 20, 0.62);
+		background: linear-gradient(180deg, rgba(0, 212, 255, 0.24), rgba(57, 255, 20, 0.1));
+		box-shadow:
+			0 0 0 1px rgba(57, 255, 20, 0.12) inset,
+			0 0 24px rgba(0, 212, 255, 0.18);
+		transform: translateY(-1px);
 	}
 
 	@keyframes appear {
@@ -125,6 +157,10 @@
 
 		.panel {
 			padding: 1.15rem;
+		}
+
+		.actions {
+			justify-content: stretch;
 		}
 
 		button {
