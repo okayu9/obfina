@@ -1,0 +1,18 @@
+name: Setup Node and pnpm
+description: Install the repository Node and pnpm versions with pnpm store caching.
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v6
+      with:
+        version: 11.5.0
+        run_install: false
+
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: .node-version
+        cache: pnpm
+
+    - run: pnpm install --frozen-lockfile
+      shell: bash
