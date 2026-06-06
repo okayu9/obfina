@@ -54,6 +54,7 @@ jobs:
     permissions:
       contents: read
       deployments: write
+      issues: write
       pull-requests: write
     steps:
       - uses: actions/checkout@v6
@@ -72,8 +73,67 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Deploy preview
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy .svelte-kit/cloudflare --project-name=obfina --branch=${{ github.head_ref }}
+        id: deploy-preview
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          deploy_log="$(mktemp)"
+          pnpm exec wrangler pages deploy .svelte-kit/cloudflare \
+            --project-name=obfina \
+            --branch="${GITHUB_HEAD_REF}" 2>&1 | tee "${deploy_log}"
+
+          deployment_url="$(sed -n 's/.*Deployment complete! Take a peek over at \(https:\/\/[^[:space:]]*\).*/\1/p' "${deploy_log}" | tail -n 1)"
+          alias_url="$(sed -n 's/.*Deployment alias URL: \(https:\/\/[^[:space:]]*\).*/\1/p' "${deploy_log}" | tail -n 1)"
+
+          test -n "${deployment_url}" || {
+            echo "Could not find Cloudflare deployment URL in Wrangler output" >&2
+            exit 1
+          }
+
+          {
+            echo "deployment_url=${deployment_url}"
+            echo "alias_url=${alias_url:-${deployment_url}}"
+          } >>"${GITHUB_OUTPUT}"
+
+          {
+            echo "### Preview deployment"
+            echo
+            echo "- Deployment: ${deployment_url}"
+            echo "- Alias: ${alias_url:-${deployment_url}}"
+          } >>"${GITHUB_STEP_SUMMARY}"
+
+      - name: Comment preview URL
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          DEPLOYMENT_URL: ${{ steps.deploy-preview.outputs.deployment_url }}
+          ALIAS_URL: ${{ steps.deploy-preview.outputs.alias_url }}
+        run: |
+          set -euo pipefail
+
+          marker="<!-- obfina-preview-url -->"
+          body="$(mktemp)"
+          cat >"${body}" <<EOF
+          ${marker}
+          ### Preview deployment
+
+          - Deployment: ${DEPLOYMENT_URL}
+          - Alias: ${ALIAS_URL}
+          EOF
+
+          existing_comment_id="$(
+            gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" \
+              --jq ".[] | select(.body | contains(\"${marker}\")) | .id" |
+              tail -n 1
+          )"
+
+          if [ -n "${existing_comment_id}" ]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${existing_comment_id}" \
+              -f body="$(cat "${body}")"
+          else
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" \
+              -f body="$(cat "${body}")"
+          fi

@@ -123,6 +123,8 @@ pnpm format  # prettier --write
 
 CI runs `pnpm lint`, `pnpm check`, `pnpm test`, and `pnpm build`.
 
+Branch and release workflow is documented in [Branching](branching.md).
+
 ## Tests
 
 Unit tests for the pure helpers (relay aggregation, formatting) run with

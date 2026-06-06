@@ -48,6 +48,7 @@ Data is refreshed via a server-side cache layer (relay summary/details: 10 min, 
 - [Architecture](docs/architecture.md) — system overview and design principles
 - [Data Sources](docs/data-sources.md) — API reference, data quality notes, caveats
 - [Development](docs/development.md) — local setup guide
+- [Branching](docs/branching.md) — branch strategy, staging gate, and release flow
 - [Infrastructure](docs/infrastructure.md) — Cloudflare deployment
 
 ## Acknowledgements
