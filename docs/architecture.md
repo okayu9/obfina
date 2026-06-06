@@ -44,9 +44,9 @@ flowchart TD
 
 `/api/relays?summary=1` returns country-level counts, observed bandwidth, and Guard/Middle/Exit composition for fast map startup. `/api/relays` returns the per-relay fields the analysis views share: `country`, `flags`, `observed_bandwidth`, `consensus_weight`, the per-position selection probabilities (`guard`/`middle`/`exit`), `as`/`as_name`, and `first_seen`. `/api/trends` proxies and downsamples three Tor Metrics CSVs (network size, advertised vs. consumed bandwidth, per-country users) into one compact payload; each section degrades independently if its CSV is unavailable.
 
-Cache entries are stored as JSON strings in Cloudflare KV. On a cache miss the Worker fetches upstream, schedules the KV write with `waitUntil()` when the platform provides it, and returns the fresh response without waiting for the write to finish. KV TTL is a hard expiry — background revalidation does not happen automatically.
+Cache entries are stored as JSON envelopes in Cloudflare KV with separate fresh and stale windows. On a cache miss the Worker fetches upstream, schedules the KV write with `waitUntil()` when the platform provides it, and returns the fresh response without waiting for the write to finish. KV expiry is set to the stale window so cached data remains available for outage fallback after the normal freshness window has passed.
 
-During an upstream outage, the Worker attempts to serve a cached value if one is still available and marks the payload `stale: true`. If no cached value exists, the API returns an empty dataset with an explicit `unavailable: true` flag so the client can render a degraded state rather than a broken one.
+During an upstream outage, the Worker attempts to serve a cached value within its stale window and marks the payload `stale: true`. If no cached value exists, the API returns an empty dataset with an explicit `unavailable: true` flag so the client can render a degraded state rather than a broken one.
 
 ## Design principles
 

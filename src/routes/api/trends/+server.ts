@@ -14,6 +14,7 @@ import { fetchTrendsSections, trendsAvailability } from '$lib/server/trends-serv
 
 const CACHE_KEY = 'trends:v2';
 const TTL_SECONDS = 60 * 30;
+const STALE_TTL_SECONDS = 60 * 60 * 24 * 3;
 
 export const GET: RequestHandler = async ({ platform, url }) => {
 	const cache = jsonCache(platform);
@@ -31,7 +32,7 @@ export const GET: RequestHandler = async ({ platform, url }) => {
 	if (!gotAny) {
 		// Serve stale cache during a full outage if we have any.
 		if (cache.kv) {
-			const stale = await getCachedJson<TrendsResponse>(cache, CACHE_KEY);
+			const stale = await getCachedJson<TrendsResponse>(cache, CACHE_KEY, { allowStale: true });
 			if (stale) return json({ ...stale, stale: true });
 		}
 		return json(
@@ -54,6 +55,6 @@ export const GET: RequestHandler = async ({ platform, url }) => {
 		...(gotAll ? {} : { partial: true })
 	};
 
-	putCachedJson(cache, CACHE_KEY, payload, TTL_SECONDS);
+	putCachedJson(cache, CACHE_KEY, payload, TTL_SECONDS, { staleTtlSeconds: STALE_TTL_SECONDS });
 	return json(payload);
 };
